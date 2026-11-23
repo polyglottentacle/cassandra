@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pizia · l'oracolo delle tue chat</title>
+<meta name="description" content="Porta una chat di WhatsApp all'oracolo. I conti si fanno sul tuo telefono: niente server, niente account.">
+<meta name="theme-color" content="#fafaf6">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icona.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icona-180.png">
+<style>
+  :root {
+    --notte: #fafaf6; --notte-2: #ffffff; --avorio: #10233a; --velo: #4a5a70; --inchiostro: #10233a; --accento: #2b2fa8; --bordo: #e3e6ea;
+    --oro: #ffe9a8; --terracotta: #ffbfd0; --ulivo: #a8f1d6; --egeo: #bde6fb; --marmo: #eceef2; --porpora: #d9c7fd;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; background: var(--notte); color: var(--avorio);
+    font: 16px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    padding: env(safe-area-inset-top) 16px calc(32px + env(safe-area-inset-bottom));
+    min-height: 100vh;
+  }
+  main { max-width: 520px; margin: 0 auto; }
+  h1, h2, .serif { font-family: "Arial Rounded MT Bold", "SF Pro Rounded", ui-rounded, -apple-system, "Segoe UI", Roboto, sans-serif; font-weight: 800; letter-spacing: -.4px; }
+  header { display: flex; align-items: center; gap: 12px; padding: 22px 0 6px; }
+  header svg { width: 44px; height: 44px; flex: none; }
+  header h1 { margin: 0; font-size: 30px; color: var(--accento); line-height: 1; }
+  header p { margin: 3px 0 0; color: var(--velo); font-size: 13px; }
+  [hidden] { display: none !important; }
+
+  .porta { margin-top: 22px; border: 0; border-radius: 30px; padding: 30px 20px; text-align: center; background: var(--ulivo); }
+  .porta.sopra { outline: 3px solid var(--accento); }
+  .porta h2 { margin: 0 0 6px; font-size: 22px; }
+  .porta p { margin: 0 0 18px; font-size: 14px; font-weight: 600; }
+  button, .bottone { font: inherit; cursor: pointer; border: 0; border-radius: 999px; min-height: 48px; padding: 12px 22px; }
+  .bottone { display: inline-flex; align-items: center; justify-content: center; background: var(--accento); color: #fff; font-weight: 800; }
+  .bottone:focus-within, button:focus-visible { outline: 3px solid var(--inchiostro); outline-offset: 2px; }
+  .piano { background: #fff; color: var(--avorio); border: 1.5px solid var(--bordo); font-weight: 700; }
+  .patto { margin: 16px 2px 0; font-size: 14px; color: var(--avorio); display: flex; gap: 10px; align-items: flex-start; }
+  .patto b { color: var(--accento); }
+  details { margin-top: 18px; background: var(--oro); border-radius: 24px; padding: 4px 18px; }
+  summary { padding: 12px 0; cursor: pointer; font-weight: 600; }
+  details ol { margin: 0 0 14px; padding-left: 20px; font-size: 14px; font-weight: 600; }
+  details li { margin: 5px 0; }
+  .errore { margin-top: 14px; background: #8a1b2e; color: #fff; font-weight: 600; border-radius: 14px; padding: 12px 14px; font-size: 14px; }
+
+  h3.sezione { font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--velo); margin: 28px 2px 10px; font-weight: 600; }
+  .responso { display: flex; align-items: center; gap: 10px; background: #fff; border: 1.5px solid var(--bordo); border-radius: 24px; padding: 8px 6px 8px 18px; margin-bottom: 10px; }
+  .responso button.apri { flex: 1; text-align: left; background: none; color: var(--avorio); padding: 8px 0; border-radius: 8px; min-width: 0; }
+  .responso .nome { display: block; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .responso .sotto { display: block; color: var(--velo); font-size: 12.5px; }
+  .responso button.via { background: none; color: var(--velo); width: 48px; padding: 0; font-size: 20px; }
+
+  .titolo { margin: 22px 2px 4px; font-size: 30px; line-height: 1.12; overflow-wrap: anywhere; }
+  .titolo .e { color: var(--velo); font-style: italic; }
+  .titolo .b { color: var(--accento); }
+  .periodo { margin: 0 2px 12px; color: var(--velo); font-size: 14px; }
+  .etichette { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+  .etichette button { min-height: 40px; padding: 6px 14px; background: #fff; color: var(--avorio); border: 1.5px solid #c9cfd8; font-size: 14px; font-weight: 600; }
+  .etichette button[aria-pressed="true"] { background: var(--avorio); color: #fff; border-color: var(--avorio); font-weight: 700; }
+
+  .carta { border-radius: 30px; padding: 22px; margin-bottom: 14px; color: var(--inchiostro); }
+  .carta h2 { margin: 0 0 12px; font-size: 18px; }
+  .carta .nota { font-size: 13px; opacity: .75; margin: 10px 0 0; }
+  .oro { background: var(--oro); } .terracotta { background: var(--terracotta); } .ulivo { background: var(--ulivo); }
+  .egeo { background: var(--egeo); } .marmo { background: var(--marmo); } .porpora { background: var(--porpora); }
+  .riga { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 5px 0; }
+  .riga .chi { font-size: 14px; font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .riga .num { font-size: 30px; font-weight: 800; letter-spacing: -.5px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .riga .num { text-align: right; line-height: 1.05; flex: none; max-width: 70%; }
+  .riga .num small { display: block; font-size: 12.5px; font-weight: 600; opacity: .7; letter-spacing: 0; white-space: normal; }
+  .barra { display: flex; height: 10px; border-radius: 6px; overflow: hidden; background: #1b1a2e22; margin-top: 10px; gap: 2px; }
+  .barra i { background: var(--inchiostro); display: block; }
+  .barra i:nth-child(even) { opacity: .45; }
+  .grande { font-size: 28px; font-weight: 800; margin: 0; line-height: 1.15; }
+  .detto { margin: 10px 0 0; padding: 10px 12px; background: #ffffff66; border-radius: 12px; font-size: 15px; overflow-wrap: anywhere; white-space: pre-wrap; }
+  .ore { display: flex; align-items: flex-end; gap: 2px; height: 90px; margin-top: 6px; }
+  .ore i { flex: 1; background: var(--inchiostro); opacity: .35; border-radius: 3px 3px 0 0; min-height: 2px; }
+  .ore i.picco { opacity: 1; }
+  .assi { display: flex; justify-content: space-between; font-size: 11px; opacity: .7; margin-top: 4px; }
+  .azioni { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+  .azioni > * { flex: 1 1 180px; }
+  footer { margin-top: 30px; text-align: center; color: var(--velo); font-size: 12.5px; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <svg viewBox="0 0 34 34" aria-hidden="true">
+      <rect width="34" height="34" rx="10" fill="#2b2fa8"/>
+      <path d="M6 17c3.2-4.6 6.9-6.8 11-6.8s7.8 2.2 11 6.800c-3.2 4.6-6.900 6.800-11 6.800S9.200 21.600 6 17z" fill="none" stroke="#ffe08a" stroke-width="2.2" stroke-linejoin="round"/>
+      <circle cx="17" cy="17" r="3.6" fill="#ffe08a"/>
+    </svg>
+    <div>
+      <h1>Pizia</h1>
+      <p>L'oracolo delle tue chat</p>
+    </div>
+  </header>
+
+  <section id="casa">
+    <div class="porta" id="porta">
+      <h2>Porta una chat all'oracolo</h2>
+      <p>Il file che WhatsApp crea con «Esporta chat» (.zip o .txt).</p>
+      <label class="bottone">Scegli il file
+        <input type="file" id="file" accept=".txt,.zip,text/plain,application/zip" style="position:absolute;opacity:0;width:1px;height:1px">
+      </label>
+    </div>
+    <div class="errore" id="errore" role="alert" hidden></div>
+    <p class="patto"><span><b>Resta tutto qui.</b> I conti si fanno su questo dispositivo: nessun server, nessun account, niente da sbloccare.</span></p>
+    <details>
+      <summary>Come si esporta una chat da WhatsApp</summary>
+      <ol>
+        <li>Apri la chat e tocca il nome in alto.</li>
+        <li>Scorri fino in fondo e tocca <b>Esporta chat</b>.</li>
+        <li>Scegli <b>Senza media</b>: è più veloce.</li>
+        <li>Tocca <b>Salva su File</b> (iPhone) o salva il file sul telefono (Android).</li>
+        <li>Torna qui e tocca «Scegli il file».</li>
+      </ol>
+    </details>
+    <div id="archivio" hidden>
+      <h3 class="sezione">Responsi salvati</h3>
+      <div id="lista"></div>
+    </div>
+  </section>
+
+  <section id="responso" hidden>
+    <h2 class="titolo" id="titolo"></h2>
+    <p class="periodo" id="periodo"></p>
+    <div class="etichette" id="etichette" role="group" aria-label="Che rapporto è"></div>
+    <div id="carte"></div>
+    <div class="azioni">
+      <button class="bottone" id="nuova">Un'altra chat</button>
+      <button class="piano" id="dimentica">Dimentica questo responso</button>
+    </div>
+  </section>
+
+  <footer>Pizia · un satellite dell'Olimpo · gratis</footer>
+</main>
+
+<script src="pizia.js"></script>
+<script>
+(function () {
+  'use strict';
+  const $ = (id) => document.getElementById(id);
+  const CHIAVE = 'pizia.responsi';
+  const ETICHETTE = ['Coppia', 'Crush', 'Famiglia', 'Amicizia', 'Lavoro'];
+  const MAX_NOMI = 6;
+  let aperto = null; // { id, nomeFile, etichetta, salvato, st }
+
+  // memoria: solo i numeri, mai il testo dei messaggi
+  function leggiArchivio() { try { return JSON.parse(localStorage.getItem(CHIAVE)) || []; } catch (e) { return []; } }
+  function scriviArchivio(lista) { try { localStorage.setItem(CHIAVE, JSON.stringify(lista.slice(0, 30))); } catch (e) { /* senza memoria si usa lo stesso */ } }
+
+  const nf = new Intl.NumberFormat('it-IT');
+  const dataLunga = (ms) => new Date(ms).toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' });
+  const dataCorta = (ms) => new Date(ms).toLocaleDateString('it-IT', { day: 'numeric', month: 'short', year: 'numeric' });
+
+  function el(tag, classe, testo) {
+    const n = document.createElement(tag);
+    if (classe) n.className = classe;
+    if (testo != null) n.textContent = testo;
+    return n;
+  }
+  function carta(colore, titolo) {
+    const c = el('article', 'carta ' + colore);
+    c.appendChild(el('h2', 'serif', titolo));
+    $('carte').appendChild(c);
+    return c;
+  }
+  function riga(c, chi, numero, piccolo) {
+    const r = el('div', 'riga');
+    r.appendChild(el('span', 'chi', chi));
+    const n = el('span', 'num', numero);
+    if (piccolo) { n.appendChild(document.createTextNode(' ')); n.appendChild(el('small', null, piccolo)); }
+    r.appendChild(n);
+    c.appendChild(r);
+  }
+  function titoloDi(st) {
+    const nomi = st.autori.map((a) => a.nome);
+    if (nomi.length <= 2) return nomi;
+    return [nomi[0], 'altri ' + (nomi.length - 1)];
+  }
+
+  function mostra(r) {
+    aperto = r;
+    const st = r.st;
+    const autori = st.autori.slice(0, MAX_NOMI);
+    $('carte').textContent = '';
+
+    const t = $('titolo');
+    t.textContent = '';
+    const nomi = titoloDi(st);
+    t.appendChild(el('span', null, nomi[0] || 'Chat'));
+    if (nomi[1]) { t.appendChild(el('span', 'e', ' e ')); t.appendChild(el('span', 'b', nomi[1])); }
+    $('periodo').textContent = st.primo
+      ? nf.format(st.totale) + ' messaggi in ' + nf.format(st.giorniAttivi) + ' giorni · dal ' + dataCorta(st.primo.quando) + ' al ' + dataCorta(st.ultimo)
+      : '';
+
+    const et = $('etichette');
+    et.textContent = '';
+    ETICHETTE.forEach((nome) => {
+      const b = el('button', null, nome);
+      b.type = 'button';
+      b.setAttribute('aria-pressed', String(r.etichetta === nome));
+      b.onclick = () => { r.etichetta = r.etichetta === nome ? null : nome; salva(r); mostra(r); };
+      et.appendChild(b);
+    });
+
+    let c = carta('ulivo', 'Messaggi');
+    autori.forEach((a) => riga(c, a.nome, nf.format(a.messaggi), Math.round(a.messaggi / st.totale * 100) + '%'));
+    const barra = el('div', 'barra');
+    autori.forEach((a) => { const i = el('i'); i.style.flex = String(a.messaggi); barra.appendChild(i); });
+    c.appendChild(barra);
+
+    c = carta('porpora', 'Tempo medio di risposta');
+    autori.forEach((a) => riga(c, a.nome, Pizia.durata(a.rispostaMediaMs), a.risposte ? 'di solito ' + Pizia.durata(a.rispostaMedianaMs) : ''));
+    c.appendChild(el('p', 'nota', 'Conta solo quando cambia chi scrive. I silenzi oltre 24 ore restano fuori. «Di solito» è il tempo di mezzo: una notte di sonno non lo sposta.'));
+
+    if (st.primo) {
+      c = carta('oro', 'Primo messaggio');
+      c.appendChild(el('p', 'grande', dataLunga(st.primo.quando)));
+      c.appendChild(el('p', 'nota', 'Ha scritto per primo: ' + st.primo.autore));
+      if (st.primo.testo) c.appendChild(el('p', 'detto', st.primo.testo.length > 240 ? st.primo.testo.slice(0, 240) + '…' : st.primo.testo));
+    }
+
+    c = carta('egeo', 'Chi apre la giornata');
+    autori.forEach((a) => riga(c, a.nome, nf.format(a.apreGiornata), Math.round(a.apreGiornata / st.giorniAttivi * 100) + '% dei giorni'));
+
+    c = carta('marmo', 'Ore più attive');
+    c.appendChild(el('p', 'grande', 'Tra le ' + st.oraPicco + ' e le ' + ((st.oraPicco + 1) % 24)));
+    const ore = el('div', 'ore');
+    const massimo = Math.max.apply(null, st.ore) || 1;
+    st.ore.forEach((n, h) => {
+      const i = el('i', h === st.oraPicco ? 'picco' : null);
+      i.style.height = Math.max(2, n / massimo * 100) + '%';
+      i.title = h + ':00 · ' + nf.format(n) + ' messaggi';
+      ore.appendChild(i);
+    });
+    ore.setAttribute('role', 'img');
+    ore.setAttribute('aria-label', 'Messaggi per ora del giorno, picco alle ' + st.oraPicco);
+    c.appendChild(ore);
+    const assi = el('div', 'assi');
+    ['0', '6', '12', '18', '23'].forEach((x) => assi.appendChild(el('span', null, x)));
+    c.appendChild(assi);
+
+    c = carta('terracotta', 'Parole e foto');
+    autori.forEach((a) => {
+      const scritti = a.messaggi - a.media - a.eliminati;
+      riga(c, a.nome, scritti ? (a.parole / scritti).toFixed(1).replace('.', ',') : '—', 'parole a messaggio · ' + nf.format(a.media) + ' media');
+    });
+    if (st.giornoRecord) {
+      const p = st.giornoRecord.data.split('-');
+      c.appendChild(el('p', 'nota', 'Giorno record: ' + dataLunga(new Date(+p[0], +p[1] - 1, +p[2]).getTime()) + ' con ' + nf.format(st.giornoRecord.messaggi) + ' messaggi.'));
+    }
+
+    if (st.chiamate > 0) {
+      c = carta('egeo', 'Chiamate');
+      c.appendChild(el('p', 'grande', nf.format(st.chiamate) + (st.chiamate === 1 ? ' chiamata' : ' chiamate')));
+      c.appendChild(el('p', 'nota', 'Fatte, ricevute o perse: il file non dice chi ha chiamato.'));
+    }
+    if (st.blocchiTuoi > 0) {
+      c = carta('porpora', 'Blocchi');
+      c.appendChild(el('p', 'grande', 'Hai bloccato questa chat ' + st.blocchiTuoi + (st.blocchiTuoi === 1 ? ' volta' : ' volte')));
+      c.appendChild(el('p', 'nota', 'WhatsApp scrive nel file solo i blocchi fatti da te. Quelli dell\'altra persona non ci sono, quindi nessuno li può contare.'));
+    }
+    if (st.autori.length > MAX_NOMI) {
+      $('carte').appendChild(el('p', 'periodo', 'Nel gruppo ci sono ' + st.autori.length + ' persone: qui vedi le ' + MAX_NOMI + ' che scrivono di più.'));
+    }
+
+    $('casa').hidden = true;
+    $('responso').hidden = false;
+    window.scrollTo(0, 0);
+  }
+
+  function salva(r) {
+    const st = Object.assign({}, r.st);
+    if (st.primo) st.primo = { quando: st.primo.quando, autore: st.primo.autore, testo: '', tipo: st.primo.tipo }; // il testo non si conserva
+    const lista = leggiArchivio().filter((x) => x.id !== r.id);
+    lista.unshift({ id: r.id, etichetta: r.etichetta, salvato: r.salvato, st: st });
+    scriviArchivio(lista);
+  }
+
+  function disegnaArchivio() {
+    const lista = leggiArchivio();
+    $('archivio').hidden = lista.length === 0;
+    $('lista').textContent = '';
+    lista.forEach((r) => {
+      const box = el('div', 'responso');
+      const apri = el('button', 'apri');
+      apri.type = 'button';
+      apri.appendChild(el('span', 'nome', titoloDi(r.st).join(' e ')));
+      apri.appendChild(el('span', 'sotto', (r.etichetta ? r.etichetta + ' · ' : '') + nf.format(r.st.totale) + ' messaggi · letto il ' + dataCorta(r.salvato)));
+      apri.onclick = () => mostra(r);
+      const via = el('button', 'via', '×');
+      via.type = 'button';
+      via.setAttribute('aria-label', 'Dimentica ' + titoloDi(r.st).join(' e '));
+      via.onclick = () => { scriviArchivio(leggiArchivio().filter((x) => x.id !== r.id)); disegnaArchivio(); };
+      box.appendChild(apri);
+      box.appendChild(via);
+      $('lista').appendChild(box);
+    });
+  }
+
+  function tornaACasa() {
+    aperto = null;
+    $('responso').hidden = true;
+    $('casa').hidden = false;
+    $('file').value = '';
+    disegnaArchivio();
+    window.scrollTo(0, 0);
+  }
+
+  async function ricevi(file) {
+    const errore = $('errore');
+    errore.hidden = true;
+    try {
+      const st = Pizia.analizza(await Pizia.testoDaFile(file));
+      if (!st.totale) throw new Error('Qui dentro non trovo messaggi di WhatsApp. Serve il file creato con «Esporta chat».');
+      const r = { id: Date.now().toString(36), etichetta: null, salvato: Date.now(), st: st };
+      salva(r);
+      mostra(r);
+    } catch (e) {
+      errore.textContent = e && e.message ? e.message : 'Non riesco a leggere questo file.';
+      errore.hidden = false;
+    }
+  }
+
+  $('file').addEventListener('change', (e) => { if (e.target.files[0]) ricevi(e.target.files[0]); });
+  const porta = $('porta');
+  ['dragenter', 'dragover'].forEach((n) => porta.addEventListener(n, (e) => { e.preventDefault(); porta.classList.add('sopra'); }));
+  ['dragleave', 'drop'].forEach((n) => porta.addEventListener(n, (e) => { e.preventDefault(); porta.classList.remove('sopra'); }));
+  porta.addEventListener('drop', (e) => { if (e.dataTransfer.files[0]) ricevi(e.dataTransfer.files[0]); });
+  $('nuova').onclick = tornaACasa;
+  $('dimentica').onclick = () => { if (aperto) scriviArchivio(leggiArchivio().filter((x) => x.id !== aperto.id)); tornaACasa(); };
+
+  disegnaArchivio();
+  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});
+})();
+</script>
+</body>
+</html>

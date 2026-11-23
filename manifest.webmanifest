@@ -1,0 +1,16 @@
+{
+  "name": "Pizia · l'oracolo delle tue chat",
+  "short_name": "Pizia",
+  "description": "Statistiche di una chat di WhatsApp, calcolate sul tuo dispositivo.",
+  "lang": "it",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#fafaf6",
+  "theme_color": "#fafaf6",
+  "icons": [
+    { "src": "icona.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icona-180.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "icona-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
