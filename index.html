@@ -98,6 +98,21 @@
   .consenso p { margin: 0; line-height: 1.5; }
   .fatto { margin: 10px 0 0; font-weight: 700; font-size: 16px; line-height: 1.35; }
   .lente { outline: 3px solid var(--accento); outline-offset: -3px; }
+  .chiedi .intro { margin: 0 0 12px; font-size: 14.5px; opacity: .92; }
+  .chiedi .scelte, .chiedi .chi { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .chiedi .chi { margin: 0 0 12px; font-size: 14px; font-weight: 700; }
+  .chiedi .scelte button, .chiedi .chi button { min-height: 40px; padding: 6px 14px; background: rgba(255,255,255,.16); color: #fff; border: 1.5px solid rgba(255,255,255,.5); font-size: 14px; font-weight: 700; text-align: left; }
+  .chiedi .chi button[aria-pressed="true"] { background: #fff; color: #10233a; }
+  .chiedi .filo { margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
+  .chiedi .filo:empty { margin-top: 0; }
+  .chiedi .mia { align-self: flex-end; max-width: 85%; margin: 0; background: #ffd23f; color: #10233a; border-radius: 18px 18px 4px 18px; padding: 10px 14px; font-weight: 700; overflow-wrap: anywhere; }
+  .chiedi .voce { align-self: flex-start; max-width: 92%; margin: 0; background: #fff; color: #10233a; border-radius: 18px 18px 18px 4px; padding: 10px 14px; line-height: 1.4; overflow-wrap: anywhere; }
+  .chiedi .voce strong { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+  .chiedi .voce.angelo strong { color: #0b7fab; }
+  .chiedi .voce.diavolo strong { color: #c2255c; }
+  .chiedi .domanda { display: flex; gap: 8px; margin-top: 14px; }
+  .chiedi .domanda input { flex: 1; min-width: 0; min-height: 48px; border-radius: 999px; border: 0; padding: 0 16px; font: inherit; font-size: 16px; color: #10233a; background: #fff; }
+  .chiedi .domanda .bottone { width: auto; margin-top: 0; padding: 0 18px; }
   .azioni { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
   .azioni > * { flex: 1 1 180px; }
   footer { margin-top: 30px; text-align: center; color: var(--velo); font-size: 12.5px; }
@@ -193,10 +208,10 @@
     <div class="lingue" id="lingue" role="group" aria-label="Lingua · Language · Taal · Idioma"></div>
   </header>
 
-  <div class="fasciaProva" id="fasciaProva" hidden><span data-t>Amici di Cassandra · Emanuele vede quello che carichi qui</span> <button type="button" id="esciProva" data-t>Esci</button></div>
+  <div class="fasciaProva" id="fasciaProva" hidden><span data-t>Cassandra</span> <button type="button" id="esciProva" data-t>Esci</button></div>
   <section class="consenso" id="consenso" hidden>
-    <h2 data-t>Benvenuto tra i primi amici di Cassandra</h2>
-    <p data-t>Sei tra i primi a usarla insieme a Emanuele. Per aiutarti e farla crescere, lui vede quello che carichi qui: la chat, i risultati e se qualcosa si inceppa. Puoi uscire quando vuoi.</p>
+    <h2 data-t>Benvenuto in Cassandra</h2>
+    <p data-t>Carica una chat di WhatsApp e Cassandra ti dice com'è il vostro rapporto: un giudizio, i numeri e due voci a cui puoi chiedere.</p>
     <div class="azioni"><button class="bottone" type="button" id="accettaProva" data-t>Ci sto</button><button class="piano" type="button" id="rifiutaProva" data-t>No, grazie</button></div>
   </section>
   <section id="casa">
@@ -990,15 +1005,13 @@ window.addEventListener('unhandledrejection', function (e) { var n = document.ge
     ["Link copiato: incollalo in un messaggio.", "Link copied: paste it into a message.", "Link gekopieerd: plak hem in een bericht."],
     ["Analizza le tue chat di WhatsApp: gratis, e la chat resta sul tuo telefono.", "Analyse your WhatsApp chats: free, and the chat stays on your phone.", "Analyseer je WhatsApp-chats: gratis, en de chat blijft op je telefoon."],
     ["Questo telefono non riesce ad aprire lo zip. Aggiorna il browser oppure carica il file .txt.", "This phone cannot open the zip. Update the browser or load the .txt file.", "Deze telefoon kan de zip niet openen. Werk de browser bij of laad het .txt-bestand."],
-    ["Amici di Cassandra · Emanuele vede quello che carichi qui", "Friends of Cassandra · Emanuele sees what you load here", "Vrienden van Cassandra · Emanuele ziet wat je hier laadt"],
+    ["Cassandra", "Cassandra", "Cassandra"],
     ["Esci", "Leave", "Verlaten"],
-    ["Benvenuto tra i primi amici di Cassandra", "Welcome among Cassandra's first friends", "Welkom bij de eerste vrienden van Cassandra"],
-    ["Sei tra i primi a usarla insieme a Emanuele. Per aiutarti e farla crescere, lui vede quello che carichi qui: la chat, i risultati e se qualcosa si inceppa. Puoi uscire quando vuoi.", "You are one of the first to use it together with Emanuele. To help you and make it grow, he sees what you load here: the chat, the results and anything that gets stuck. You can leave whenever you want.", "Je bent een van de eersten die het samen met Emanuele gebruikt. Om je te helpen en het te laten groeien ziet hij wat je hier laadt: de chat, de resultaten en wat er vastloopt. Je kunt stoppen wanneer je wilt."],
+    ["Benvenuto in Cassandra", "Welcome to Cassandra", "Welkom bij Cassandra"],
+    ["Carica una chat di WhatsApp e Cassandra ti dice com'è il vostro rapporto: un giudizio, i numeri e due voci a cui puoi chiedere.", "Load a WhatsApp chat and Cassandra tells you how your relationship is: a verdict, the numbers and two voices you can ask.", "Laad een WhatsApp-chat en Cassandra vertelt je hoe jullie relatie is: een oordeel, de cijfers en twee stemmen die je iets kunt vragen."],
     ["Ci sto", "I'm in", "Ik doe mee"],
     ["No, grazie", "No, thanks", "Nee, bedankt"],
     ["Questo invito non è più attivo.", "This invitation is no longer active.", "Deze uitnodiging is niet meer actief."],
-    ["Emanuele ora può vedere questa analisi.", "Emanuele can now see this analysis.", "Emanuele kan deze analyse nu zien."],
-    ["Non sono riuscita a mandare l'analisi a Emanuele.", "I could not send the analysis to Emanuele.", "Het is niet gelukt de analyse naar Emanuele te sturen."],
     ["Voi due, da vicino", "The two of you, up close", "Jullie twee, van dichtbij"],
     ["Chi insegue chi", "Who is chasing whom", "Wie achter wie aan zit"],
     ["La vostra famiglia in chat", "Your family in the chat", "Jullie familie in de chat"],
@@ -1014,7 +1027,40 @@ window.addEventListener('unhandledrejection', function (e) { var n = document.ge
     ["Tiene viva la chat: {0} ({1}% dei messaggi)", "Keeps the chat alive: {0} ({1}% of messages)", "Houdt de chat levend: {0} ({1}% van de berichten)"],
     ["Foto, video e audio condivisi: {0}", "Photos, videos and audio shared: {0}", "Gedeelde foto's, video's en audio: {0}"],
     ["Manda più link: {0} ({1})", "Sends the most links: {0} ({1})", "Stuurt de meeste links: {0} ({1})"],
-    ["Messaggi fuori orario (sera, notte e weekend): {0}%", "Messages outside working hours (evening, night and weekend): {0}%", "Berichten buiten werktijd (avond, nacht en weekend): {0}%"]
+    ["Messaggi fuori orario (sera, notte e weekend): {0}%", "Messages outside working hours (evening, night and weekend): {0}%", "Berichten buiten werktijd (avond, nacht en weekend): {0}%"],
+    ["Chiedi", "Ask", "Vraag"],
+    ["Chiedi all'angelo e al diavolo", "Ask the angel and the devil", "Vraag het de engel en de duivel"],
+    ["Rispondono con i numeri di questa chat. L'angelo cerca il buono, il diavolo parla franco.", "They answer with the numbers of this chat. The angel looks for the good, the devil speaks bluntly.", "Ze antwoorden met de cijfers van deze chat. De engel zoekt het goede, de duivel zegt het recht voor zijn raap."],
+    ["È un'ossessione o un buon rapporto?", "Is it an obsession or a good relationship?", "Is het een obsessie of een goede relatie?"],
+    ["Chi ci tiene di più?", "Who cares more?", "Wie geeft er meer om?"],
+    ["Ci sono le basi per un buon rapporto?", "Are the foundations for a good relationship there?", "Is er een basis voor een goede relatie?"],
+    ["Devo preoccuparmi di qualcosa?", "Should I worry about anything?", "Moet ik me ergens zorgen over maken?"],
+    ["Cosa va bene tra noi?", "What is going well between us?", "Wat gaat er goed tussen ons?"],
+    ["Scrivi la tua domanda", "Write your question", "Schrijf je vraag"],
+    ["Angelo", "Angel", "Engel"],
+    ["Diavolo", "Devil", "Duivel"],
+    ["È una lettura dei numeri, non una diagnosi: della vostra vita sapete di più voi.", "It is a reading of the numbers, not a diagnosis: you know more about your life than they do.", "Het is een lezing van de cijfers, geen diagnose: over jullie leven weten jullie zelf meer."],
+    ["Ci penso…", "Thinking…", "Even denken…"],
+    ["Ha risposto un'intelligenza artificiale: ha ricevuto la tua domanda e i numeri della chat, mai i messaggi.", "An artificial intelligence answered: it received your question and the chat's numbers, never the messages.", "Een kunstmatige intelligentie heeft geantwoord: ze kreeg je vraag en de cijfers van de chat, nooit de berichten."],
+    ["Chi sei tu?", "Which one are you?", "Wie ben jij?"],
+    ["In una chat di gruppo so dire solo chi la tiene viva: {0}, con il {1}% dei messaggi.", "In a group chat I can only tell who keeps it alive: {0}, with {1}% of the messages.", "In een groepschat kan ik alleen zeggen wie hem levend houdt: {0}, met {1}% van de berichten."],
+    ["{0} messaggi in {1} giorni non si scrivono per caso.", "{0} messages in {1} days are not written by chance.", "{0} berichten in {1} dagen schrijf je niet zomaar."],
+    ["Questa non la so leggere nei numeri. Prova con una delle domande qui sopra.", "I cannot read this one in the numbers. Try one of the questions above.", "Dit kan ik niet uit de cijfers lezen. Probeer een van de vragen hierboven."],
+    ["Guardo i fatti: {0} ha riscritto {1} volte senza risposta e {2} apre la giornata nel {3}% dei giorni. La rincorsa pende da una parte.", "I look at the facts: {0} wrote again {1} times without a reply and {2} starts the day on {3}% of days. The chasing leans to one side.", "Ik kijk naar de feiten: {0} schreef {1} keer opnieuw zonder antwoord en {2} begint de dag op {3}% van de dagen. Het achternalopen komt van één kant."],
+    ["Ossessione? I numeri dicono di no: {0}% dei messaggi da una parte, {1}% dall'altra, e nessuno rincorre in modo vistoso.", "Obsession? The numbers say no: {0}% of messages on one side, {1}% on the other, and nobody is visibly chasing.", "Obsessie? De cijfers zeggen nee: {0}% van de berichten aan de ene kant, {1}% aan de andere, en niemand loopt er opvallend achteraan."],
+    ["Cercare tanto qualcuno non è per forza ossessione: conta se dall'altra parte torna qualcosa. Qui l'equilibrio è {0} su 100: parlatene, più che contare.", "Looking for someone a lot is not necessarily obsession: what matters is whether something comes back. Here the balance is {0} out of 100: talk about it, rather than counting.", "Iemand vaak opzoeken is niet per se een obsessie: het gaat erom of er iets terugkomt. Hier is de balans {0} op 100: praat erover, in plaats van te tellen."],
+    ["Vi cercate tutti e due: equilibrio {0} su 100. Somiglia a un rapporto, non a una fissazione.", "You both look for each other: balance {0} out of 100. It looks like a relationship, not a fixation.", "Jullie zoeken elkaar allebei op: balans {0} op 100. Het lijkt op een relatie, niet op een fixatie."],
+    ["I conti. {0}: {1}% dei messaggi, apre la giornata {2} volte, riscrive senza risposta {3} volte. {4}: {5}%, {6} volte, {7} volte.", "The sums. {0}: {1}% of messages, starts the day {2} times, writes again without a reply {3} times. {4}: {5}%, {6} times, {7} times.", "De som. {0}: {1}% van de berichten, begint de dag {2} keer, schrijft {3} keer opnieuw zonder antwoord. {4}: {5}%, {6} keer, {7} keer."],
+    ["Tenerci non si misura solo in messaggi: c'è chi scrive poco e risponde subito. Di solito {0} risponde in {1} e {2} in {3}.", "Caring is not measured only in messages: some write little and reply at once. Usually {0} replies in {1} and {2} in {3}.", "Om iemand geven meet je niet alleen in berichten: sommigen schrijven weinig en antwoorden meteen. Meestal antwoordt {0} in {1} en {2} in {3}."],
+    ["Tenerci non si misura solo in messaggi: guardate anche come state quando vi sentite.", "Caring is not measured only in messages: look also at how you feel when you talk.", "Om iemand geven meet je niet alleen in berichten: kijk ook hoe jullie je voelen als jullie elkaar spreken."],
+    ["Le basi che vedo: {0}.", "The foundations I see: {0}.", "De basis die ik zie: {0}."],
+    ["Nei numeri non trovo ancora segni forti, né belli né brutti: serve più tempo.", "In the numbers I do not find strong signs yet, neither good nor bad: it takes more time.", "In de cijfers vind ik nog geen sterke tekenen, goed noch slecht: er is meer tijd nodig."],
+    ["Prima di parlare di basi, guarderei questo: {0}.", "Before talking about foundations, I would look at this: {0}.", "Voordat we over een basis praten, zou ik hiernaar kijken: {0}."],
+    ["Non trovo niente di storto nei conti. Il giudizio della macchina: {0} su 100.", "I find nothing crooked in the sums. The machine's verdict: {0} out of 100.", "Ik vind niets scheefs in de som. Het oordeel van de machine: {0} op 100."],
+    ["Terrei d'occhio questo: {0}", "I would keep an eye on this: {0}", "Hier zou ik op letten: {0}"],
+    ["Nessun campanello d'allarme nei numeri.", "No alarm bells in the numbers.", "Geen alarmbellen in de cijfers."],
+    ["Un numero non è una condanna: è una domanda da fare a voce. Il giudizio complessivo è {0} su 100.", "A number is not a sentence: it is a question to ask out loud. The overall verdict is {0} out of 100.", "Een cijfer is geen vonnis: het is een vraag om hardop te stellen. Het totaaloordeel is {0} op 100."],
+    ["Va bene questo: {0}.", "This is going well: {0}.", "Dit gaat goed: {0}."]
   ];
   // Lo spagnolo, nello stesso ordine di FRASI (una riga per frase).
   const SPAGNOLO = [
@@ -1183,15 +1229,13 @@ window.addEventListener('unhandledrejection', function (e) { var n = document.ge
     "Enlace copiado: pégalo en un mensaje.",
     "Analiza tus chats de WhatsApp: gratis, y el chat se queda en tu teléfono.",
     "Este teléfono no consigue abrir el zip. Actualiza el navegador o carga el archivo .txt.",
-    "Amigos de Cassandra · Emanuele ve lo que cargas aquí",
+    "Cassandra",
     "Salir",
-    "Bienvenido entre los primeros amigos de Cassandra",
-    "Eres de los primeros en usarla junto a Emanuele. Para ayudarte y hacerla crecer, él ve lo que cargas aquí: el chat, los resultados y si algo se atasca. Puedes salir cuando quieras.",
+    "Bienvenido a Cassandra",
+    "Carga un chat de WhatsApp y Cassandra te dice cómo es vuestra relación: un veredicto, los números y dos voces a las que puedes preguntar.",
     "Me apunto",
     "No, gracias",
     "Esta invitación ya no está activa.",
-    "Emanuele ya puede ver este análisis.",
-    "No he conseguido enviar el análisis a Emanuele.",
     "Vosotros dos, de cerca",
     "Quién persigue a quién",
     "Vuestra familia en el chat",
@@ -1207,7 +1251,40 @@ window.addEventListener('unhandledrejection', function (e) { var n = document.ge
     "Mantiene vivo el chat: {0} ({1}% de los mensajes)",
     "Fotos, vídeos y audios compartidos: {0}",
     "Envía más enlaces: {0} ({1})",
-    "Mensajes fuera de horario (tarde, noche y fin de semana): {0}%"
+    "Mensajes fuera de horario (tarde, noche y fin de semana): {0}%",
+    "Pregunta",
+    "Pregunta al ángel y al diablo",
+    "Responden con los números de este chat. El ángel busca lo bueno, el diablo habla claro.",
+    "¿Es una obsesión o una buena relación?",
+    "¿A quién le importa más?",
+    "¿Hay bases para una buena relación?",
+    "¿Debo preocuparme por algo?",
+    "¿Qué va bien entre nosotros?",
+    "Escribe tu pregunta",
+    "Ángel",
+    "Diablo",
+    "Es una lectura de los números, no un diagnóstico: de vuestra vida sabéis más vosotros.",
+    "Lo pienso…",
+    "Ha respondido una inteligencia artificial: recibió tu pregunta y los números del chat, nunca los mensajes.",
+    "¿Quién eres tú?",
+    "En un chat de grupo solo sé decir quién lo mantiene vivo: {0}, con el {1}% de los mensajes.",
+    "{0} mensajes en {1} días no se escriben por casualidad.",
+    "Esta no la sé leer en los números. Prueba con una de las preguntas de arriba.",
+    "Miro los hechos: {0} volvió a escribir {1} veces sin respuesta y {2} abre el día el {3}% de los días. La persecución cae de un lado.",
+    "¿Obsesión? Los números dicen que no: {0}% de los mensajes de un lado, {1}% del otro, y nadie persigue de forma llamativa.",
+    "Buscar mucho a alguien no es por fuerza obsesión: cuenta si del otro lado vuelve algo. Aquí el equilibrio es {0} sobre 100: habladlo, más que contar.",
+    "Os buscáis los dos: equilibrio {0} sobre 100. Se parece a una relación, no a una fijación.",
+    "Las cuentas. {0}: {1}% de los mensajes, abre el día {2} veces, vuelve a escribir sin respuesta {3} veces. {4}: {5}%, {6} veces, {7} veces.",
+    "Que te importe no se mide solo en mensajes: hay quien escribe poco y responde enseguida. Normalmente {0} responde en {1} y {2} en {3}.",
+    "Que te importe no se mide solo en mensajes: mirad también cómo estáis cuando habláis.",
+    "Las bases que veo: {0}.",
+    "En los números aún no encuentro señales fuertes, ni buenas ni malas: hace falta más tiempo.",
+    "Antes de hablar de bases, miraría esto: {0}.",
+    "No encuentro nada torcido en las cuentas. El veredicto de la máquina: {0} sobre 100.",
+    "Vigilaría esto: {0}",
+    "Ninguna señal de alarma en los números.",
+    "Un número no es una condena: es una pregunta para hacer en voz alta. El veredicto global es {0} sobre 100.",
+    "Esto va bien: {0}."
   ];
   const en = {}, nl = {}, es = {};
   FRASI.forEach(function (f, i) { en[f[0]] = f[1]; nl[f[0]] = f[2]; es[f[0]] = SPAGNOLO[i]; });
@@ -1226,7 +1303,7 @@ window.addEventListener('unhandledrejection', function (e) { var n = document.ge
   const K = (it) => it; // frase tradotta più tardi con t(variabile)
   const CHIAVE = 'pizia.responsi', CHIAVE_LINGUA = 'pizia.lingua', CHIAVE_PREMIUM = 'pizia.premium';
   const ETICHETTE = [K('Coppia'), K('Crush'), K('Famiglia'), K('Amicizia'), K('Lavoro')]; // in memoria restano in italiano
-  const PAGINE = [['giudizio', K('Giudizio')], ['frasi', K('Frasi')], ['numeri', K('Numeri')], ['tempo', K('Tempo')]];
+  const PAGINE = [['giudizio', K('Giudizio')], ['frasi', K('Frasi')], ['numeri', K('Numeri')], ['tempo', K('Tempo')], ['chiedi', K('Chiedi')]];
   const LINGUE = { it: 'it-IT', en: 'en-GB', nl: 'nl-NL', es: 'es-ES' };
   const MAX_NOMI = 6;
   // Premium: spento finché «link» è vuoto. link = Payment Link di Stripe; verifica = indirizzo del servizio che conferma il pagamento.
@@ -1234,8 +1311,8 @@ window.addEventListener('unhandledrejection', function (e) { var n = document.ge
   if (/[?&]provaPremium=1/.test(location.search)) PREMIUM.link = '#premium'; // solo per provare il blocco: non sblocca niente
 
   // Prova con gli amici: per chi apre Cassandra normalmente NON parte nessuna chiamata.
-  // Solo chi apre il link con ?prova=CODICE e accetta il consenso manda eventi, risultati e chat alla regia di Emanuele.
-  const PROVA = { indirizzo: 'https://ebpdmcrovzomixdyliju.supabase.co', chiave: 'sb_publishable_YNWHj_TiscPDI2FpC0ZKrg_Db9oeGii', versione: 'pizia-14' };
+  // Solo chi apre il link con ?prova=CODICE e accetta il consenso manda eventi, risultati e chat alla regia.
+  const PROVA = { indirizzo: 'https://ebpdmcrovzomixdyliju.supabase.co', chiave: 'sb_publishable_YNWHj_TiscPDI2FpC0ZKrg_Db9oeGii', versione: 'pizia-15' };
   const CHIAVE_PROVA = 'pizia.prova';
   let codiceProva = null, battito = null;
 
@@ -1317,7 +1394,7 @@ window.addEventListener('unhandledrejection', function (e) { var n = document.ge
 
   // ---- prova con gli amici ----
   function chiama(nome, corpo) {
-    return fetch(PROVA.indirizzo + '/rest/v1/rpc/' + nome, { method: 'POST', headers: { apikey: PROVA.chiave, 'Content-Type': 'application/json' }, body: JSON.stringify(corpo) }).then((r) => r.json());
+    return fetch(PROVA.indirizzo + (nome === 'cervello' ? '/functions/v1/' : '/rest/v1/rpc/') + nome, { method: 'POST', headers: { apikey: PROVA.chiave, 'Content-Type': 'application/json' }, body: JSON.stringify(corpo) }).then((r) => r.json());
   }
   function segna(tipo, dati) {
     if (!codiceProva) return Promise.resolve(null);
@@ -1334,7 +1411,6 @@ window.addEventListener('unhandledrejection', function (e) { var n = document.ge
   }
   function entraInProva(codice) {
     codiceProva = codice;
-    $('fasciaProva').hidden = false;
     segna('aperta', { pagina: 'casa' }).then((ok) => {
       if (ok !== false) return;
       esciDallaProva();
@@ -1367,8 +1443,8 @@ window.addEventListener('unhandledrejection', function (e) { var n = document.ge
     if (JSON.stringify(risultati).length > 380000) risultati = { giudizio: risultati.giudizio, totale: r.st.totale, ms: ms, tagliato: true };
     segna('analisi', { totale: r.st.totale, persone: r.st.autori.length, punti: v.punti, ms: ms, peso: file.size });
     chiama('consegna', { p_codice: codiceProva, p_nome_file: file.name, p_testo: testo.length <= 6000000 ? testo : null, p_risultati: risultati })
-      .then((ok) => { avvisa(ok === true ? t('Emanuele ora può vedere questa analisi.') : t('Non sono riuscita a mandare l\'analisi a Emanuele.')); if (ok !== true) segna('errore', { testo: 'consegna rifiutata', dove: 'consegna' }); })
-      .catch((e) => { avvisa(t('Non sono riuscita a mandare l\'analisi a Emanuele.')); segna('errore', { testo: String(e && e.message || e).slice(0, 300), dove: 'consegna' }); });
+      .then((ok) => { if (ok !== true) segna('errore', { testo: 'consegna rifiutata', dove: 'consegna' }); })
+      .catch((e) => { segna('errore', { testo: String(e && e.message || e).slice(0, 300), dove: 'consegna' }); });
   }
 
   // ---- premium ----
@@ -1626,6 +1702,115 @@ window.addEventListener('unhandledrejection', function (e) { var n = document.ge
     righe.forEach((x) => c.appendChild(el('p', 'fatto', x)));
   }
 
+  // ---- chiedi: l'angelo e il diavolo rispondono con i numeri della chat ----
+  // Per tutti rispondono le regole qui sotto, sul telefono. Solo per gli amici su invito, e solo se il cervello è acceso, risponde un'IA
+  // che riceve la domanda e il riassunto di soli numeri (mai i messaggi, mai i nomi).
+  const DOMANDE = [['ossessione', K('È un\'ossessione o un buon rapporto?')], ['tiene', K('Chi ci tiene di più?')], ['basi', K('Ci sono le basi per un buon rapporto?')], ['guai', K('Devo preoccuparmi di qualcosa?')], ['bene', K('Cosa va bene tra noi?')]];
+  const PAROLE = [
+    ['ossessione', /ossession|fissa|obse|geobsed|troppo|too much|demasiado|te veel/i],
+    ['guai', /preoc|worr|zorg|problem|risch|red flag|tossic|toxic|tóxic|giftig|allarm/i],
+    ['tiene', /ci tien|tiene di pi|interess|cares?\b|importa|geeft|\bama\b|love|liefde|quiere|sforz|effort|moeite|esfuerz/i],
+    ['basi', /\bbas[ie]s?\b|futur|toekomst|funzion|durer|\blast\b|\bwork/i],
+    ['bene', /\bbene\b|bell[oae]|good|goed|\bbien\b|positiv|\bwell\b/i]
+  ];
+  let cervelloSpento = false, ioSono = null;
+  function intento(testo) { const p = PAROLE.find((x) => x[1].test(testo)); return p ? p[0] : null; }
+  function rispondi(st, etichetta, quale) {
+    if (!quale) return { angelo: t('Questa non la so leggere nei numeri. Prova con una delle domande qui sopra.'), diavolo: null };
+    const conta = t('{0} messaggi in {1} giorni non si scrivono per caso.', nf.format(st.totale), nf.format(st.giorniAttivi));
+    const pct = (n) => Math.round(n / Math.max(1, st.totale) * 100);
+    if (st.autori.length !== 2) return { angelo: conta, diavolo: t('In una chat di gruppo so dire solo chi la tiene viva: {0}, con il {1}% dei messaggi.', st.autori[0].nome, pct(st.autori[0].messaggi)) };
+    const v = Pizia.verdetto(st, etichetta), segni = Pizia.segnali(st);
+    const elenco = (tono) => segni.filter((s) => s.tono === tono).map((s) => s.titolo).join(' · ');
+    const buoni = elenco('buono'), storti = elenco('attenzione');
+    const a = st.autori[0], b = st.autori[1];
+    const ins = (a.insistenze || 0) >= (b.insistenze || 0) ? a : b, altro = ins === a ? b : a;
+    const apre = a.apreGiornata >= b.apreGiornata ? a : b, quotaApre = Math.round(apre.apreGiornata / Math.max(1, st.giorniAttivi) * 100);
+    const eq = st.equilibrio == null ? 50 : st.equilibrio;
+    if (quale === 'ossessione') {
+      const pende = ((ins.insistenze || 0) >= 20 && (ins.insistenze || 0) >= 2 * (altro.insistenze || 0)) || quotaApre > 70 || pct(a.messaggi) > 60;
+      return pende
+        ? { angelo: t('Cercare tanto qualcuno non è per forza ossessione: conta se dall\'altra parte torna qualcosa. Qui l\'equilibrio è {0} su 100: parlatene, più che contare.', eq), diavolo: t('Guardo i fatti: {0} ha riscritto {1} volte senza risposta e {2} apre la giornata nel {3}% dei giorni. La rincorsa pende da una parte.', ins.nome, nf.format(ins.insistenze || 0), apre.nome, quotaApre) }
+        : { angelo: t('Vi cercate tutti e due: equilibrio {0} su 100. Somiglia a un rapporto, non a una fissazione.', eq), diavolo: t('Ossessione? I numeri dicono di no: {0}% dei messaggi da una parte, {1}% dall\'altra, e nessuno rincorre in modo vistoso.', pct(a.messaggi), pct(b.messaggi)) };
+    }
+    if (quale === 'tiene') {
+      return {
+        angelo: a.rispostaMedianaMs != null && b.rispostaMedianaMs != null ? t('Tenerci non si misura solo in messaggi: c\'è chi scrive poco e risponde subito. Di solito {0} risponde in {1} e {2} in {3}.', a.nome, Pizia.durata(a.rispostaMedianaMs), b.nome, Pizia.durata(b.rispostaMedianaMs)) : t('Tenerci non si misura solo in messaggi: guardate anche come state quando vi sentite.'),
+        diavolo: t('I conti. {0}: {1}% dei messaggi, apre la giornata {2} volte, riscrive senza risposta {3} volte. {4}: {5}%, {6} volte, {7} volte.', a.nome, pct(a.messaggi), nf.format(a.apreGiornata), nf.format(a.insistenze || 0), b.nome, pct(b.messaggi), nf.format(b.apreGiornata), nf.format(b.insistenze || 0))
+      };
+    }
+    if (quale === 'basi') return { angelo: buoni ? t('Le basi che vedo: {0}.', buoni) : t('Nei numeri non trovo ancora segni forti, né belli né brutti: serve più tempo.'), diavolo: storti ? t('Prima di parlare di basi, guarderei questo: {0}.', storti) : t('Non trovo niente di storto nei conti. Il giudizio della macchina: {0} su 100.', v.punti) };
+    if (quale === 'guai') {
+      const primo = segni.find((s) => s.tono === 'attenzione');
+      return { angelo: t('Un numero non è una condanna: è una domanda da fare a voce. Il giudizio complessivo è {0} su 100.', v.punti), diavolo: primo ? t('Terrei d\'occhio questo: {0}', primo.titolo + '. ' + primo.testo) : t('Nessun campanello d\'allarme nei numeri.') };
+    }
+    return { angelo: buoni ? t('Va bene questo: {0}.', buoni) : t('Nei numeri non trovo ancora segni forti, né belli né brutti: serve più tempo.'), diavolo: conta };
+  }
+  function chiedi(r) {
+    const st = r.st;
+    const c = carta('giostra chiedi', t('Chiedi all\'angelo e al diavolo'));
+    c.appendChild(el('p', 'intro', t('Rispondono con i numeri di questa chat. L\'angelo cerca il buono, il diavolo parla franco.')));
+    if (codiceProva && st.autori.length === 2) {
+      const chi = el('div', 'chi');
+      chi.appendChild(el('span', null, t('Chi sei tu?')));
+      st.autori.forEach((x, n) => {
+        const b = el('button', null, x.nome);
+        b.type = 'button';
+        b.setAttribute('aria-pressed', String(ioSono === n));
+        b.onclick = () => { ioSono = ioSono === n ? null : n; Array.from(chi.querySelectorAll('button')).forEach((y, m) => y.setAttribute('aria-pressed', String(ioSono === m))); };
+        chi.appendChild(b);
+      });
+      c.appendChild(chi);
+    }
+    const scelte = el('div', 'scelte'), filo = el('div', 'filo'), modulo = el('form', 'domanda'), campo = el('input'), invia = el('button', 'bottone', t('Chiedi'));
+    filo.setAttribute('aria-live', 'polite');
+    campo.type = 'text'; campo.maxLength = 300; campo.placeholder = t('Scrivi la tua domanda'); campo.setAttribute('aria-label', t('Scrivi la tua domanda')); campo.autocomplete = 'off';
+    invia.type = 'submit';
+    modulo.appendChild(campo); modulo.appendChild(invia);
+    let occupato = false;
+    async function domanda(testo, quale) {
+      testo = testo.trim().slice(0, 300);
+      if (!testo || occupato) return;
+      occupato = true;
+      filo.appendChild(el('p', 'mia', testo));
+      const attesa = el('p', 'voce', t('Ci penso…'));
+      filo.appendChild(attesa);
+      let risposta = null, ia = false;
+      segna('domanda', { testo: testo, intento: quale });
+      if (codiceProva && !cervelloSpento) {
+        try {
+          const x = await Promise.race([
+            chiama('cervello', { codice: codiceProva, domanda: testo, numeri: Pizia.riassunto(st), etichetta: r.etichetta || null, lingua: lingua, io: ioSono == null ? null : 'AB'[ioSono] }),
+            new Promise((ok) => setTimeout(() => ok(null), 30000))
+          ]);
+          if (x && x.attiva === true && (x.angelo || x.diavolo)) { risposta = { angelo: x.angelo || null, diavolo: x.diavolo || null }; ia = true; }
+          else if (!x || x.attiva !== true) cervelloSpento = x ? x.riprova !== true : true;
+        } catch (e) { cervelloSpento = true; }
+      }
+      if (!risposta) risposta = rispondi(st, r.etichetta, quale);
+      attesa.remove();
+      [['angelo', t('Angelo')], ['diavolo', t('Diavolo')]].forEach((x) => {
+        if (!risposta[x[0]]) return;
+        const p = el('p', 'voce ' + x[0]);
+        p.appendChild(el('strong', null, x[1]));
+        p.appendChild(document.createTextNode(String(risposta[x[0]])));
+        filo.appendChild(p);
+      });
+      if (ia) filo.appendChild(el('p', 'nota', t('Ha risposto un\'intelligenza artificiale: ha ricevuto la tua domanda e i numeri della chat, mai i messaggi.')));
+      occupato = false;
+      if (filo.lastChild.scrollIntoView) filo.lastChild.scrollIntoView({ block: 'nearest' });
+    }
+    DOMANDE.forEach((d) => {
+      const b = el('button', null, t(d[1]));
+      b.type = 'button';
+      b.onclick = () => domanda(t(d[1]), d[0]);
+      scelte.appendChild(b);
+    });
+    modulo.onsubmit = (e) => { e.preventDefault(); const testo = campo.value; campo.value = ''; domanda(testo, intento(testo)); };
+    c.appendChild(scelte); c.appendChild(filo); c.appendChild(modulo);
+    c.appendChild(el('p', 'nota', t('È una lettura dei numeri, non una diagnosi: della vostra vita sapete di più voi.')));
+  }
+
   // ---- le pagine del responso ----
   function mostraPagina(id) {
     const carte = Array.from($('carte').children);
@@ -1835,6 +2020,10 @@ window.addEventListener('unhandledrejection', function (e) { var n = document.ge
       const top = tot.indexOf(Math.max.apply(null, tot));
       c.appendChild(el('p', 'nota', t('Il giorno in cui vi scrivete di più: {0}.', giornoSettimana(top, 'long'))));
     }
+
+    // pagina 5 · chiedi
+    pagina = 'chiedi';
+    chiedi(r);
 
     $('casa').hidden = true;
     $('responso').hidden = false;

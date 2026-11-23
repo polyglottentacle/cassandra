@@ -185,12 +185,12 @@
 
     const tv = $('eventi'); tv.textContent = '';
     if (!q.eventi.length) vuota(tv, 'Ancora nessun movimento.', 4);
-    const NOMI = { aperta: 'ha aperto l\'app', file: 'ha caricato un file', analisi: 'analisi riuscita', errore: 'errore' };
+    const NOMI = { aperta: 'ha aperto l\'app', file: 'ha caricato un file', analisi: 'analisi riuscita', errore: 'errore', domanda: 'ha chiesto', ia: 'risposta dell\'IA' };
     q.eventi.slice(0, 60).forEach((e) => {
       const r = el('tr'), d = e.dati || {};
       cella(r, quando(e.quando), 't'); cella(r, nomi[e.codice] || e.codice);
       cella(r, NOMI[e.tipo] || e.tipo, e.tipo === 'errore' ? 'err' : e.tipo === 'analisi' ? 'ok' : null);
-      cella(r, e.tipo === 'analisi' ? d.totale + ' messaggi · ' + d.persone + ' persone · ' + d.ms + ' ms' : e.tipo === 'file' ? '.' + d.tipo + ' · ' + Math.round((d.peso || 0) / 1024) + ' KB' : e.tipo === 'errore' ? (d.testo || '') : dispositivo(e.dispositivo));
+      cella(r, e.tipo === 'analisi' ? d.totale + ' messaggi · ' + d.persone + ' persone · ' + d.ms + ' ms' : e.tipo === 'file' ? '.' + d.tipo + ' · ' + Math.round((d.peso || 0) / 1024) + ' KB' : e.tipo === 'errore' || e.tipo === 'domanda' ? (d.testo || '') : dispositivo(e.dispositivo));
       tv.appendChild(r);
     });
   }
