@@ -93,6 +93,38 @@
   .azioni { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
   .azioni > * { flex: 1 1 180px; }
   footer { margin-top: 30px; text-align: center; color: var(--velo); font-size: 12.5px; }
+  header .coppia { display: flex; flex: none; }
+  header .coppia svg { width: 40px; height: 48px; margin-right: -8px; }
+  .eroe { display: flex; justify-content: center; gap: 6px; margin-bottom: 4px; }
+  .eroe svg { width: 92px; height: 110px; animation: dondola 2.6s ease-in-out infinite; }
+  .eroe svg + svg { animation-delay: -1.3s; }
+  @keyframes dondola { 0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-7px) rotate(3deg); } }
+  .giostra { background: linear-gradient(160deg, #2b2fa8, #7b3fe4 60%, #e0469b); color: #fff; overflow: hidden; }
+  .giostra h2 { font-size: 22px; }
+  .giostra svg.scena { display: block; width: 100%; max-width: 380px; margin: 0 auto; }
+  .giostra .bottone { background: #ffd23f; color: #10233a; width: 100%; margin-top: 8px; font-size: 17px; }
+  .giostra .esito { min-height: 64px; margin: 14px 0 0; font-size: 24px; font-weight: 800; line-height: 1.15; text-align: center; }
+  .giostra .punti { text-align: center; font-size: 14px; font-weight: 700; opacity: .9; margin: 4px 0 0; }
+  .giostra .conto { font-size: 12.5px; opacity: .85; margin: 8px 0 0; }
+  .giostra .nota { opacity: .85; }
+  .bolla { animation: fluttua 3s ease-in-out infinite; }
+  @keyframes fluttua { 50% { transform: translateY(-5px); } }
+  .trema { animation: trema .12s linear infinite; }
+  @keyframes trema { 25% { transform: translate(1.5px, -1px); } 75% { transform: translate(-1.5px, 1px); } }
+  .ruota { display: block; width: 210px; height: 210px; margin: 0 auto 6px; }
+  .ruota path { cursor: pointer; transition: transform .15s; transform-origin: 100px 100px; }
+  .ruota path:hover, .ruota path.scelto { transform: scale(1.06); }
+  .tag { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .tag button { min-height: 38px; padding: 4px 12px; background: #fff; color: var(--avorio); border: 2px solid transparent; font-size: 13.5px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; }
+  .tag button i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .tag button[aria-pressed="true"] { border-color: var(--avorio); }
+  .cercaRiga { display: flex; gap: 8px; margin-top: 10px; }
+  .cercaRiga input, .cercaRiga select { font: inherit; min-height: 44px; border-radius: 14px; border: 1.5px solid #c9cfd8; padding: 6px 12px; background: #fff; color: var(--avorio); min-width: 0; }
+  .cercaRiga input { flex: 1; }
+  .frasi { margin-top: 10px; max-height: 420px; overflow: auto; display: flex; flex-direction: column; gap: 6px; }
+  .frase { background: #fff; border-radius: 14px; padding: 8px 12px; font-size: 14px; overflow-wrap: anywhere; white-space: pre-wrap; }
+  .frase small { display: block; color: var(--velo); font-size: 11.5px; font-weight: 700; }
+  @media (prefers-reduced-motion: reduce) { .eroe svg, .bolla, .trema { animation: none; } }
   .galleria{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}
   .galleria img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px}
   .mappa{display:grid;grid-template-columns:2.4em repeat(24,1fr);gap:2px;align-items:center;margin-top:10px}
@@ -102,12 +134,39 @@
 </head>
 <body>
 <main>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="angelo" viewBox="0 0 100 120">
+      <ellipse cx="50" cy="11" rx="19" ry="5" fill="none" stroke="#ffc93c" stroke-width="4.5"/>
+      <path d="M24 74C5 68 2 46 11 37c4 13 12 18 21 20z" fill="#fff" stroke="#10233a" stroke-width="2.5" stroke-linejoin="round"/>
+      <path d="M76 74c19-6 22-28 13-37-4 13-12 18-21 20z" fill="#fff" stroke="#10233a" stroke-width="2.5" stroke-linejoin="round"/>
+      <path d="M24 119c0-29 11-41 26-41s26 12 26 41z" fill="#1d2440" stroke="#10233a" stroke-width="2.5"/>
+      <path d="M43 79h14l2 20-9 8-9-8z" fill="#fff" stroke="#10233a" stroke-width="2"/>
+      <path d="M50 80v26" stroke="#10233a" stroke-width="1.5"/>
+      <circle cx="50" cy="48" r="25" fill="#ffd9b8" stroke="#10233a" stroke-width="2.5"/>
+      <path d="M26 45c1-17 13-24 24-24s23 7 24 24c-7-9-14-12-24-12s-17 3-24 12z" fill="#f6c453" stroke="#10233a" stroke-width="2" stroke-linejoin="round"/>
+      <circle cx="41" cy="50" r="3.2" fill="#10233a"/><circle cx="59" cy="50" r="3.2" fill="#10233a"/>
+      <circle cx="35" cy="57" r="4" fill="#ff8fa8" opacity=".7"/><circle cx="65" cy="57" r="4" fill="#ff8fa8" opacity=".7"/>
+      <path d="M42 59q8 8 16 0" fill="none" stroke="#10233a" stroke-width="2.5" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="diavolo" viewBox="0 0 100 120">
+      <path d="M78 104q16-2 13-20l6 3-3-14-10 9 4 2q1 11-10 13z" fill="#e23b4e" stroke="#10233a" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M24 119c0-29 11-41 26-41s26 12 26 41z" fill="#d2a968" stroke="#10233a" stroke-width="2.5"/>
+      <path d="M37 80l13 16 13-16-3 38H40z" fill="#b08a4f" stroke="#10233a" stroke-width="2" stroke-linejoin="round"/>
+      <circle cx="50" cy="50" r="25" fill="#f0525f" stroke="#10233a" stroke-width="2.5"/>
+      <path d="M25 37c1-17 13-24 25-24s24 7 25 24z" fill="#6b4a2b" stroke="#10233a" stroke-width="2.5" stroke-linejoin="round"/>
+      <path d="M12 39q38-11 76 0-38 9-76 0z" fill="#7d5733" stroke="#10233a" stroke-width="2.5" stroke-linejoin="round"/>
+      <path d="M27 31q23-6 46 0" fill="none" stroke="#10233a" stroke-width="3.5"/>
+      <path d="M29 20l-7-15 15 7z" fill="#f0525f" stroke="#10233a" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M71 20l7-15-15 7z" fill="#f0525f" stroke="#10233a" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M36 49l10 3M64 49l-10 3" stroke="#10233a" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="42" cy="56" r="3.2" fill="#10233a"/><circle cx="58" cy="56" r="3.2" fill="#10233a"/>
+      <path d="M42 65q10 6 18-3" fill="none" stroke="#10233a" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="16" cy="86" r="10" fill="#bde6fb" fill-opacity=".7" stroke="#10233a" stroke-width="3"/>
+      <path d="M23 93l8 9" stroke="#10233a" stroke-width="4.5" stroke-linecap="round"/>
+    </symbol>
+  </svg>
   <header>
-    <svg viewBox="0 0 34 34" aria-hidden="true">
-      <rect width="34" height="34" rx="10" fill="#2b2fa8"/>
-      <path d="M6 17c3.2-4.6 6.9-6.8 11-6.8s7.8 2.2 11 6.800c-3.2 4.6-6.900 6.800-11 6.800S9.200 21.600 6 17z" fill="none" stroke="#ffe08a" stroke-width="2.2" stroke-linejoin="round"/>
-      <circle cx="17" cy="17" r="3.6" fill="#ffe08a"/>
-    </svg>
+    <span class="coppia" aria-hidden="true"><svg><use href="#angelo"/></svg><svg><use href="#diavolo"/></svg></span>
     <div>
       <h1>Pizia</h1>
       <p>L'oracolo delle tue chat</p>
@@ -116,8 +175,9 @@
 
   <section id="casa">
     <div class="porta" id="porta">
-      <h2>Porta una chat all'oracolo</h2>
-      <p>Il file che WhatsApp crea con «Esporta chat» (.zip o .txt).</p>
+      <div class="eroe" aria-hidden="true"><svg><use href="#angelo"/></svg><svg><use href="#diavolo"/></svg></div>
+      <h2>Vuoi sapere il nostro giudizio?</h2>
+      <p>L'angelo avvocato difende, il diavolo detective indaga. Porta il file che WhatsApp crea con «Esporta chat» (.zip o .txt).</p>
       <label class="bottone">Scegli il file
         <input type="file" id="file" accept=".txt,.zip,text/plain,application/zip" style="position:absolute;opacity:0;width:1px;height:1px">
       </label>
@@ -168,6 +228,7 @@
   const ETICHETTE = ['Coppia', 'Crush', 'Famiglia', 'Amicizia', 'Lavoro'];
   const MAX_NOMI = 6;
   let aperto = null; // { id, nomeFile, etichetta, salvato, st }
+  let letturaAperta = null; // i messaggi dell'ultima chat caricata: mai salvati
 
   // memoria: solo i numeri, mai il testo dei messaggi
   function leggiArchivio() { try { return JSON.parse(localStorage.getItem(CHIAVE)) || []; } catch (e) { return []; } }
@@ -203,6 +264,175 @@
     return [nomi[0], 'altri ' + (nomi.length - 1)];
   }
 
+  // La giostra del martello: le chat finiscono nella macchina, il peso sale fino al giudizio.
+  const SCENA = (function () {
+    const colori = ['#e23b4e', '#ff7b54', '#ffb23f', '#f2c94c', '#9acd32', '#22c9a5', '#3fb6ff'];
+    const posti = [[20, 60], [72, 28], [100, 96], [28, 134], [92, 158], [226, 56], [282, 96], [246, 148], [300, 36]];
+    let s = '<svg class="scena" viewBox="0 0 340 380" role="img" aria-label="Giostra del martello con angelo avvocato e diavolo detective">';
+    posti.forEach(function (p, i) {
+      s += '<g class="vola" data-x="' + p[0] + '" data-y="' + p[1] + '"><g class="bolla" style="animation-delay:-' + (i * 0.37).toFixed(2) + 's">' +
+        '<rect x="' + p[0] + '" y="' + p[1] + '" width="34" height="22" rx="8" fill="' + (i % 2 ? '#a8f1d6' : '#fff') + '"/>' +
+        '<path d="M' + (p[0] + 7) + ' ' + (p[1] + 8) + 'h20M' + (p[0] + 7) + ' ' + (p[1] + 14) + 'h13" stroke="#10233a" stroke-width="2.5" stroke-linecap="round" opacity=".55"/></g></g>';
+    });
+    s += '<rect x="146" y="40" width="48" height="260" rx="10" fill="#10233a"/>';
+    colori.forEach(function (c, i) { s += '<rect x="150" y="' + (260 - i * 36) + '" width="40" height="34" rx="5" fill="' + c + '"/>'; });
+    s += '<circle id="campana" cx="170" cy="24" r="15" fill="#ffd23f" stroke="#10233a" stroke-width="3"/><circle cx="170" cy="24" r="4" fill="#10233a"/>';
+    s += '<rect id="peso" x="152" y="284" width="36" height="12" rx="5" fill="#fff" stroke="#10233a" stroke-width="3"/>';
+    s += '<g id="macchina"><path d="M98 312L54 290v62l44-14z" fill="#ffd23f" stroke="#10233a" stroke-width="3" stroke-linejoin="round"/>' +
+      '<rect x="96" y="300" width="150" height="64" rx="16" fill="#10233a" stroke="#fff" stroke-width="3"/>' +
+      '<circle cx="120" cy="322" r="6" fill="#ff5d8f"/><circle cx="140" cy="322" r="6" fill="#ffd23f"/><circle cx="160" cy="322" r="6" fill="#22c9a5"/>' +
+      '<text x="171" y="350" text-anchor="middle" font-size="15" font-weight="800" fill="#fff" font-family="inherit">MACCHINA DELLA VERITÀ</text></g>';
+    s += '<rect x="250" y="352" width="60" height="12" rx="6" fill="#e23b4e" stroke="#10233a" stroke-width="3"/>';
+    s += '<use href="#angelo" x="0" y="196" width="78" height="94"/><use href="#diavolo" x="262" y="196" width="78" height="94"/>';
+    s += '<g id="martello" style="transform-origin:272px 262px"><path d="M272 262V186" stroke="#7d5733" stroke-width="9" stroke-linecap="round"/>' +
+      '<rect x="248" y="164" width="48" height="28" rx="7" fill="#ffd23f" stroke="#10233a" stroke-width="3"/></g>';
+    return s + '</svg>';
+  })();
+
+  function giostra(r) {
+    const v = Pizia.verdetto(r.st, r.etichetta);
+    const c = carta('giostra', 'Vuoi sapere il nostro giudizio?');
+    const scena = el('div');
+    scena.innerHTML = SCENA; // disegno fisso scritto qui sopra: dentro non c'è nulla della chat
+    c.appendChild(scena);
+    const bottone = el('button', 'bottone', 'Dai la martellata');
+    bottone.type = 'button';
+    bottone.id = 'martella';
+    c.appendChild(bottone);
+    const esito = el('p', 'esito'); esito.setAttribute('aria-live', 'polite');
+    const punti = el('p', 'punti'), conto = el('p', 'conto');
+    c.appendChild(esito); c.appendChild(punti); c.appendChild(conto);
+    c.appendChild(el('p', 'nota', 'È un gioco con regole fisse, non una sentenza: i numeri non conoscono la vostra vita.'));
+    const q = (sel) => scena.querySelector(sel);
+    let vive = [];
+    function fine() {
+      esito.textContent = v.titolo;
+      punti.textContent = v.punti + ' su 100';
+      conto.textContent = 'Si parte da ' + v.base + ' (equilibrio). ' + v.voci.map((x) => x.nome + ' ' + (x.punti > 0 ? '+' : '') + x.punti).join(' · ');
+      bottone.disabled = false;
+      bottone.textContent = 'Rifai la martellata';
+    }
+    bottone.onclick = async () => {
+      bottone.disabled = true;
+      vive.forEach((a) => a.cancel()); vive = [];
+      esito.textContent = ''; punti.textContent = ''; conto.textContent = '';
+      const salita = -v.punti / 100 * 240;
+      const fermo = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const anima = (nodo, passi, opz) => { const a = nodo.animate(passi, Object.assign({ fill: 'forwards' }, opz)); vive.push(a); return a.finished; };
+      try {
+        if (fermo || !scena.animate) { q('#peso').style.transform = 'translateY(' + salita + 'px)'; fine(); return; }
+        q('#peso').style.transform = '';
+        q('#macchina').classList.add('trema');
+        await Promise.all(Array.from(scena.querySelectorAll('.vola')).map((g, i) => {
+          const dx = 62 - (+g.dataset.x + 17), dy = 320 - (+g.dataset.y + 11);
+          g.style.transformOrigin = (+g.dataset.x + 17) + 'px ' + (+g.dataset.y + 11) + 'px';
+          return anima(g, [{ transform: 'translate(0,0) scale(1)', opacity: 1 }, { transform: 'translate(' + dx + 'px,' + dy + 'px) scale(.15)', opacity: 0 }], { duration: 800, delay: i * 90, easing: 'ease-in' });
+        }));
+        await anima(q('#martello'), [{ transform: 'rotate(0deg)' }, { transform: 'rotate(30deg)', offset: 0.4 }, { transform: 'rotate(-180deg)' }], { duration: 700, easing: 'ease-in' });
+        q('#macchina').classList.remove('trema');
+        anima(q('#martello'), [{ transform: 'rotate(-180deg)' }, { transform: 'rotate(0deg)' }], { duration: 900, delay: 300, easing: 'ease-out' });
+        await anima(q('#peso'), [{ transform: 'translateY(0)' }, { transform: 'translateY(' + (salita - 10) + 'px)', offset: 0.8 }, { transform: 'translateY(' + salita + 'px)' }], { duration: 1300, easing: 'cubic-bezier(.1,.8,.2,1)' });
+        if (v.gradino === 6) anima(q('#campana'), [{ transform: 'translateX(0)' }, { transform: 'translateX(-4px)' }, { transform: 'translateX(4px)' }, { transform: 'translateX(0)' }], { duration: 160, iterations: 6, fill: 'none' });
+      } catch (e) { /* animazione interrotta: il giudizio si mostra lo stesso */ }
+      q('#macchina').classList.remove('trema');
+      fine();
+    };
+  }
+
+  // La ruota dei temi: ogni spicchio è un tag; toccandolo si leggono le frasi.
+  function ruota(r) {
+    const st = r.st;
+    if (!st.temi) return;
+    let temi = st.temi.filter((t) => t.totale > 0);
+    if (!temi.length) return;
+    if (r.etichetta === 'Amicizia' || r.etichetta === 'Famiglia' || r.etichetta === 'Lavoro') {
+      const primaAmici = (t) => (t.id === 'amici' || t.id === 'soloamici' || t.id === 'scuse') ? 0 : 1;
+      temi = temi.slice().sort((a, b) => primaAmici(a) - primaAmici(b));
+    }
+    const lettura = (letturaAperta && letturaAperta.id === r.id) ? letturaAperta.lettura : null;
+    const c = carta('marmo', 'La ruota delle parole');
+    const somma = temi.reduce((a, t) => a + t.totale, 0);
+    const NS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('viewBox', '0 0 200 200'); svg.setAttribute('class', 'ruota');
+    svg.setAttribute('role', 'img'); svg.setAttribute('aria-label', 'Ruota dei temi della chat');
+    let giro = -Math.PI / 2;
+    const punto = (raggio, ang) => (100 + raggio * Math.cos(ang)).toFixed(2) + ' ' + (100 + raggio * Math.sin(ang)).toFixed(2);
+    const spicchi = {};
+    temi.forEach((t) => {
+      const ampio = Math.max(0.02, t.totale / somma * Math.PI * 2 - 0.02), a0 = giro, a1 = giro + ampio;
+      giro += t.totale / somma * Math.PI * 2;
+      const p = document.createElementNS(NS, 'path');
+      p.setAttribute('d', 'M' + punto(94, a0) + 'A94 94 0 ' + (ampio > Math.PI ? 1 : 0) + ' 1 ' + punto(94, a1) + 'L' + punto(52, a1) + 'A52 52 0 ' + (ampio > Math.PI ? 1 : 0) + ' 0 ' + punto(52, a0) + 'Z');
+      p.setAttribute('fill', t.colore);
+      const tt = document.createElementNS(NS, 'title'); tt.textContent = t.nome + ': ' + nf.format(t.totale); p.appendChild(tt);
+      p.onclick = () => scegli({ tema: t.id });
+      spicchi[t.id] = p;
+      svg.appendChild(p);
+    });
+    const centro = document.createElementNS(NS, 'text');
+    centro.setAttribute('x', '100'); centro.setAttribute('y', '106'); centro.setAttribute('text-anchor', 'middle');
+    centro.setAttribute('font-size', '22'); centro.setAttribute('font-weight', '800'); centro.setAttribute('fill', '#10233a');
+    centro.textContent = nf.format(somma);
+    svg.appendChild(centro);
+    c.appendChild(svg);
+
+    const tag = el('div', 'tag');
+    const bottoni = {};
+    temi.forEach((t) => {
+      const b = el('button');
+      b.type = 'button';
+      const pallino = el('i'); pallino.style.background = t.colore;
+      b.appendChild(pallino);
+      b.appendChild(document.createTextNode(t.nome + ' ' + nf.format(t.totale)));
+      b.setAttribute('aria-pressed', 'false');
+      b.onclick = () => scegli({ tema: t.id });
+      bottoni[t.id] = b;
+      tag.appendChild(b);
+    });
+    c.appendChild(tag);
+
+    const rigaCerca = el('div', 'cercaRiga');
+    const campo = el('input'); campo.type = 'search'; campo.placeholder = 'Cerca una parola tua'; campo.setAttribute('aria-label', 'Cerca una parola nella chat');
+    const chi = el('select'); chi.setAttribute('aria-label', 'Chi l\'ha scritto');
+    [['', 'Tutti']].concat(st.autori.slice(0, MAX_NOMI).map((a) => [a.nome, a.nome])).forEach((o) => { const op = el('option', null, o[1]); op.value = o[0]; chi.appendChild(op); });
+    rigaCerca.appendChild(campo); rigaCerca.appendChild(chi);
+    c.appendChild(rigaCerca);
+    const conta = el('p', 'nota', lettura ? 'Tocca un tag o uno spicchio per leggere le frasi. Restano su questo dispositivo e non vengono salvate.' : 'Per leggere le frasi ricarica il file: Pizia non conserva i messaggi.');
+    c.appendChild(conta);
+    const frasi = el('div', 'frasi'); frasi.hidden = true;
+    c.appendChild(frasi);
+    if (!lettura) { campo.disabled = true; chi.disabled = true; }
+
+    let scelta = null, viste = 0, trovate = [];
+    function altre() {
+      const vecchio = frasi.querySelector('button'); if (vecchio) vecchio.remove();
+      trovate.slice(viste, viste + 60).forEach((m) => {
+        const f = el('div', 'frase');
+        f.appendChild(el('small', null, m.autore + ' · ' + new Date(m.quando).toLocaleString('it-IT', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })));
+        f.appendChild(document.createTextNode(m.testo.length > 600 ? m.testo.slice(0, 600) + '…' : m.testo));
+        frasi.appendChild(f);
+      });
+      viste = Math.min(trovate.length, viste + 60);
+      if (viste < trovate.length) { const b = el('button', 'piano', 'Mostra altre ' + Math.min(60, trovate.length - viste)); b.type = 'button'; b.onclick = altre; frasi.appendChild(b); }
+    }
+    function scegli(cosa) {
+      if (cosa) scelta = cosa;
+      Object.keys(bottoni).forEach((id) => { const su = !!scelta && scelta.tema === id; bottoni[id].setAttribute('aria-pressed', String(su)); spicchi[id].classList.toggle('scelto', su); });
+      if (!lettura || !scelta) return;
+      trovate = Pizia.cerca(lettura, Object.assign({ autore: chi.value || null }, scelta));
+      const per = {};
+      trovate.forEach((m) => { per[m.autore] = (per[m.autore] || 0) + 1; });
+      conta.textContent = trovate.length
+        ? nf.format(trovate.length) + (trovate.length === 1 ? ' frase' : ' frasi') + ' · ' + Object.keys(per).map((n) => n + ' ' + nf.format(per[n])).join(' · ') + '. Le parole non dicono il contesto: leggile.'
+        : 'Nessuna frase trovata.';
+      frasi.textContent = ''; viste = 0; frasi.hidden = !trovate.length;
+      altre();
+    }
+    campo.onchange = () => { if (campo.value.trim().length >= 2) scegli({ parola: campo.value }); };
+    chi.onchange = () => scegli();
+  }
+
   function mostra(r) {
     aperto = r;
     const st = r.st;
@@ -227,6 +457,9 @@
       b.onclick = () => { r.etichetta = r.etichetta === nome ? null : nome; salva(r); mostra(r); };
       et.appendChild(b);
     });
+
+    giostra(r);
+    ruota(r);
 
     let c = carta('ulivo', 'Messaggi');
     autori.forEach((a) => riga(c, a.nome, nf.format(a.messaggi), Math.round(a.messaggi / st.totale * 100) + '%'));
@@ -416,6 +649,7 @@
 
   function tornaACasa() {
     aperto = null;
+    letturaAperta = null;
     $('responso').hidden = true;
     $('casa').hidden = false;
     $('file').value = '';
@@ -427,9 +661,11 @@
     const errore = $('errore');
     errore.hidden = true;
     try {
-      const st = Pizia.analizza(await Pizia.testoDaFile(file));
+      const lettura = Pizia.leggi(await Pizia.testoDaFile(file));
+      const st = Pizia.statistiche(lettura);
       if (!st.totale) throw new Error('Qui dentro non trovo messaggi di WhatsApp. Serve il file creato con «Esporta chat».');
       const r = { id: Date.now().toString(36), etichetta: null, salvato: Date.now(), st: st };
+      letturaAperta = { id: r.id, lettura: lettura }; // solo in memoria, finché la pagina resta aperta
       salva(r);
       mostra(r);
       try {

@@ -41,6 +41,80 @@
   const RE_BRUTTO = /(^|[^a-zà-ÿ])(basta|stanc[oa]|odio|schifo|bugiard[oa]|stronz[oa]|vaffanculo|fanculo|lasciami|non mi scrivere|arrabbiat[oa]|delus[oa]|triste|piango|litigare|colpa tua|mentiros[oa]|mentira|te odio|d[eé]jame|harta|harto|enojad[oa]|hate|liar|leave me|angry|sad|moe van|haat|😡|🤬|😭|💔|😤)(?![a-zà-ÿ])/;
   const RE_LINK = /https?:\/\/([^\s\/]+)/g;
 
+  // Temi (i «tag»): liste corte e dichiarate di parole in italiano, spagnolo e inglese.
+  // Contano le parole, non capiscono il contesto: «amici» può parlare di altre persone.
+  function parole(lista) { return new RegExp('(^|[^a-zà-ÿ])(' + lista + ')(?![a-zà-ÿ])'); }
+  const TEMI = [
+    { id: 'amore', nome: 'Ti amo', colore: '#ff5d8f', re: parole('ti amo|te amo|i love you|love you|ik hou van je|ti voglio bene|tvb|te quiero|tqm') },
+    { id: 'nomignoli', nome: 'Nomignoli', colore: '#ffb23f', re: parole('amore|amor|mi vida|vita mia|cariño|tesoro|bebé|bebe|baby|cucciol[oa]|princes[as]|principessa') },
+    { id: 'baci', nome: 'Baci', colore: '#ff7b54', re: /(^|[^a-zà-ÿ])(baci[oa]?|bacion[ei]|bes[oa]s?|besit[oa]s?|kiss(es)?)(?![a-zà-ÿ])|😘|💋/ },
+    { id: 'coppia', nome: 'Coppia', colore: '#8f5bff', re: parole('fidanzat[oaie]|mio ragazzo|mia ragazza|novi[oa]|pareja|relazione|relaci[oó]n|stiamo insieme|estamos juntos|la mia donna|il mio uomo|mi mujer|mi hombre|moglie|marito|espos[oa]|boyfriend|girlfriend') },
+    { id: 'manchi', nome: 'Mi manchi', colore: '#3fb6ff', re: parole('mi manchi|te extraño|te extrano|te echo de menos|i miss you|miss you') },
+    { id: 'promesse', nome: 'Promesse', colore: '#22c9a5', re: parole('ti prometto|te prometo|prometto|te lo juro|te lo giuro|lo giuro|i promise|per sempre|para siempre|forever') },
+    { id: 'intimita', nome: 'Intimità', colore: '#e0469b', re: parole('sesso|fare l.amore|hacer el amor|letto insieme|dormire insieme|dormir juntos|nud[oa]|desnud[oa]|sexy') },
+    { id: 'gelosia', nome: 'Gelosia', colore: '#9acd32', re: parole('gelos[oaie]|gelosia|celos[oa]?|celos|jealous') },
+    { id: 'soloamici', nome: 'Solo amici', colore: '#5c6b82', re: parole('solo amic[oi]|solo amig[oa]s|siamo amici|somos amigos|just friends|come amic[oi]|como amig[oa]s|restiamo amici|quedamos como amigos') },
+    { id: 'amici', nome: 'Amicizia', colore: '#2f80ed', re: parole('amic[oaie]|amig[oa]s?|amicizia|amistad|friends?') },
+    { id: 'rottura', nome: 'Lasciarsi', colore: '#e23b4e', re: parole('lasciamoci|ci lasciamo|ti lascio|terminamos|se acab[oó]|[eè] finita|abbiamo chiuso|non mi scrivere pi[uù]|no me escribas|addio') },
+    { id: 'scuse', nome: 'Scuse', colore: '#f2c94c', re: RE_SCUSE }
+  ];
+
+  /** Le frasi di un tema o con una parola scelta. Lavora sui messaggi in memoria: niente esce dal dispositivo. */
+  function cerca(lettura, cosa) {
+    let prova;
+    if (cosa && cosa.tema) {
+      const t = TEMI.find(function (x) { return x.id === cosa.tema; });
+      if (!t) return [];
+      prova = function (basso) { return t.re.test(basso); };
+    } else if (cosa && cosa.parola && cosa.parola.trim().length >= 2) {
+      const ago = cosa.parola.trim().toLowerCase();
+      prova = function (basso) { return basso.indexOf(ago) >= 0; };
+    } else return [];
+    const out = [];
+    for (const m of lettura.messaggi) {
+      if (m.tipo !== 'testo') continue;
+      if (cosa.autore && m.autore !== cosa.autore) continue;
+      if (prova(m.testo.toLowerCase())) out.push({ quando: m.timestamp.getTime(), autore: m.autore, testo: m.testo });
+    }
+    return out;
+  }
+
+  // Il giudizio della giostra: un gioco con formula dichiarata, non una sentenza.
+  const GRADINI = [
+    'Scappa subito e manda la posizione a un familiare',
+    'Modalità aereo, respira e chiama un\'amica',
+    'Più fumo che arrosto',
+    'Né carne né pesce: parlatevi chiaro',
+    'C\'è del buono: annaffiatelo',
+    'Qui c\'è una cosa seria',
+    'È la tua anima gemella'
+  ];
+  const CIMA = { Amicizia: ['Un\'amicizia che tiene', 'Amici per la vita'], Famiglia: ['Una famiglia che c\'è', 'Famiglia vera, tienitela stretta'], Lavoro: ['Si lavora bene insieme', 'Collega d\'oro'] };
+  function verdetto(st, etichetta) {
+    const voci = [];
+    function voce(nome, punti) { punti = Math.round(punti); if (punti) voci.push({ nome: nome, punti: punti }); return punti; }
+    const base = Math.round(50 + ((st.equilibrio == null ? 50 : st.equilibrio) - 50) * 0.5);
+    let p = base;
+    const tema = function (id) { const t = (st.temi || []).find(function (x) { return x.id === id; }); return t ? t.totale : 0; };
+    const perMille = function (n) { return st.totale ? n / st.totale * 1000 : 0; };
+    p += voce('Parole d\'amore', Math.min(12, perMille(tema('amore')) * 2));
+    if (st.striscia >= 30) p += voce('Vi scrivete ogni giorno', 6);
+    const belli = (st.mesi || []).reduce(function (a, m) { return a + m.belli; }, 0);
+    const brutti = (st.mesi || []).reduce(function (a, m) { return a + m.brutti; }, 0);
+    if (belli + brutti >= 20) p += voce('Tono delle parole', (belli / (belli + brutti) - 0.5) * 30);
+    const ss = segnali(st);
+    p += voce('Buoni segni', 3 * ss.filter(function (s) { return s.tono === 'buono'; }).length);
+    p += voce('Cose da guardare', -6 * ss.filter(function (s) { return s.tono === 'attenzione'; }).length);
+    p += voce('Blocchi', -Math.min(15, 2 * (st.blocchiTuoi || 0)));
+    p += voce('Silenzi lunghi', -Math.min(10, 3 * (st.silenzi || 0)));
+    p += voce('Parole di rottura', -Math.min(10, perMille(tema('rottura')) * 3));
+    p = Math.max(0, Math.min(100, Math.round(p)));
+    const gradino = Math.min(6, Math.floor(p / 15));
+    let titolo = GRADINI[gradino];
+    if (CIMA[etichetta] && gradino >= 5) titolo = CIMA[etichetta][gradino - 5];
+    return { punti: p, gradino: gradino, titolo: titolo, base: base, voci: voci };
+  }
+
   function classifica(resto) {
     if (SEGNO.test(resto)) return { autore: null, testo: resto.replace(SEGNO, ''), tipo: 'sistema' };
     let taglio = resto.indexOf(': ');
@@ -131,7 +205,7 @@
     const perAutore = new Map();
     function scheda(nome) {
       if (!perAutore.has(nome)) perAutore.set(nome, { nome: nome, messaggi: 0, parole: 0, media: 0, eliminati: 0, tempi: [], apreGiornata: 0,
-        emoji: new Map(), paroleUsate: new Map(), notte: 0, insistenze: 0, scuse: 0, affetto: 0, link: 0 });
+        emoji: new Map(), paroleUsate: new Map(), notte: 0, insistenze: 0, scuse: 0, affetto: 0, link: 0, temi: {} });
       return perAutore.get(nome);
     }
     const ore = new Array(24).fill(0);
@@ -169,6 +243,7 @@
           const pp = basso.match(RE_PAROLA);
           if (pp) for (const p of pp) if (!VUOTE.has(p) && !RE_RISATA.test(p)) s.paroleUsate.set(p, (s.paroleUsate.get(p) || 0) + 1);
         }
+        for (const tm of TEMI) if (tm.re.test(basso)) s.temi[tm.id] = (s.temi[tm.id] || 0) + 1;
         if (RE_BELLO.test(basso)) mm.belli++;
         if (RE_BRUTTO.test(basso)) mm.brutti++;
         let lk; RE_LINK.lastIndex = 0;
@@ -246,6 +321,12 @@
       mesi: Array.from(mesi.values()).sort(function (a, b) { return a.mese < b.mese ? -1 : 1; }),
       settimana: settimana,
       sitiTop: primi(siti, 5),
+      temi: TEMI.map(function (tm) {
+        const per = {};
+        let tot = 0;
+        perAutore.forEach(function (s) { const n = s.temi[tm.id] || 0; per[s.nome] = n; tot += n; });
+        return { id: tm.id, nome: tm.nome, colore: tm.colore, totale: tot, perAutore: per };
+      }),
       equilibrio: equilibrio(autori, giorni.size)
     };
   }
@@ -423,5 +504,5 @@
     return h + ' h' + (min % 60 ? ' ' + (min % 60) + ' min' : '');
   }
 
-  return { segnali: segnali, riassunto: riassunto, leggi: leggi, statistiche: statistiche, analizza: analizza, testoDaFile: testoDaFile, txtDaZip: txtDaZip, mediaDaZip: mediaDaZip, durata: durata };
+  return { cerca: cerca, verdetto: verdetto, segnali: segnali, riassunto: riassunto, leggi: leggi, statistiche: statistiche, analizza: analizza, testoDaFile: testoDaFile, txtDaZip: txtDaZip, mediaDaZip: mediaDaZip, durata: durata };
 });
