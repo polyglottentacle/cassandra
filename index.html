@@ -93,6 +93,8 @@
   .azioni { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
   .azioni > * { flex: 1 1 180px; }
   footer { margin-top: 30px; text-align: center; color: var(--velo); font-size: 12.5px; }
+  .galleria{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}
+  .galleria img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px}
   .mappa{display:grid;grid-template-columns:2.4em repeat(24,1fr);gap:2px;align-items:center;margin-top:10px}
   .mappa span{font-size:11px;opacity:.7}
   .mappa i{display:block;aspect-ratio:1;border-radius:3px;background:var(--accento)}
@@ -430,6 +432,17 @@
       const r = { id: Date.now().toString(36), etichetta: null, salvato: Date.now(), st: st };
       salva(r);
       mostra(r);
+      try {
+        const md = await Pizia.mediaDaZip(file, 12);
+        if (md.foto + md.video + md.audio > 0) {
+          const c = carta('porpora', 'Foto della chat');
+          c.appendChild(el('p', 'grande', nf.format(md.foto) + ' foto'));
+          c.appendChild(el('p', 'nota', nf.format(md.video) + ' video · ' + nf.format(md.audio) + ' audio. Qui sotto le ultime foto: restano sul tuo dispositivo e non vengono salvate.'));
+          const gal = el('div', 'galleria');
+          md.anteprime.forEach((b) => { const im = new Image(); im.src = URL.createObjectURL(b); im.alt = 'Foto della chat'; im.loading = 'lazy'; gal.appendChild(im); });
+          c.appendChild(gal);
+        }
+      } catch (e) { /* le foto sono un di più: se non si leggono, il responso resta */ }
     } catch (e) {
       errore.textContent = e && e.message ? e.message : 'Non riesco a leggere questo file.';
       errore.hidden = false;

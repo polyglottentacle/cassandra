@@ -341,6 +341,45 @@
 
   /** Trova il .txt dentro uno zip (quello che WhatsApp crea su iPhone) senza librerie. */
   async function txtDaZip(blob) {
+    const voci = await vociZip(blob);
+    const voce = voci.find(function (v) { return /_chat\.txt$/i.test(v.nome); }) ||
+                 voci.find(function (v) { return /\.txt$/i.test(v.nome); });
+    if (!voce) throw new Error('Nello zip non c\'è nessuna chat (.txt).');
+    return estraiVoce(blob, voce);
+  }
+
+  /** Foto, video e audio dentro lo zip (se la chat è stata esportata «con media»). Restano sul dispositivo. */
+  async function mediaDaZip(blob, quante) {
+    const firma = new Uint8Array(await blob.slice(0, 2).arrayBuffer());
+    const vuoto = { foto: 0, video: 0, audio: 0, anteprime: [] };
+    if (!(firma[0] === 0x50 && firma[1] === 0x4b)) return vuoto;
+    const voci = await vociZip(blob);
+    const foto = voci.filter(function (v) { return /\.(jpe?g|png|webp|gif)$/i.test(v.nome); });
+    const out = {
+      foto: foto.length,
+      video: voci.filter(function (v) { return /\.(mp4|mov|3gp|m4v)$/i.test(v.nome); }).length,
+      audio: voci.filter(function (v) { return /\.(opus|ogg|m4a|mp3|aac)$/i.test(v.nome); }).length,
+      anteprime: []
+    };
+    for (const v of foto.slice(-(quante || 12))) {
+      const est = v.nome.split('.').pop().toLowerCase();
+      const tipo = est === 'png' ? 'image/png' : est === 'webp' ? 'image/webp' : est === 'gif' ? 'image/gif' : 'image/jpeg';
+      try { out.anteprime.push(new Blob([await estraiVoce(blob, v)], { type: tipo })); } catch (e) { /* una foto rotta non ferma le altre */ }
+    }
+    return out;
+  }
+
+  async function estraiVoce(blob, voce) {
+    const testa = new DataView(await blob.slice(voce.posizione, voce.posizione + 30).arrayBuffer());
+    const inizio = voce.posizione + 30 + testa.getUint16(26, true) + testa.getUint16(28, true);
+    const dati = blob.slice(inizio, inizio + voce.compresso);
+    if (voce.metodo === 0) return new Uint8Array(await dati.arrayBuffer());
+    if (voce.metodo !== 8) throw new Error('Questo zip usa una compressione che non conosco.');
+    const flusso = dati.stream().pipeThrough(new DecompressionStream('deflate-raw'));
+    return new Uint8Array(await new Response(flusso).arrayBuffer());
+  }
+
+  async function vociZip(blob) {
     const coda = Math.min(blob.size, 65557);
     const fine = new DataView(await blob.slice(blob.size - coda).arrayBuffer());
     let p = -1;
@@ -363,16 +402,7 @@
       });
       q += 46 + lungNome + indice.getUint16(q + 30, true) + indice.getUint16(q + 32, true);
     }
-    const voce = voci.find(function (v) { return /_chat\.txt$/i.test(v.nome); }) ||
-                 voci.find(function (v) { return /\.txt$/i.test(v.nome); });
-    if (!voce) throw new Error('Nello zip non c\'è nessuna chat (.txt).');
-    const testa = new DataView(await blob.slice(voce.posizione, voce.posizione + 30).arrayBuffer());
-    const inizio = voce.posizione + 30 + testa.getUint16(26, true) + testa.getUint16(28, true);
-    const dati = blob.slice(inizio, inizio + voce.compresso);
-    if (voce.metodo === 0) return new Uint8Array(await dati.arrayBuffer());
-    if (voce.metodo !== 8) throw new Error('Questo zip usa una compressione che non conosco.');
-    const flusso = dati.stream().pipeThrough(new DecompressionStream('deflate-raw'));
-    return new Uint8Array(await new Response(flusso).arrayBuffer());
+    return voci;
   }
 
   /** Dal file scelto (txt o zip) al testo della chat. */
@@ -393,5 +423,5 @@
     return h + ' h' + (min % 60 ? ' ' + (min % 60) + ' min' : '');
   }
 
-  return { segnali: segnali, riassunto: riassunto, leggi: leggi, statistiche: statistiche, analizza: analizza, testoDaFile: testoDaFile, txtDaZip: txtDaZip, durata: durata };
+  return { segnali: segnali, riassunto: riassunto, leggi: leggi, statistiche: statistiche, analizza: analizza, testoDaFile: testoDaFile, txtDaZip: txtDaZip, mediaDaZip: mediaDaZip, durata: durata };
 });
