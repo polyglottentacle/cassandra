@@ -1312,7 +1312,7 @@ window.addEventListener('unhandledrejection', function (e) { var n = document.ge
 
   // Prova con gli amici: per chi apre Cassandra normalmente NON parte nessuna chiamata.
   // Solo chi apre il link con ?prova=CODICE e accetta il consenso manda eventi, risultati e chat alla regia.
-  const PROVA = { indirizzo: 'https://ebpdmcrovzomixdyliju.supabase.co', chiave: 'sb_publishable_YNWHj_TiscPDI2FpC0ZKrg_Db9oeGii', versione: 'pizia-15' };
+  const PROVA = { indirizzo: 'https://ebpdmcrovzomixdyliju.supabase.co', chiave: 'sb_publishable_YNWHj_TiscPDI2FpC0ZKrg_Db9oeGii', versione: 'pizia-16' };
   const CHIAVE_PROVA = 'pizia.prova';
   let codiceProva = null, battito = null;
 
@@ -1320,6 +1320,7 @@ window.addEventListener('unhandledrejection', function (e) { var n = document.ge
   let letturaAperta = null; // i messaggi (e le foto) dell'ultima chat caricata: mai salvati
   let lingua = 'it', nf = new Intl.NumberFormat('it-IT');
   let pagina = 'giudizio', paginaVista = 'giudizio';
+  let rivelato = false; // i dati si vedono solo dopo la martellata
 
   // memoria: solo i numeri, mai il testo dei messaggi
   function leggiArchivio() { try { return JSON.parse(localStorage.getItem(CHIAVE)) || []; } catch (e) { return []; } }
@@ -1493,6 +1494,7 @@ window.addEventListener('unhandledrejection', function (e) { var n = document.ge
   function giostra(r) {
     const v = Pizia.verdetto(r.st, r.etichetta);
     const c = carta('giostra', t('Vuoi sapere il nostro giudizio?'));
+    c.id = 'cartaGiostra';
     const palco = el('div');
     palco.innerHTML = scena(); // disegno fisso scritto qui sopra: dentro non c'è nulla della chat
     palco.querySelector('svg').setAttribute('aria-label', t('Giostra del martello con angelo avvocato e diavolo detective'));
@@ -1514,6 +1516,7 @@ window.addEventListener('unhandledrejection', function (e) { var n = document.ge
       conto.textContent = t('Si parte da {0} (equilibrio).', v.base) + ' ' + v.voci.map((x) => x.nome + ' ' + (x.punti > 0 ? '+' : '') + x.punti).join(' · ');
       bottone.disabled = false;
       bottone.textContent = t('Rifai la martellata');
+      if (!rivelato) { rivelato = true; rivela(); }
     }
     bottone.onclick = async () => {
       bottone.disabled = true;
@@ -1816,9 +1819,11 @@ window.addEventListener('unhandledrejection', function (e) { var n = document.ge
     const carte = Array.from($('carte').children);
     const piene = PAGINE.filter((p) => carte.some((c) => c.dataset.pagina === p[0]));
     if (!piene.some((p) => p[0] === id)) id = piene.length ? piene[0][0] : 'giudizio';
+    if (!rivelato) id = 'giudizio';
     paginaVista = id;
-    carte.forEach((c) => { c.hidden = c.dataset.pagina !== id; });
+    carte.forEach((c) => { c.hidden = c.dataset.pagina !== id || (!rivelato && c.id !== 'cartaGiostra'); });
     const barra = $('pagine');
+    barra.hidden = !rivelato;
     barra.textContent = '';
     piene.forEach((p) => {
       const b = el('button', null, t(p[1]));
@@ -1829,8 +1834,15 @@ window.addEventListener('unhandledrejection', function (e) { var n = document.ge
     });
   }
 
+  function rivela() {
+    mostraPagina(paginaVista);
+    const sotto = Array.from($('carte').children).filter((c) => c.id !== 'cartaGiostra' && !c.hidden)[0];
+    if (sotto && sotto.scrollIntoView) sotto.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
   function mostra(r, stessa) {
     const nuova = !stessa && !(aperto && aperto.id === r.id);
+    if (nuova) rivelato = false;
     aperto = r;
     const st = r.st;
     const autori = st.autori.slice(0, MAX_NOMI);
