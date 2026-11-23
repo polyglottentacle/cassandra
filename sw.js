@@ -1,7 +1,7 @@
 /* Pizia · tiene l'app in memoria così funziona anche senza rete.
    Serve solo i file dell'app: nessuna richiesta verso l'esterno. */
-const VERSIONE = 'pizia-6';
-const FILE = ['./', 'index.html', 'pizia.js', 'manifest.webmanifest', 'icona.svg', 'icona-180.png', 'icona-512.png'];
+const VERSIONE = 'pizia-7';
+const FILE = ['./', 'index.html', 'pizia.js', 'manifest.webmanifest', 'icona.svg', 'icona-180.png', 'icona-512.png', 'privacy.html'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(VERSIONE).then((c) => c.addAll(FILE)).then(() => self.skipWaiting()));

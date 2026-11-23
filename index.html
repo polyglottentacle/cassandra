@@ -183,6 +183,7 @@
       </label>
     </div>
     <div class="errore" id="errore" role="alert" hidden></div>
+    <div class="azioni" id="rigaInstalla" hidden style="margin-top:14px"><button class="piano" id="installa" type="button">Installa Pizia sul telefono</button></div>
     <p class="patto"><span><b>Resta tutto qui.</b> I conti si fanno su questo dispositivo: nessun server, nessun account, niente da sbloccare.</span></p>
     <details>
       <summary>Come si esporta una chat da WhatsApp</summary>
@@ -216,7 +217,7 @@
     </div>
   </section>
 
-  <footer>Pizia · un satellite dell'Olimpo · gratis</footer>
+  <footer>Pizia · un satellite dell'Olimpo · gratis · <a href="privacy.html" style="color:inherit;font-weight:700">Privacy</a></footer>
 </main>
 
 <script src="pizia.js"></script>
@@ -729,7 +730,9 @@
       scrivi(r[3], 110, y + 210, 78, r[1], 'left', 440);
       if (b.nome) { scrivi(b.nome, 970, y + 125, 30, r[1], 'right', 420); scrivi(r[4], 970, y + 210, 78, r[1], 'right', 440); }
     });
-    scrivi(nf.format(st.totale) + ' messaggi · striscia di ' + nf.format(st.striscia || 0) + ' giorni', 70, 1290, 34, '#4a5a70', 'left', 940);
+    const v = Pizia.verdetto(st, aperto && aperto.etichetta);
+    scrivi('Giudizio ' + v.punti + '/100 · ' + v.titolo, 70, 1262, 36, '#2b2fa8', 'left', 940);
+    scrivi(nf.format(st.totale) + ' messaggi · striscia di ' + nf.format(st.striscia || 0) + ' giorni', 70, 1312, 30, '#4a5a70', 'left', 940);
     return tela;
   }
   $('immagine').onclick = () => {
@@ -748,6 +751,12 @@
 
   $('nuova').onclick = tornaACasa;
   $('dimentica').onclick = () => { if (aperto) scriviArchivio(leggiArchivio().filter((x) => x.id !== aperto.id)); tornaACasa(); };
+
+  // Android e Chrome: il browser offre l'installazione, noi mostriamo il bottone
+  let invito = null;
+  window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); invito = e; $('rigaInstalla').hidden = false; });
+  $('installa').onclick = async () => { if (!invito) return; invito.prompt(); try { await invito.userChoice; } catch (e) { /* chiuso senza scegliere */ } invito = null; $('rigaInstalla').hidden = true; };
+  window.addEventListener('appinstalled', () => { $('rigaInstalla').hidden = true; });
 
   disegnaArchivio();
   if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});
