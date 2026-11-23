@@ -24,6 +24,17 @@
   const RE_AVVISO = /crittograf|end-to-end|encrypt|chiamata|\bcall\b|oproep|bloccato|blocked|codice di sicurezza|security code|effimer|disappearing|ha aggiunto|ha abbandonato|ha creato/i;
   const RE_SBLOCCO = /sbloccato|unblocked|gedeblokkeerd/i;
   const GIORNO_MS = 24 * 60 * 60 * 1000;
+  const MEZZORA_MS = 30 * 60 * 1000;
+  const RE_SCUSE = /(^|[^a-zà-ÿ])(scusa|scusami|perdonami|mi dispiace|perd[oó]n|perd[oó]name|lo siento|disculpa|sorry|sry)(?![a-zà-ÿ])/;
+  const RE_AFFETTO = /(^|[^a-zà-ÿ])(ti amo|ti voglio bene|tvb|te amo|te quiero|tqm|love you|ik hou van je)(?![a-zà-ÿ])/;
+  const RE_EMOJI = /\p{Extended_Pictographic}/gu;
+  const RE_PAROLA = /[a-zà-ÿ]{4,}/g;
+  const RE_RISATA = /^(?:[jh]+[aeiou]+)+[jh]*$/;
+  // parole che non dicono niente (italiano, spagnolo, inglese, olandese)
+  const VUOTE = new Set(('sono anche come cosa però perché quando dove questo questa quello quella siamo hanno molto poco tutto tutti ancora allora quindi adesso dopo prima sempre solo così bene male fare fatto essere avere deve devo puoi posso vuoi voglio stai stavo della dello delle degli nella nelle alla alle agli dalla ecco ' +
+    'para pero porque como cuando donde esta este esto estoy estas está estás eres tengo tienes tiene quiero quieres puedo puedes vamos hace hacer nada todo toda todos bien pues entonces ahora luego también tambien menos algo aquí aqui allí sólo vale claro bueno igual sisi nono okok ' +
+    'that this with have what when where your just like dont about there they them then than from will would could should been were yeah okay ' +
+    'voor niet maar deze heeft naar over door mijn jouw waar wanneer').split(' '));
 
   function classifica(resto) {
     if (SEGNO.test(resto)) return { autore: null, testo: resto.replace(SEGNO, ''), tipo: 'sistema' };
@@ -114,11 +125,13 @@
   function statistiche(lettura) {
     const perAutore = new Map();
     function scheda(nome) {
-      if (!perAutore.has(nome)) perAutore.set(nome, { nome: nome, messaggi: 0, parole: 0, media: 0, eliminati: 0, tempi: [], apreGiornata: 0 });
+      if (!perAutore.has(nome)) perAutore.set(nome, { nome: nome, messaggi: 0, parole: 0, media: 0, eliminati: 0, tempi: [], apreGiornata: 0,
+        emoji: new Map(), paroleUsate: new Map(), notte: 0, insistenze: 0, scuse: 0, affetto: 0 });
       return perAutore.get(nome);
     }
     const ore = new Array(24).fill(0);
     const giorni = new Map();
+    let silenzi = 0, silenzioMax = { ms: 0, rotto: null }, striscia = 0, strisciaOra = 0, numGiornoPrima = null, notte = 0;
     let sistema = 0, blocchi = 0, chiamate = 0, primo = null, ultimo = null, prima = null, giornoPrima = null;
 
     for (const m of lettura.messaggi) {
@@ -134,17 +147,45 @@
       s.messaggi++;
       if (m.tipo === 'media') s.media++;
       else if (m.tipo === 'eliminato') s.eliminati++;
-      else s.parole += m.testo.split(/\s+/).filter(Boolean).length;
-      ore[m.timestamp.getHours()]++;
+      else {
+        s.parole += m.testo.split(/\s+/).filter(Boolean).length;
+        const basso = m.testo.toLowerCase();
+        const faccine = m.testo.match(RE_EMOJI);
+        if (faccine) for (const f of faccine) s.emoji.set(f, (s.emoji.get(f) || 0) + 1);
+        if (basso.indexOf('http') < 0) {
+          const pp = basso.match(RE_PAROLA);
+          if (pp) for (const p of pp) if (!VUOTE.has(p) && !RE_RISATA.test(p)) s.paroleUsate.set(p, (s.paroleUsate.get(p) || 0) + 1);
+        }
+        if (RE_SCUSE.test(basso)) s.scuse++;
+        if (RE_AFFETTO.test(basso)) s.affetto++;
+      }
+      const oraDelGiorno = m.timestamp.getHours();
+      if (oraDelGiorno < 5) { s.notte++; notte++; }
+      ore[oraDelGiorno]++;
 
       const giorno = chiaveGiorno(m.timestamp);
       giorni.set(giorno, (giorni.get(giorno) || 0) + 1);
-      if (giorno !== giornoPrima) { s.apreGiornata++; giornoPrima = giorno; }
+      if (giorno !== giornoPrima) {
+        s.apreGiornata++;
+        giornoPrima = giorno;
+        const numGiorno = Math.round(Date.UTC(m.timestamp.getFullYear(), m.timestamp.getMonth(), m.timestamp.getDate()) / GIORNO_MS);
+        strisciaOra = (numGiornoPrima != null && numGiorno === numGiornoPrima + 1) ? strisciaOra + 1 : 1;
+        if (strisciaOra > striscia) striscia = strisciaOra;
+        numGiornoPrima = numGiorno;
+      }
 
-      // risposta = cambio di autore; le pause oltre 24 ore non contano
-      if (prima && prima.autore !== m.autore) {
+      if (prima) {
         const attesa = t - prima.timestamp.getTime();
-        if (attesa >= 0 && attesa <= GIORNO_MS) s.tempi.push(attesa);
+        if (prima.autore !== m.autore) {
+          // risposta = cambio di autore; le pause oltre 24 ore non contano
+          if (attesa >= 0 && attesa <= GIORNO_MS) s.tempi.push(attesa);
+        } else if (attesa >= MEZZORA_MS && attesa <= GIORNO_MS) {
+          s.insistenze++; // ha riscritto dopo almeno mezz'ora senza aver avuto risposta
+        }
+        if (attesa > 3 * GIORNO_MS) {
+          silenzi++;
+          if (attesa > silenzioMax.ms) silenzioMax = { ms: attesa, rotto: m.autore };
+        }
       }
       if (!primo) primo = m;
       ultimo = m;
@@ -156,6 +197,8 @@
       return {
         nome: s.nome, messaggi: s.messaggi, parole: s.parole, media: s.media, eliminati: s.eliminati,
         apreGiornata: s.apreGiornata, risposte: s.tempi.length,
+        notte: s.notte, insistenze: s.insistenze, scuse: s.scuse, affetto: s.affetto,
+        emojiTop: primi(s.emoji, 6), paroleTop: primi(s.paroleUsate, 8),
         rispostaMediaMs: s.tempi.length ? somma / s.tempi.length : null,
         rispostaMedianaMs: mediana(s.tempi)
       };
@@ -178,8 +221,85 @@
       ore: ore,
       oraPicco: oraPicco,
       blocchiTuoi: blocchi,
-      chiamate: chiamate
+      chiamate: chiamate,
+      notte: notte,
+      striscia: striscia,
+      silenzi: silenzi,
+      silenzioMax: silenzioMax.ms ? silenzioMax : null
     };
+  }
+
+  function primi(mappa, quanti) {
+    return Array.from(mappa.entries()).sort(function (a, b) { return b[1] - a[1]; }).slice(0, quanti);
+  }
+  function perc(x) { return Math.round(x * 100) + '%'; }
+
+  /** I segnali: regole semplici e dichiarate sui numeri. Sono conti, non giudizi. Solo per chat a due. */
+  function segnali(st) {
+    const out = [];
+    if (!st || st.autori.length !== 2 || !st.totale) return out;
+    const a = st.autori[0], b = st.autori[1];
+    function metti(tono, titolo, testo) { out.push({ tono: tono, titolo: titolo, testo: testo }); }
+
+    const quota = a.messaggi / st.totale;
+    if (quota > 0.6) metti('attenzione', a.nome + ' scrive molto di più', perc(quota) + ' dei messaggi sono suoi.');
+    else if (quota <= 0.55) metti('buono', 'Scrivete quasi uguale', perc(quota) + ' e ' + perc(1 - quota) + ': nessuno dei due parla da solo.');
+
+    if (a.rispostaMedianaMs != null && b.rispostaMedianaMs != null) {
+      const lento = a.rispostaMedianaMs >= b.rispostaMedianaMs ? a : b;
+      const svelto = lento === a ? b : a;
+      if (lento.rispostaMedianaMs <= 5 * 60000) metti('buono', 'Vi rispondete in fretta', 'Di solito ' + svelto.nome + ' risponde in ' + durata(svelto.rispostaMedianaMs) + ' e ' + lento.nome + ' in ' + durata(lento.rispostaMedianaMs) + '.');
+      else if (lento.rispostaMedianaMs >= MEZZORA_MS && lento.rispostaMedianaMs >= 5 * svelto.rispostaMedianaMs) metti('attenzione', lento.nome + ' fa aspettare', 'Di solito risponde in ' + durata(lento.rispostaMedianaMs) + ', contro ' + durata(svelto.rispostaMedianaMs) + ' di ' + svelto.nome + '.');
+    }
+
+    const apre = a.apreGiornata >= b.apreGiornata ? a : b;
+    const quotaApre = apre.apreGiornata / Math.max(1, st.giorniAttivi);
+    if (quotaApre > 0.7) metti('attenzione', 'È quasi sempre ' + apre.nome + ' a cercare', 'Apre la giornata ' + perc(quotaApre) + ' delle volte.');
+
+    if (a.insistenze != null) {
+      const insiste = a.insistenze >= b.insistenze ? a : b;
+      const altro = insiste === a ? b : a;
+      if (insiste.insistenze >= 20 && insiste.insistenze >= 2 * altro.insistenze) metti('attenzione', insiste.nome + ' riscrive spesso senza risposta', insiste.insistenze + ' volte ha riscritto dopo almeno mezz\'ora di silenzio, contro ' + altro.insistenze + ' di ' + altro.nome + '.');
+
+      [a, b].forEach(function (x) {
+        if (x.eliminati >= 20 && x.eliminati / x.messaggi > 0.03) metti('nota', x.nome + ' cancella molti messaggi', x.eliminati + ' messaggi eliminati (' + perc(x.eliminati / x.messaggi) + ' dei suoi).');
+      });
+
+      const chiede = a.scuse >= b.scuse ? a : b;
+      const altroScuse = chiede === a ? b : a;
+      if (chiede.scuse >= 10 && chiede.scuse >= 3 * altroScuse.scuse) metti('nota', 'È quasi sempre ' + chiede.nome + ' a chiedere scusa', chiede.scuse + ' messaggi di scuse, contro ' + altroScuse.scuse + '.');
+      if (a.affetto > 0 && b.affetto > 0) metti('buono', 'Ve lo dite tutti e due', a.nome + ' ' + a.affetto + ' volte, ' + b.nome + ' ' + b.affetto + ' volte (ti amo, te quiero, ti voglio bene…).');
+      else if (a.affetto + b.affetto >= 10) metti('nota', 'Lo dice solo ' + (a.affetto ? a.nome : b.nome), (a.affetto || b.affetto) + ' volte, l\'altra persona mai (con queste parole).');
+    }
+
+    if (st.blocchiTuoi > 0) metti('attenzione', 'Hai bloccato questa chat ' + st.blocchiTuoi + (st.blocchiTuoi === 1 ? ' volta' : ' volte'), 'Il file segna solo i blocchi fatti da chi esporta.');
+    if (st.silenzioMax) metti('nota', st.silenzi + (st.silenzi === 1 ? ' silenzio' : ' silenzi') + ' di oltre 3 giorni', 'Il più lungo è durato ' + Math.round(st.silenzioMax.ms / GIORNO_MS) + ' giorni. L\'ha rotto ' + st.silenzioMax.rotto + '.');
+    if (st.notte != null && st.notte / st.totale > 0.15) metti('nota', 'Vi scrivete molto di notte', perc(st.notte / st.totale) + ' dei messaggi sono tra mezzanotte e le 5.');
+    if (st.striscia >= 30) metti('buono', st.striscia + ' giorni di fila', 'La striscia più lunga senza saltare un giorno.');
+    return out;
+  }
+
+  /** Un riassunto di soli numeri (niente nomi, niente messaggi) da incollare nella propria IA. */
+  function riassunto(st) {
+    const sigle = ['A', 'B', 'C', 'D', 'E', 'F'];
+    const sigla = {};
+    st.autori.slice(0, 6).forEach(function (x, i) { sigla[x.nome] = 'Persona ' + sigle[i]; });
+    function anonimo(t) { Object.keys(sigla).forEach(function (n) { t = t.split(n).join(sigla[n]); }); return t; }
+    const righe = [
+      'Qui sotto ci sono solo i numeri di una chat di WhatsApp (nessun messaggio, nessun nome). Io sono la Persona ___.',
+      'Dimmi con onestà e gentilezza: cosa va bene, cosa terresti d\'occhio, e tre domande che dovrei farmi. Non inventare fatti che i numeri non mostrano.',
+      '',
+      'Messaggi totali: ' + st.totale + ' in ' + st.giorniAttivi + ' giorni attivi. Striscia più lunga: ' + (st.striscia || '?') + ' giorni. Chiamate: ' + (st.chiamate || 0) + '.'
+    ];
+    st.autori.slice(0, 6).forEach(function (x) {
+      righe.push(sigla[x.nome] + ': ' + x.messaggi + ' messaggi; risponde in media in ' + durata(x.rispostaMediaMs) + ' (di solito ' + durata(x.rispostaMedianaMs) + '); apre la giornata ' + x.apreGiornata + ' volte; riscrive senza risposta ' + (x.insistenze || 0) + ' volte; messaggi eliminati ' + x.eliminati + '; di notte ' + (x.notte || 0) + '; scuse ' + (x.scuse || 0) + '; parole d\'affetto ' + (x.affetto || 0) + '.');
+    });
+    const ss = segnali(st);
+    if (ss.length) {
+      righe.push('', 'Segnali calcolati:');
+      ss.forEach(function (s) { righe.push('- ' + anonimo(s.titolo) + '. ' + anonimo(s.testo)); });
+    }
+    return righe.join('\n');
   }
 
   function analizza(testo) { return statistiche(leggi(testo)); }
@@ -238,5 +358,5 @@
     return h + ' h' + (min % 60 ? ' ' + (min % 60) + ' min' : '');
   }
 
-  return { leggi: leggi, statistiche: statistiche, analizza: analizza, testoDaFile: testoDaFile, txtDaZip: txtDaZip, durata: durata };
+  return { segnali: segnali, riassunto: riassunto, leggi: leggi, statistiche: statistiche, analizza: analizza, testoDaFile: testoDaFile, txtDaZip: txtDaZip, durata: durata };
 });

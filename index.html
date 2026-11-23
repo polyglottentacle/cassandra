@@ -80,6 +80,16 @@
   .ore i { flex: 1; background: var(--inchiostro); opacity: .35; border-radius: 3px 3px 0 0; min-height: 2px; }
   .ore i.picco { opacity: 1; }
   .assi { display: flex; justify-content: space-between; font-size: 11px; opacity: .7; margin-top: 4px; }
+  .segno { background: #fff; border-radius: 18px; padding: 12px 14px; margin-top: 8px; display: flex; flex-direction: column; gap: 3px; }
+  .segno strong { font-size: 15.5px; overflow-wrap: anywhere; }
+  .segno .perche { font-size: 13.5px; color: var(--velo); overflow-wrap: anywhere; }
+  .pillola { align-self: flex-start; font-size: 11.5px; font-weight: 800; padding: 3px 10px; border-radius: 10px; }
+  .segno.attenzione .pillola { background: var(--terracotta); color: #5e0f2e; }
+  .segno.buono .pillola { background: var(--ulivo); color: #0b3a34; }
+  .segno.nota .pillola { background: var(--oro); color: #4a3500; }
+  .chi2 { margin: 10px 0 2px; font-size: 14px; font-weight: 700; }
+  .faccine { margin: 0; font-size: 28px; letter-spacing: 2px; }
+  .parole { margin: 4px 0 0; font-size: 14px; font-weight: 600; overflow-wrap: anywhere; }
   .azioni { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
   .azioni > * { flex: 1 1 180px; }
   footer { margin-top: 30px; text-align: center; color: var(--velo); font-size: 12.5px; }
@@ -130,6 +140,11 @@
     <p class="periodo" id="periodo"></p>
     <div class="etichette" id="etichette" role="group" aria-label="Che rapporto è"></div>
     <div id="carte"></div>
+    <div class="azioni">
+      <button class="bottone" id="immagine">Salva come immagine</button>
+      <button class="piano" id="perIA">Copia il riassunto per la tua IA</button>
+    </div>
+    <p class="periodo" id="avviso" role="status" style="margin-top:10px"></p>
     <div class="azioni">
       <button class="bottone" id="nuova">Un'altra chat</button>
       <button class="piano" id="dimentica">Dimentica questo responso</button>
@@ -214,6 +229,20 @@
     autori.forEach((a) => { const i = el('i'); i.style.flex = String(a.messaggi); barra.appendChild(i); });
     c.appendChild(barra);
 
+    const segni = Pizia.segnali(st);
+    if (segni.length) {
+      c = carta('marmo', 'Segnali');
+      const NOMI = { attenzione: 'Da guardare', buono: 'Buon segno', nota: 'Da sapere' };
+      segni.forEach((s) => {
+        const box = el('div', 'segno ' + s.tono);
+        box.appendChild(el('span', 'pillola', NOMI[s.tono]));
+        box.appendChild(el('strong', null, s.titolo));
+        box.appendChild(el('span', 'perche', s.testo));
+        c.appendChild(box);
+      });
+      c.appendChild(el('p', 'nota', 'Sono conti fatti con regole fisse, non giudizi. I numeri non sanno perché succede una cosa.'));
+    }
+
     c = carta('porpora', 'Tempo medio di risposta');
     autori.forEach((a) => riga(c, a.nome, Pizia.durata(a.rispostaMediaMs), a.risposte ? 'di solito ' + Pizia.durata(a.rispostaMedianaMs) : ''));
     c.appendChild(el('p', 'nota', 'Conta solo quando cambia chi scrive. I silenzi oltre 24 ore restano fuori. «Di solito» è il tempo di mezzo: una notte di sonno non lo sposta.'));
@@ -255,6 +284,27 @@
       c.appendChild(el('p', 'nota', 'Giorno record: ' + dataLunga(new Date(+p[0], +p[1] - 1, +p[2]).getTime()) + ' con ' + nf.format(st.giornoRecord.messaggi) + ' messaggi.'));
     }
 
+    if (autori[0] && autori[0].emojiTop) {
+      if (autori.some((a) => a.emojiTop.length || (a.paroleTop && a.paroleTop.length))) {
+        c = carta('oro', 'Emoji e parole');
+        autori.forEach((a) => {
+          c.appendChild(el('p', 'chi2', a.nome));
+          if (a.emojiTop.length) c.appendChild(el('p', 'faccine', a.emojiTop.map((e) => e[0]).join(' ')));
+          if (a.paroleTop && a.paroleTop.length) c.appendChild(el('p', 'parole', a.paroleTop.map((p) => p[0]).join(' · ')));
+        });
+      }
+
+      c = carta('porpora', 'Insistenze e silenzi');
+      autori.forEach((a) => riga(c, a.nome, nf.format(a.insistenze), 'volte ha riscritto senza risposta'));
+      c.appendChild(el('p', 'nota', (st.silenzioMax
+        ? nf.format(st.silenzi) + (st.silenzi === 1 ? ' silenzio' : ' silenzi') + ' di oltre 3 giorni; il più lungo ' + Math.round(st.silenzioMax.ms / 86400000) + ' giorni, rotto da ' + st.silenzioMax.rotto + '. '
+        : 'Nessun silenzio di oltre 3 giorni. ') + 'Striscia più lunga: ' + nf.format(st.striscia) + ' giorni di fila.'));
+
+      c = carta('terracotta', 'Affetto, scuse e notte');
+      autori.forEach((a) => riga(c, a.nome, nf.format(a.affetto), 'parole d\'affetto · ' + nf.format(a.scuse) + ' scuse · ' + nf.format(a.notte) + ' di notte'));
+      c.appendChild(el('p', 'nota', 'Affetto: ti amo, te quiero, ti voglio bene e simili. Notte: tra mezzanotte e le 5.'));
+    }
+
     if (st.chiamate > 0) {
       c = carta('egeo', 'Chiamate');
       c.appendChild(el('p', 'grande', nf.format(st.chiamate) + (st.chiamate === 1 ? ' chiamata' : ' chiamate')));
@@ -277,6 +327,7 @@
   function salva(r) {
     const st = Object.assign({}, r.st);
     if (st.primo) st.primo = { quando: st.primo.quando, autore: st.primo.autore, testo: '', tipo: st.primo.tipo }; // il testo non si conserva
+    st.autori = st.autori.map((a) => Object.assign({}, a, { paroleTop: [] })); // nemmeno le parole più usate
     const lista = leggiArchivio().filter((x) => x.id !== r.id);
     lista.unshift({ id: r.id, etichetta: r.etichetta, salvato: r.salvato, st: st });
     scriviArchivio(lista);
@@ -332,6 +383,62 @@
   ['dragenter', 'dragover'].forEach((n) => porta.addEventListener(n, (e) => { e.preventDefault(); porta.classList.add('sopra'); }));
   ['dragleave', 'drop'].forEach((n) => porta.addEventListener(n, (e) => { e.preventDefault(); porta.classList.remove('sopra'); }));
   porta.addEventListener('drop', (e) => { if (e.dataTransfer.files[0]) ricevi(e.dataTransfer.files[0]); });
+  function avvisa(testo) { $('avviso').textContent = testo; }
+
+  $('perIA').onclick = async () => {
+    if (!aperto) return;
+    const testo = Pizia.riassunto(aperto.st);
+    try { await navigator.clipboard.writeText(testo); avvisa('Copiato. Sono solo numeri, senza nomi e senza messaggi: incollalo nella tua IA.'); }
+    catch (e) { window.prompt('Copia questo testo e incollalo nella tua IA:', testo); }
+  };
+
+  // un'immagine 1080×1350 disegnata qui, da salvare o condividere
+  function disegna(st) {
+    const tela = document.createElement('canvas');
+    tela.width = 1080; tela.height = 1350;
+    const g = tela.getContext('2d');
+    const FONT = '"Arial Rounded MT Bold", ui-rounded, -apple-system, "Segoe UI", sans-serif';
+    function scatola(x, y, w, h, colore) { g.fillStyle = colore; g.beginPath(); g.roundRect(x, y, w, h, 56); g.fill(); }
+    function scrivi(t, x, y, px, colore, allinea, largo) {
+      g.font = '800 ' + px + 'px ' + FONT; g.fillStyle = colore; g.textAlign = allinea || 'left';
+      while (largo && g.measureText(t).width > largo && t.length > 4) t = t.slice(0, -2).trimEnd() + '…';
+      g.fillText(t, x, y);
+    }
+    const a = st.autori[0], b = st.autori[1] || { nome: '', messaggi: 0, rispostaMedianaMs: null };
+    g.fillStyle = '#fafaf6'; g.fillRect(0, 0, 1080, 1350);
+    scrivi('Pizia', 70, 120, 54, '#2b2fa8');
+    scrivi(a.nome, 70, 250, 76, '#10233a', 'left', 940);
+    if (b.nome) scrivi('e ' + b.nome, 70, 340, 76, '#2b2fa8', 'left', 940);
+    const blocchi = [
+      ['#a8f1d6', '#0b3a34', 'Messaggi', nf.format(a.messaggi), nf.format(b.messaggi)],
+      ['#d9c7fd', '#2c1763', 'Di solito risponde in', Pizia.durata(a.rispostaMedianaMs), Pizia.durata(b.rispostaMedianaMs)],
+      ['#ffe9a8', '#4a3500', 'Apre la giornata', nf.format(a.apreGiornata), nf.format(b.apreGiornata || 0)]
+    ];
+    blocchi.forEach((r, i) => {
+      const y = 410 + i * 280;
+      scatola(60, y, 960, 250, r[0]);
+      scrivi(r[2], 110, y + 70, 38, r[1]);
+      scrivi(a.nome, 110, y + 125, 30, r[1], 'left', 420);
+      scrivi(r[3], 110, y + 210, 78, r[1], 'left', 440);
+      if (b.nome) { scrivi(b.nome, 970, y + 125, 30, r[1], 'right', 420); scrivi(r[4], 970, y + 210, 78, r[1], 'right', 440); }
+    });
+    scrivi(nf.format(st.totale) + ' messaggi · striscia di ' + nf.format(st.striscia || 0) + ' giorni', 70, 1290, 34, '#4a5a70', 'left', 940);
+    return tela;
+  }
+  $('immagine').onclick = () => {
+    if (!aperto) return;
+    disegna(aperto.st).toBlob(async (blob) => {
+      const file = new File([blob], 'pizia.png', { type: 'image/png' });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try { await navigator.share({ files: [file] }); return; } catch (e) { if (e && e.name === 'AbortError') return; }
+      }
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob); link.download = 'pizia.png';
+      document.body.appendChild(link); link.click(); link.remove();
+      avvisa('Immagine salvata come pizia.png.');
+    }, 'image/png');
+  };
+
   $('nuova').onclick = tornaACasa;
   $('dimentica').onclick = () => { if (aperto) scriviArchivio(leggiArchivio().filter((x) => x.id !== aperto.id)); tornaACasa(); };
 
