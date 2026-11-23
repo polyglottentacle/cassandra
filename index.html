@@ -125,9 +125,10 @@
   .frase { background: #fff; border-radius: 14px; padding: 8px 12px; font-size: 14px; overflow-wrap: anywhere; white-space: pre-wrap; }
   .frase small { display: block; color: var(--velo); font-size: 11.5px; font-weight: 700; }
   @media (prefers-reduced-motion: reduce) { .eroe svg, .bolla, .trema { animation: none; } }
-  header .marchio { flex: 1; min-width: 0; }
-  .lingue { display: flex; gap: 4px; flex: none; }
-  .lingue button { min-height: 36px; min-width: 40px; padding: 4px 8px; font-size: 12.5px; font-weight: 800; background: #fff; color: var(--velo); border: 1.5px solid var(--bordo); }
+  header { flex-wrap: wrap; }
+  header .marchio { flex: 1 1 150px; min-width: 0; }
+  .lingue { display: flex; gap: 4px; flex: none; margin-left: auto; }
+  .lingue button { min-height: 36px; min-width: 34px; padding: 4px 6px; font-size: 12.5px; font-weight: 800; background: #fff; color: var(--velo); border: 1.5px solid var(--bordo); }
   .lingue button[aria-pressed="true"] { background: var(--accento); color: #fff; border-color: var(--accento); }
   .pagine { position: sticky; top: 0; z-index: 5; display: flex; gap: 6px; padding: 8px 0; margin-bottom: 8px; background: var(--notte); }
   .pagine button { flex: 1; min-height: 44px; padding: 6px 4px; font-size: 14px; font-weight: 800; background: #fff; color: var(--avorio); border: 1.5px solid var(--bordo); }
@@ -181,7 +182,7 @@
       <h1>Cassandra</h1>
       <p data-t>Dice la verità sulle tue chat</p>
     </div>
-    <div class="lingue" id="lingue" role="group" aria-label="Lingua · Language · Taal"></div>
+    <div class="lingue" id="lingue" role="group" aria-label="Lingua · Language · Taal · Idioma"></div>
   </header>
 
   <section id="casa">
@@ -965,9 +966,174 @@
     ["Dimentica questo responso", "Forget this reading", "Vergeet deze uitslag"],
     ["Cassandra · un satellite dell'Olimpo", "Cassandra · a satellite of Olimpo", "Cassandra · een satelliet van Olimpo"]
   ];
-  const en = {}, nl = {};
-  FRASI.forEach(function (f) { en[f[0]] = f[1]; nl[f[0]] = f[2]; });
-  return { en: en, nl: nl };
+  // Lo spagnolo, nello stesso ordine di FRASI (una riga per frase).
+  const SPAGNOLO = [
+    "Te amo", "Apodos cariñosos", "Besos", "Pareja", "Te extraño", "Promesas", "Intimidad", "Celos", "Solo amigos", "Amistad", "Romper", "Disculpas",
+    "Huye ya y manda tu ubicación a un familiar",
+    "Modo avión, respira y llama a una amiga",
+    "Mucho ruido y pocas nueces",
+    "Ni chicha ni limonada: hablad claro",
+    "Aquí hay algo bueno: regadlo",
+    "Esto va en serio",
+    "Es tu alma gemela",
+    "Una amistad que aguanta",
+    "Amigos para toda la vida",
+    "Una familia que está",
+    "Familia de verdad: no la sueltes",
+    "Trabajáis bien juntos",
+    "Un compañero de oro",
+    "Palabras de amor", "Os escribís cada día", "Tono de las palabras", "Buenas señales", "Cosas a vigilar", "Bloqueos", "Silencios largos", "Palabras de ruptura",
+    "{0} escribe mucho más",
+    "{0} de los mensajes son suyos.",
+    "Escribís casi lo mismo",
+    "{0} y {1}: ninguno de los dos habla solo.",
+    "Os respondéis rápido",
+    "{0} suele responder en {1} y {2} en {3}.",
+    "{0} hace esperar",
+    "Suele responder en {0}, frente a {1} de {2}.",
+    "Casi siempre es {0} quien busca",
+    "Abre el día el {0} de las veces.",
+    "{0} vuelve a escribir a menudo sin respuesta",
+    "{0} veces volvió a escribir tras al menos media hora de silencio, frente a {1} de {2}.",
+    "{0} borra muchos mensajes",
+    "{0} mensajes eliminados ({1} de los suyos).",
+    "Casi siempre es {0} quien pide perdón",
+    "{0} mensajes de disculpa, frente a {1}.",
+    "Os lo decís los dos",
+    "{0} {1} veces, {2} {3} veces (te amo, te quiero, ti amo…).",
+    "Solo lo dice {0}",
+    "{0} veces, la otra persona nunca (con estas palabras).",
+    "Has bloqueado este chat {0} vez",
+    "Has bloqueado este chat {0} veces",
+    "El archivo solo registra los bloqueos de quien exporta.",
+    "{0} silencio de más de 3 días",
+    "{0} silencios de más de 3 días",
+    "1 silencio de más de 3 días",
+    "El más largo duró {0} días. Lo rompió {1}.",
+    "Os escribís mucho de noche",
+    "{0} de los mensajes son entre medianoche y las 5.",
+    "{0} días seguidos",
+    "La racha más larga sin saltarse un día.",
+    "Persona {0}",
+    "Aquí abajo solo están los números de un chat de WhatsApp (ningún mensaje, ningún nombre). Yo soy la Persona ___.",
+    "Dime con honestidad y amabilidad: qué va bien, qué vigilarías y tres preguntas que debería hacerme. No inventes hechos que los números no muestran.",
+    "Mensajes totales: {0} en {1} días activos. Racha más larga: {2} días. Llamadas: {3}.",
+    "Índice de equilibrio del esfuerzo: {0} de 100.",
+    "Mensajes por mes (mes: total, palabras bonitas/tensas): {0}.",
+    "{0} mensajes; responde de media en {1} (normalmente {2}); abre el día {3} veces; vuelve a escribir sin respuesta {4} veces; mensajes eliminados {5}; de noche {6}; disculpas {7}; palabras de cariño {8}.",
+    "Señales calculadas:",
+    "En este zip no hay ningún chat (.txt).",
+    "Este zip usa una compresión que no conozco.",
+    "Este zip no se puede leer.",
+    "Aquí dentro no encuentro mensajes de WhatsApp. Hace falta el archivo creado con «Exportar chat».",
+    "No consigo leer este archivo.",
+    "Crush", "Familia", "Trabajo", "Veredicto", "Frases", "Números", "Tiempo",
+    "{0} más",
+    "y",
+    "Cassandra · dice la verdad sobre tus chats",
+    "Qué relación es",
+    "Premium activo en este dispositivo. ¡Gracias!",
+    "No consigo confirmar el pago. Vuelve a abrir el enlace que recibiste después de pagar.",
+    "Has leído {0} frases de {1}.",
+    "Desbloquea todas las frases · {0}",
+    "Se paga una sola vez. El chat se queda en tu dispositivo: quien cobra no recibe ningún mensaje.",
+    "¿Quieres saber nuestro veredicto?",
+    "Feria del martillo con ángel abogado y diablo detective",
+    "MÁQUINA DE LA VERDAD",
+    "Da el martillazo",
+    "Otro martillazo",
+    "Es un juego con reglas fijas, no una sentencia: los números no conocen vuestra vida.",
+    "{0} de 100",
+    "Se parte de {0} (equilibrio).",
+    "La rueda de las palabras",
+    "Rueda de los temas del chat",
+    "Busca una palabra tuya",
+    "Busca una palabra en el chat",
+    "Quién lo escribió",
+    "Todos",
+    "Toca una etiqueta o un trozo para leer las frases. Se quedan en este dispositivo y no se guardan.",
+    "Para leer las frases vuelve a cargar el archivo: Cassandra no guarda los mensajes.",
+    "Mostrar {0} más",
+    "1 frase",
+    "{0} frases",
+    "Las palabras no dicen el contexto: léelas.",
+    "No se encontró ninguna frase.",
+    "Fotos del chat",
+    "{0} fotos",
+    "{0} vídeos · {1} audios. Aquí abajo las últimas fotos: se quedan en tu dispositivo y no se guardan.",
+    "{0} mensajes en {1} días · del {2} al {3}",
+    "Señales", "A vigilar", "Buena señal", "Para saber",
+    "Son cuentas hechas con reglas fijas, no juicios. Los números no saben por qué pasa algo.",
+    "Equilibrio",
+    "Cuánto se reparte el esfuerzo a partes iguales: mensajes, quién abre el día, rapidez de respuesta. No mide el amor.",
+    "Emojis y palabras",
+    "Cariño, disculpas y noche",
+    "palabras de cariño · {0} disculpas · {1} de noche",
+    "Cariño: te amo, te quiero, ti amo, love you, ik hou van je y parecidas. Noche: entre medianoche y las 5.",
+    "Enlaces enviados",
+    "enlaces",
+    "Mensajes",
+    "Tiempo medio de respuesta",
+    "normalmente {0}",
+    "Solo cuenta cuando cambia quien escribe. Los silencios de más de 24 horas quedan fuera. «Normalmente» es el tiempo del medio: una noche de sueño no lo mueve.",
+    "Primer mensaje",
+    "Escribió primero: {0}",
+    "Quién abre el día",
+    "{0}% de los días",
+    "Palabras y fotos",
+    "palabras por mensaje · {0} multimedia",
+    "Día récord: {0} con {1} mensajes.",
+    "Insistencias y silencios",
+    "veces volvió a escribir sin respuesta",
+    "el más largo {0} días, roto por {1}.",
+    "Ningún silencio de más de 3 días.",
+    "Racha más larga: {0} días seguidos.",
+    "Llamadas",
+    "1 llamada",
+    "{0} llamadas",
+    "Hechas, recibidas o perdidas: el archivo no dice quién llamó.",
+    "WhatsApp solo escribe en el archivo los bloqueos hechos por ti. Los de la otra persona no están, así que nadie puede contarlos.",
+    "En el grupo hay {0} personas: aquí ves las {1} que más escriben.",
+    "Horas más activas",
+    "Entre las {0} y las {1}",
+    "Mensajes por hora del día, pico a las {0}",
+    "Mes a mes",
+    "Mensajes por mes",
+    "Tono: el mes más dulce es {0} ({1}% de palabras bonitas), el más tenso {2} ({3}%). Cuenta palabras, no entiende la ironía.",
+    "Vuestra semana",
+    "Mapa de mensajes por día de la semana y hora",
+    "El día en que más os escribís: {0}.",
+    "{0} mensajes · leído el {1}",
+    "Olvidar {0}",
+    "Copiado. Son solo números, sin nombres y sin mensajes: pégalo en tu IA.",
+    "Copia este texto y pégalo en tu IA:",
+    "Suele responder en",
+    "Abre el día",
+    "Veredicto {0}/100 · {1}",
+    "{0} mensajes · racha de {1} días",
+    "Imagen guardada como cassandra.png.",
+    "Dice la verdad sobre tus chats",
+    "El ángel abogado defiende, el diablo detective investiga. Trae el archivo que WhatsApp crea con «Exportar chat» (.zip o .txt).",
+    "Elige el archivo",
+    "Instala Cassandra en el teléfono",
+    "<b>Todo se queda aquí.</b> Las cuentas se hacen en este dispositivo: ningún servidor, ninguna cuenta.",
+    "Cómo exportar un chat de WhatsApp",
+    "Abre el chat y toca el nombre de arriba.",
+    "Baja hasta el final y toca <b>Exportar chat</b>.",
+    "Elige <b>Sin archivos</b>: es más rápido.",
+    "Toca <b>Guardar en Archivos</b> (iPhone) o guarda el archivo en el teléfono (Android).",
+    "Vuelve aquí y toca «Elige el archivo».",
+    "Lecturas guardadas",
+    "Guardar como imagen",
+    "Copiar el resumen para tu IA",
+    "Otro chat",
+    "Olvidar esta lectura",
+    "Cassandra · un satélite del Olimpo"
+  ];
+  const en = {}, nl = {}, es = {};
+  FRASI.forEach(function (f, i) { en[f[0]] = f[1]; nl[f[0]] = f[2]; es[f[0]] = SPAGNOLO[i]; });
+  if (SPAGNOLO.length !== FRASI.length) throw new Error('lingue.js: lo spagnolo ha ' + SPAGNOLO.length + ' righe, le frasi sono ' + FRASI.length);
+  return { en: en, nl: nl, es: es };
 });
 /*LINGUE-FINE*/</script>
 <script>/*APP-INIZIO*/
@@ -982,7 +1148,7 @@
   const CHIAVE = 'pizia.responsi', CHIAVE_LINGUA = 'pizia.lingua', CHIAVE_PREMIUM = 'pizia.premium';
   const ETICHETTE = [K('Coppia'), K('Crush'), K('Famiglia'), K('Amicizia'), K('Lavoro')]; // in memoria restano in italiano
   const PAGINE = [['giudizio', K('Giudizio')], ['frasi', K('Frasi')], ['numeri', K('Numeri')], ['tempo', K('Tempo')]];
-  const LINGUE = { it: 'it-IT', en: 'en-GB', nl: 'nl-NL' };
+  const LINGUE = { it: 'it-IT', en: 'en-GB', nl: 'nl-NL', es: 'es-ES' };
   const MAX_NOMI = 6;
   // Premium: spento finché «link» è vuoto. link = Payment Link di Stripe; verifica = indirizzo del servizio che conferma il pagamento.
   const PREMIUM = { link: '', verifica: '', prezzo: '2,99 €', gratis: 3 };
@@ -1059,7 +1225,7 @@
   Object.keys(LINGUE).forEach((l) => {
     const b = el('button', null, l.toUpperCase());
     b.type = 'button'; b.dataset.lingua = l;
-    b.setAttribute('aria-label', { it: 'Italiano', en: 'English', nl: 'Nederlands' }[l]);
+    b.setAttribute('aria-label', { it: 'Italiano', en: 'English', nl: 'Nederlands', es: 'Español' }[l]);
     b.onclick = () => cambiaLingua(l);
     $('lingue').appendChild(b);
   });
@@ -1099,7 +1265,7 @@
     s += '<g id="macchina"><path d="M98 312L54 290v62l44-14z" fill="#ffd23f" stroke="#10233a" stroke-width="3" stroke-linejoin="round"/>' +
       '<rect x="96" y="300" width="150" height="64" rx="16" fill="#10233a" stroke="#fff" stroke-width="3"/>' +
       '<circle cx="120" cy="322" r="6" fill="#ff5d8f"/><circle cx="140" cy="322" r="6" fill="#ffd23f"/><circle cx="160" cy="322" r="6" fill="#22c9a5"/>' +
-      '<text id="targa" x="171" y="350" text-anchor="middle" font-size="14" font-weight="800" fill="#fff" font-family="inherit"></text></g>';
+      '<text id="targa" x="171" y="350" text-anchor="middle" font-size="12" font-weight="800" fill="#fff" font-family="inherit"></text></g>';
     s += '<rect x="250" y="352" width="60" height="12" rx="6" fill="#e23b4e" stroke="#10233a" stroke-width="3"/>';
     s += '<use href="#angelo" x="0" y="196" width="78" height="94"/><use href="#diavolo" x="262" y="196" width="78" height="94"/>';
     s += '<g id="martello" style="transform-origin:272px 262px"><path d="M272 262V186" stroke="#7d5733" stroke-width="9" stroke-linecap="round"/>' +
