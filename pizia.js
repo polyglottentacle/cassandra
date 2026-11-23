@@ -8,7 +8,17 @@
 })(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  const DATA = '(\\d{1,4})[\\/.\\-](\\d{1,2})[\\/.\\-](\\d{1,4})';
+  // Lingue: l'italiano è la chiave. lingua(dizionario) cambia le frasi che escono; lingua(null) torna all'italiano.
+  let DIZ = null;
+  function lingua(dizionario) { DIZ = dizionario || null; }
+  function T(it) {
+    let s = (DIZ && DIZ[it]) || it;
+    for (let i = 1; i < arguments.length; i++) s = s.split('{' + (i - 1) + '}').join(String(arguments[i]));
+    return s;
+  }
+  function K(it) { return it; } // segna una frase che verrà tradotta più tardi
+
+  const DATA ='(\\d{1,4})[\\/.\\-](\\d{1,2})[\\/.\\-](\\d{1,4})';
   const ORA = '(\\d{1,2})[:.](\\d{2})(?:[:.](\\d{2}))?(?:\\s*([AaPp])\\.?\\s?[Mm]\\.?)?';
   // iOS:     [23/11/26, 07:23:10] Nome: testo
   // Android: 23/11/26, 07:23 - Nome: testo
@@ -21,12 +31,12 @@
   const RE_BLOCCO = /bloccato quest[oa] (contatto|persona)|blocked this (contact|person)|dit contact geblokkeerd/i;
   const RE_CHIAMATA = /chiamata|\bcall\b|oproep/i;
   // avvisi che WhatsApp scrive a nome di qualcuno ma che non sono messaggi
-  const RE_AVVISO = /crittograf|end-to-end|encrypt|chiamata|\bcall\b|oproep|bloccato|blocked|codice di sicurezza|security code|effimer|disappearing|ha aggiunto|ha abbandonato|ha creato/i;
+  const RE_AVVISO = /crittograf|end-to-end|encrypt|versleuteld|chiamata|\bcall\b|oproep|bloccato|blocked|geblokkeerd|codice di sicurezza|security code|beveiligingscode|effimer|disappearing|verdwijnende|ha aggiunto|ha abbandonato|ha creato|toegevoegd|verlaten|\badded\b|\bleft\b/i;
   const RE_SBLOCCO = /sbloccato|unblocked|gedeblokkeerd/i;
   const GIORNO_MS = 24 * 60 * 60 * 1000;
   const MEZZORA_MS = 30 * 60 * 1000;
-  const RE_SCUSE = /(^|[^a-zà-ÿ])(scusa|scusami|perdonami|mi dispiace|perd[oó]n|perd[oó]name|lo siento|disculpa|sorry|sry)(?![a-zà-ÿ])/;
-  const RE_AFFETTO = /(^|[^a-zà-ÿ])(ti amo|ti voglio bene|tvb|te amo|te quiero|tqm|love you|ik hou van je)(?![a-zà-ÿ])/;
+  const RE_SCUSE = /(^|[^a-zà-ÿ])(scusa|scusami|perdonami|mi dispiace|perd[oó]n|perd[oó]name|lo siento|disculpa|sorry|sry|forgive me|het spijt me|spijt me|vergeef me|excuses)(?![a-zà-ÿ])/;
+  const RE_AFFETTO = /(^|[^a-zà-ÿ])(ti amo|ti voglio bene|tvb|te amo|te quiero|tqm|love you|ik hou van je|ik hou van jou|hou van je|hou van jou)(?![a-zà-ÿ])/;
   const RE_EMOJI = /\p{Extended_Pictographic}/gu;
   const RE_PAROLA = /[a-zà-ÿ]{4,}/g;
   const RE_RISATA = /^(?:[jh]+[aeiou]+)+[jh]*$/;
@@ -37,26 +47,26 @@
     'voor niet maar deze heeft naar over door mijn jouw waar wanneer').split(' '));
 
   // Lessico corto e dichiarato per il tono: conta le parole, non capisce l'ironia.
-  const RE_BELLO = /(^|[^a-zà-ÿ])(grazie|amore|bello|bella|bellissim[oa]|brav[oa]|felice|contento|contenta|mi manchi|ti amo|ti voglio bene|tesoro|perfetto|fantastico|stupendo|adoro|gracias|te quiero|te amo|hermos[oa]|lind[oa]|feliz|love|thanks|great|happy|miss you|dank je|lief|mooi|❤️|😍|🥰|😘|😊)(?![a-zà-ÿ])/;
-  const RE_BRUTTO = /(^|[^a-zà-ÿ])(basta|stanc[oa]|odio|schifo|bugiard[oa]|stronz[oa]|vaffanculo|fanculo|lasciami|non mi scrivere|arrabbiat[oa]|delus[oa]|triste|piango|litigare|colpa tua|mentiros[oa]|mentira|te odio|d[eé]jame|harta|harto|enojad[oa]|hate|liar|leave me|angry|sad|moe van|haat|😡|🤬|😭|💔|😤)(?![a-zà-ÿ])/;
+  const RE_BELLO = /(^|[^a-zà-ÿ])(grazie|amore|bello|bella|bellissim[oa]|brav[oa]|felice|contento|contenta|mi manchi|ti amo|ti voglio bene|tesoro|perfetto|fantastico|stupendo|adoro|gracias|te quiero|te amo|hermos[oa]|lind[oa]|feliz|love|thanks|thank you|great|happy|beautiful|wonderful|miss you|dank je|dankjewel|bedankt|lief|mooi|prachtig|geweldig|blij|gelukkig|mis je|❤️|😍|🥰|😘|😊)(?![a-zà-ÿ])/;
+  const RE_BRUTTO = /(^|[^a-zà-ÿ])(basta|stanc[oa]|odio|schifo|bugiard[oa]|stronz[oa]|vaffanculo|fanculo|lasciami|non mi scrivere|arrabbiat[oa]|delus[oa]|triste|piango|litigare|colpa tua|mentiros[oa]|mentira|te odio|d[eé]jame|harta|harto|enojad[oa]|hate|liar|leave me|angry|sad|shut up|moe van|haat|boos|verdrietig|leugenaar|laat me met rust|hou je mond|😡|🤬|😭|💔|😤)(?![a-zà-ÿ])/;
   const RE_LINK = /https?:\/\/([^\s\/]+)/g;
 
-  // Temi (i «tag»): liste corte e dichiarate di parole in italiano, spagnolo e inglese.
+  // Temi (i «tag»): liste corte e dichiarate di parole in italiano, spagnolo, inglese e olandese.
   // Contano le parole, non capiscono il contesto: «amici» può parlare di altre persone.
   function parole(lista) { return new RegExp('(^|[^a-zà-ÿ])(' + lista + ')(?![a-zà-ÿ])'); }
   const TEMI = [
-    { id: 'amore', nome: 'Ti amo', colore: '#ff5d8f', re: parole('ti amo|te amo|i love you|love you|ik hou van je|ti voglio bene|tvb|te quiero|tqm') },
-    { id: 'nomignoli', nome: 'Nomignoli', colore: '#ffb23f', re: parole('amore|amor|mi vida|vita mia|cariño|tesoro|bebé|bebe|baby|cucciol[oa]|princes[as]|principessa') },
-    { id: 'baci', nome: 'Baci', colore: '#ff7b54', re: /(^|[^a-zà-ÿ])(baci[oa]?|bacion[ei]|bes[oa]s?|besit[oa]s?|kiss(es)?)(?![a-zà-ÿ])|😘|💋/ },
-    { id: 'coppia', nome: 'Coppia', colore: '#8f5bff', re: parole('fidanzat[oaie]|mio ragazzo|mia ragazza|novi[oa]|pareja|relazione|relaci[oó]n|stiamo insieme|estamos juntos|la mia donna|il mio uomo|mi mujer|mi hombre|moglie|marito|espos[oa]|boyfriend|girlfriend') },
-    { id: 'manchi', nome: 'Mi manchi', colore: '#3fb6ff', re: parole('mi manchi|te extraño|te extrano|te echo de menos|i miss you|miss you') },
-    { id: 'promesse', nome: 'Promesse', colore: '#22c9a5', re: parole('ti prometto|te prometo|prometto|te lo juro|te lo giuro|lo giuro|i promise|per sempre|para siempre|forever') },
-    { id: 'intimita', nome: 'Intimità', colore: '#e0469b', re: parole('sesso|fare l.amore|hacer el amor|letto insieme|dormire insieme|dormir juntos|nud[oa]|desnud[oa]|sexy') },
-    { id: 'gelosia', nome: 'Gelosia', colore: '#9acd32', re: parole('gelos[oaie]|gelosia|celos[oa]?|celos|jealous') },
-    { id: 'soloamici', nome: 'Solo amici', colore: '#5c6b82', re: parole('solo amic[oi]|solo amig[oa]s|siamo amici|somos amigos|just friends|come amic[oi]|como amig[oa]s|restiamo amici|quedamos como amigos') },
-    { id: 'amici', nome: 'Amicizia', colore: '#2f80ed', re: parole('amic[oaie]|amig[oa]s?|amicizia|amistad|friends?') },
-    { id: 'rottura', nome: 'Lasciarsi', colore: '#e23b4e', re: parole('lasciamoci|ci lasciamo|ti lascio|terminamos|se acab[oó]|[eè] finita|abbiamo chiuso|non mi scrivere pi[uù]|no me escribas|addio') },
-    { id: 'scuse', nome: 'Scuse', colore: '#f2c94c', re: RE_SCUSE }
+    { id: 'amore', nome: K('Ti amo'), colore: '#ff5d8f', re: parole('ti amo|te amo|i love you|love you|ik hou van je|ik hou van jou|hou van je|hou van jou|ti voglio bene|tvb|te quiero|tqm') },
+    { id: 'nomignoli', nome: K('Nomignoli'), colore: '#ffb23f', re: parole('amore|amor|mi vida|vita mia|cariño|tesoro|bebé|bebe|baby|babe|honey|sweetheart|darling|schat|schatje|liefje|lieverd|cucciol[oa]|princes[as]|principessa') },
+    { id: 'baci', nome: K('Baci'), colore: '#ff7b54', re: /(^|[^a-zà-ÿ])(baci[oa]?|bacion[ei]|bes[oa]s?|besit[oa]s?|kiss(es)?|kus(je|jes)?)(?![a-zà-ÿ])|😘|💋/ },
+    { id: 'coppia', nome: K('Coppia'), colore: '#8f5bff', re: parole('fidanzat[oaie]|mio ragazzo|mia ragazza|novi[oa]|pareja|relazione|relaci[oó]n|stiamo insieme|estamos juntos|la mia donna|il mio uomo|mi mujer|mi hombre|moglie|marito|espos[oa]|boyfriend|girlfriend|relationship|husband|wife|verkering|relatie|mijn man|mijn vrouw') },
+    { id: 'manchi', nome: K('Mi manchi'), colore: '#3fb6ff', re: parole('mi manchi|te extraño|te extrano|te echo de menos|i miss you|miss you|ik mis je|mis je|mis jou') },
+    { id: 'promesse', nome: K('Promesse'), colore: '#22c9a5', re: parole('ti prometto|te prometo|prometto|te lo juro|te lo giuro|lo giuro|i promise|i swear|per sempre|para siempre|forever|ik beloof|beloofd|voor altijd') },
+    { id: 'intimita', nome: K('Intimità'), colore: '#e0469b', re: parole('sesso|fare l.amore|hacer el amor|letto insieme|dormire insieme|dormir juntos|nud[oa]|desnud[oa]|sexy|naked|naakt|seks') },
+    { id: 'gelosia', nome: K('Gelosia'), colore: '#9acd32', re: parole('gelos[oaie]|gelosia|celos[oa]?|celos|jealous|jealousy|jaloers') },
+    { id: 'soloamici', nome: K('Solo amici'), colore: '#5c6b82', re: parole('solo amic[oi]|solo amig[oa]s|siamo amici|somos amigos|just friends|only friends|come amic[oi]|como amig[oa]s|restiamo amici|quedamos como amigos|gewoon vrienden|alleen vrienden') },
+    { id: 'amici', nome: K('Amicizia'), colore: '#2f80ed', re: parole('amic[oaie]|amig[oa]s?|amicizia|amistad|friends?|friendship|vriend|vrienden|vriendin|vriendinnen|vriendschap') },
+    { id: 'rottura', nome: K('Lasciarsi'), colore: '#e23b4e', re: parole('lasciamoci|ci lasciamo|ti lascio|terminamos|se acab[oó]|[eè] finita|abbiamo chiuso|non mi scrivere pi[uù]|no me escribas|addio|break up|breaking up|it.s over|we.re done|het is uit|het is voorbij|ik maak het uit') },
+    { id: 'scuse', nome: K('Scuse'), colore: '#f2c94c', re: RE_SCUSE }
   ];
 
   /** Le frasi di un tema o con una parola scelta. Lavora sui messaggi in memoria: niente esce dal dispositivo. */
@@ -81,38 +91,38 @@
 
   // Il giudizio della giostra: un gioco con formula dichiarata, non una sentenza.
   const GRADINI = [
-    'Scappa subito e manda la posizione a un familiare',
-    'Modalità aereo, respira e chiama un\'amica',
-    'Più fumo che arrosto',
-    'Né carne né pesce: parlatevi chiaro',
-    'C\'è del buono: annaffiatelo',
-    'Qui c\'è una cosa seria',
-    'È la tua anima gemella'
+    K('Scappa subito e manda la posizione a un familiare'),
+    K('Modalità aereo, respira e chiama un\'amica'),
+    K('Più fumo che arrosto'),
+    K('Né carne né pesce: parlatevi chiaro'),
+    K('C\'è del buono: annaffiatelo'),
+    K('Qui c\'è una cosa seria'),
+    K('È la tua anima gemella')
   ];
-  const CIMA = { Amicizia: ['Un\'amicizia che tiene', 'Amici per la vita'], Famiglia: ['Una famiglia che c\'è', 'Famiglia vera, tienitela stretta'], Lavoro: ['Si lavora bene insieme', 'Collega d\'oro'] };
+  const CIMA = { Amicizia: [K('Un\'amicizia che tiene'), K('Amici per la vita')], Famiglia: [K('Una famiglia che c\'è'), K('Famiglia vera, tienitela stretta')], Lavoro: [K('Si lavora bene insieme'), K('Collega d\'oro')] };
   function verdetto(st, etichetta) {
     const voci = [];
-    function voce(nome, punti) { punti = Math.round(punti); if (punti) voci.push({ nome: nome, punti: punti }); return punti; }
+    function voce(nome, punti) { punti = Math.round(punti); if (punti) voci.push({ nome: T(nome), punti: punti }); return punti; }
     const base = Math.round(50 + ((st.equilibrio == null ? 50 : st.equilibrio) - 50) * 0.5);
     let p = base;
     const tema = function (id) { const t = (st.temi || []).find(function (x) { return x.id === id; }); return t ? t.totale : 0; };
     const perMille = function (n) { return st.totale ? n / st.totale * 1000 : 0; };
-    p += voce('Parole d\'amore', Math.min(12, perMille(tema('amore')) * 2));
-    if (st.striscia >= 30) p += voce('Vi scrivete ogni giorno', 6);
+    p += voce(K('Parole d\'amore'), Math.min(12, perMille(tema('amore')) * 2));
+    if (st.striscia >= 30) p += voce(K('Vi scrivete ogni giorno'), 6);
     const belli = (st.mesi || []).reduce(function (a, m) { return a + m.belli; }, 0);
     const brutti = (st.mesi || []).reduce(function (a, m) { return a + m.brutti; }, 0);
-    if (belli + brutti >= 20) p += voce('Tono delle parole', (belli / (belli + brutti) - 0.5) * 30);
+    if (belli + brutti >= 20) p += voce(K('Tono delle parole'), (belli / (belli + brutti) - 0.5) * 30);
     const ss = segnali(st);
-    p += voce('Buoni segni', 3 * ss.filter(function (s) { return s.tono === 'buono'; }).length);
-    p += voce('Cose da guardare', -6 * ss.filter(function (s) { return s.tono === 'attenzione'; }).length);
-    p += voce('Blocchi', -Math.min(15, 2 * (st.blocchiTuoi || 0)));
-    p += voce('Silenzi lunghi', -Math.min(10, 3 * (st.silenzi || 0)));
-    p += voce('Parole di rottura', -Math.min(10, perMille(tema('rottura')) * 3));
+    p += voce(K('Buoni segni'), 3 * ss.filter(function (s) { return s.tono === 'buono'; }).length);
+    p += voce(K('Cose da guardare'), -6 * ss.filter(function (s) { return s.tono === 'attenzione'; }).length);
+    p += voce(K('Blocchi'), -Math.min(15, 2 * (st.blocchiTuoi || 0)));
+    p += voce(K('Silenzi lunghi'), -Math.min(10, 3 * (st.silenzi || 0)));
+    p += voce(K('Parole di rottura'), -Math.min(10, perMille(tema('rottura')) * 3));
     p = Math.max(0, Math.min(100, Math.round(p)));
     const gradino = Math.min(6, Math.floor(p / 15));
     let titolo = GRADINI[gradino];
     if (CIMA[etichetta] && gradino >= 5) titolo = CIMA[etichetta][gradino - 5];
-    return { punti: p, gradino: gradino, titolo: titolo, base: base, voci: voci };
+    return { punti: p, gradino: gradino, titolo: T(titolo), base: base, voci: voci };
   }
 
   function classifica(resto) {
@@ -356,40 +366,40 @@
     function metti(tono, titolo, testo) { out.push({ tono: tono, titolo: titolo, testo: testo }); }
 
     const quota = a.messaggi / st.totale;
-    if (quota > 0.6) metti('attenzione', a.nome + ' scrive molto di più', perc(quota) + ' dei messaggi sono suoi.');
-    else if (quota <= 0.55) metti('buono', 'Scrivete quasi uguale', perc(quota) + ' e ' + perc(1 - quota) + ': nessuno dei due parla da solo.');
+    if (quota > 0.6) metti('attenzione', T('{0} scrive molto di più', a.nome), T('{0} dei messaggi sono suoi.', perc(quota)));
+    else if (quota <= 0.55) metti('buono', T('Scrivete quasi uguale'), T('{0} e {1}: nessuno dei due parla da solo.', perc(quota), perc(1 - quota)));
 
     if (a.rispostaMedianaMs != null && b.rispostaMedianaMs != null) {
       const lento = a.rispostaMedianaMs >= b.rispostaMedianaMs ? a : b;
       const svelto = lento === a ? b : a;
-      if (lento.rispostaMedianaMs <= 5 * 60000) metti('buono', 'Vi rispondete in fretta', 'Di solito ' + svelto.nome + ' risponde in ' + durata(svelto.rispostaMedianaMs) + ' e ' + lento.nome + ' in ' + durata(lento.rispostaMedianaMs) + '.');
-      else if (lento.rispostaMedianaMs >= MEZZORA_MS && lento.rispostaMedianaMs >= 5 * svelto.rispostaMedianaMs) metti('attenzione', lento.nome + ' fa aspettare', 'Di solito risponde in ' + durata(lento.rispostaMedianaMs) + ', contro ' + durata(svelto.rispostaMedianaMs) + ' di ' + svelto.nome + '.');
+      if (lento.rispostaMedianaMs <= 5 * 60000) metti('buono', T('Vi rispondete in fretta'), T('Di solito {0} risponde in {1} e {2} in {3}.', svelto.nome, durata(svelto.rispostaMedianaMs), lento.nome, durata(lento.rispostaMedianaMs)));
+      else if (lento.rispostaMedianaMs >= MEZZORA_MS && lento.rispostaMedianaMs >= 5 * svelto.rispostaMedianaMs) metti('attenzione', T('{0} fa aspettare', lento.nome), T('Di solito risponde in {0}, contro {1} di {2}.', durata(lento.rispostaMedianaMs), durata(svelto.rispostaMedianaMs), svelto.nome));
     }
 
     const apre = a.apreGiornata >= b.apreGiornata ? a : b;
     const quotaApre = apre.apreGiornata / Math.max(1, st.giorniAttivi);
-    if (quotaApre > 0.7) metti('attenzione', 'È quasi sempre ' + apre.nome + ' a cercare', 'Apre la giornata ' + perc(quotaApre) + ' delle volte.');
+    if (quotaApre > 0.7) metti('attenzione', T('È quasi sempre {0} a cercare', apre.nome), T('Apre la giornata {0} delle volte.', perc(quotaApre)));
 
     if (a.insistenze != null) {
       const insiste = a.insistenze >= b.insistenze ? a : b;
       const altro = insiste === a ? b : a;
-      if (insiste.insistenze >= 20 && insiste.insistenze >= 2 * altro.insistenze) metti('attenzione', insiste.nome + ' riscrive spesso senza risposta', insiste.insistenze + ' volte ha riscritto dopo almeno mezz\'ora di silenzio, contro ' + altro.insistenze + ' di ' + altro.nome + '.');
+      if (insiste.insistenze >= 20 && insiste.insistenze >= 2 * altro.insistenze) metti('attenzione', T('{0} riscrive spesso senza risposta', insiste.nome), T('{0} volte ha riscritto dopo almeno mezz\'ora di silenzio, contro {1} di {2}.', insiste.insistenze, altro.insistenze, altro.nome));
 
       [a, b].forEach(function (x) {
-        if (x.eliminati >= 20 && x.eliminati / x.messaggi > 0.03) metti('nota', x.nome + ' cancella molti messaggi', x.eliminati + ' messaggi eliminati (' + perc(x.eliminati / x.messaggi) + ' dei suoi).');
+        if (x.eliminati >= 20 && x.eliminati / x.messaggi > 0.03) metti('nota', T('{0} cancella molti messaggi', x.nome), T('{0} messaggi eliminati ({1} dei suoi).', x.eliminati, perc(x.eliminati / x.messaggi)));
       });
 
       const chiede = a.scuse >= b.scuse ? a : b;
       const altroScuse = chiede === a ? b : a;
-      if (chiede.scuse >= 10 && chiede.scuse >= 3 * altroScuse.scuse) metti('nota', 'È quasi sempre ' + chiede.nome + ' a chiedere scusa', chiede.scuse + ' messaggi di scuse, contro ' + altroScuse.scuse + '.');
-      if (a.affetto > 0 && b.affetto > 0) metti('buono', 'Ve lo dite tutti e due', a.nome + ' ' + a.affetto + ' volte, ' + b.nome + ' ' + b.affetto + ' volte (ti amo, te quiero, ti voglio bene…).');
-      else if (a.affetto + b.affetto >= 10) metti('nota', 'Lo dice solo ' + (a.affetto ? a.nome : b.nome), (a.affetto || b.affetto) + ' volte, l\'altra persona mai (con queste parole).');
+      if (chiede.scuse >= 10 && chiede.scuse >= 3 * altroScuse.scuse) metti('nota', T('È quasi sempre {0} a chiedere scusa', chiede.nome), T('{0} messaggi di scuse, contro {1}.', chiede.scuse, altroScuse.scuse));
+      if (a.affetto > 0 && b.affetto > 0) metti('buono', T('Ve lo dite tutti e due'), T('{0} {1} volte, {2} {3} volte (ti amo, te quiero, ti voglio bene…).', a.nome, a.affetto, b.nome, b.affetto));
+      else if (a.affetto + b.affetto >= 10) metti('nota', T('Lo dice solo {0}', a.affetto ? a.nome : b.nome), T('{0} volte, l\'altra persona mai (con queste parole).', a.affetto || b.affetto));
     }
 
-    if (st.blocchiTuoi > 0) metti('attenzione', 'Hai bloccato questa chat ' + st.blocchiTuoi + (st.blocchiTuoi === 1 ? ' volta' : ' volte'), 'Il file segna solo i blocchi fatti da chi esporta.');
-    if (st.silenzioMax) metti('nota', st.silenzi + (st.silenzi === 1 ? ' silenzio' : ' silenzi') + ' di oltre 3 giorni', 'Il più lungo è durato ' + Math.round(st.silenzioMax.ms / GIORNO_MS) + ' giorni. L\'ha rotto ' + st.silenzioMax.rotto + '.');
-    if (st.notte != null && st.notte / st.totale > 0.15) metti('nota', 'Vi scrivete molto di notte', perc(st.notte / st.totale) + ' dei messaggi sono tra mezzanotte e le 5.');
-    if (st.striscia >= 30) metti('buono', st.striscia + ' giorni di fila', 'La striscia più lunga senza saltare un giorno.');
+    if (st.blocchiTuoi > 0) metti('attenzione', st.blocchiTuoi === 1 ? T('Hai bloccato questa chat {0} volta', 1) : T('Hai bloccato questa chat {0} volte', st.blocchiTuoi), T('Il file segna solo i blocchi fatti da chi esporta.'));
+    if (st.silenzioMax) metti('nota', st.silenzi === 1 ? T('{0} silenzio di oltre 3 giorni', 1) : T('{0} silenzi di oltre 3 giorni', st.silenzi), T('Il più lungo è durato {0} giorni. L\'ha rotto {1}.', Math.round(st.silenzioMax.ms / GIORNO_MS), st.silenzioMax.rotto));
+    if (st.notte != null && st.notte / st.totale > 0.15) metti('nota', T('Vi scrivete molto di notte'), T('{0} dei messaggi sono tra mezzanotte e le 5.', perc(st.notte / st.totale)));
+    if (st.striscia >= 30) metti('buono', T('{0} giorni di fila', st.striscia), T('La striscia più lunga senza saltare un giorno.'));
     return out;
   }
 
@@ -397,22 +407,22 @@
   function riassunto(st) {
     const sigle = ['A', 'B', 'C', 'D', 'E', 'F'];
     const sigla = {};
-    st.autori.slice(0, 6).forEach(function (x, i) { sigla[x.nome] = 'Persona ' + sigle[i]; });
+    st.autori.slice(0, 6).forEach(function (x, i) { sigla[x.nome] = T('Persona {0}', sigle[i]); });
     function anonimo(t) { Object.keys(sigla).forEach(function (n) { t = t.split(n).join(sigla[n]); }); return t; }
     const righe = [
-      'Qui sotto ci sono solo i numeri di una chat di WhatsApp (nessun messaggio, nessun nome). Io sono la Persona ___.',
-      'Dimmi con onestà e gentilezza: cosa va bene, cosa terresti d\'occhio, e tre domande che dovrei farmi. Non inventare fatti che i numeri non mostrano.',
+      T('Qui sotto ci sono solo i numeri di una chat di WhatsApp (nessun messaggio, nessun nome). Io sono la Persona ___.'),
+      T('Dimmi con onestà e gentilezza: cosa va bene, cosa terresti d\'occhio, e tre domande che dovrei farmi. Non inventare fatti che i numeri non mostrano.'),
       '',
-      'Messaggi totali: ' + st.totale + ' in ' + st.giorniAttivi + ' giorni attivi. Striscia più lunga: ' + (st.striscia || '?') + ' giorni. Chiamate: ' + (st.chiamate || 0) + '.'
+      T('Messaggi totali: {0} in {1} giorni attivi. Striscia più lunga: {2} giorni. Chiamate: {3}.', st.totale, st.giorniAttivi, st.striscia || '?', st.chiamate || 0)
     ];
-    if (st.equilibrio != null) righe.push('Indice di equilibrio dello sforzo: ' + st.equilibrio + ' su 100.');
-    if (st.mesi && st.mesi.length) righe.push('Messaggi per mese (mese: totale, parole belle/tese): ' + st.mesi.map(function (m) { return m.mese + ': ' + m.totale + ', ' + m.belli + '/' + m.brutti; }).join('; ') + '.');
+    if (st.equilibrio != null) righe.push(T('Indice di equilibrio dello sforzo: {0} su 100.', st.equilibrio));
+    if (st.mesi && st.mesi.length) righe.push(T('Messaggi per mese (mese: totale, parole belle/tese): {0}.', st.mesi.map(function (m) { return m.mese + ': ' + m.totale + ', ' + m.belli + '/' + m.brutti; }).join('; ')));
     st.autori.slice(0, 6).forEach(function (x) {
-      righe.push(sigla[x.nome] + ': ' + x.messaggi + ' messaggi; risponde in media in ' + durata(x.rispostaMediaMs) + ' (di solito ' + durata(x.rispostaMedianaMs) + '); apre la giornata ' + x.apreGiornata + ' volte; riscrive senza risposta ' + (x.insistenze || 0) + ' volte; messaggi eliminati ' + x.eliminati + '; di notte ' + (x.notte || 0) + '; scuse ' + (x.scuse || 0) + '; parole d\'affetto ' + (x.affetto || 0) + '.');
+      righe.push(sigla[x.nome] + ': ' + T('{0} messaggi; risponde in media in {1} (di solito {2}); apre la giornata {3} volte; riscrive senza risposta {4} volte; messaggi eliminati {5}; di notte {6}; scuse {7}; parole d\'affetto {8}.', x.messaggi, durata(x.rispostaMediaMs), durata(x.rispostaMedianaMs), x.apreGiornata, x.insistenze || 0, x.eliminati, x.notte || 0, x.scuse || 0, x.affetto || 0));
     });
     const ss = segnali(st);
     if (ss.length) {
-      righe.push('', 'Segnali calcolati:');
+      righe.push('', T('Segnali calcolati:'));
       ss.forEach(function (s) { righe.push('- ' + anonimo(s.titolo) + '. ' + anonimo(s.testo)); });
     }
     return righe.join('\n');
@@ -425,7 +435,7 @@
     const voci = await vociZip(blob);
     const voce = voci.find(function (v) { return /_chat\.txt$/i.test(v.nome); }) ||
                  voci.find(function (v) { return /\.txt$/i.test(v.nome); });
-    if (!voce) throw new Error('Nello zip non c\'è nessuna chat (.txt).');
+    if (!voce) throw new Error(T('Nello zip non c\'è nessuna chat (.txt).'));
     return estraiVoce(blob, voce);
   }
 
@@ -455,7 +465,7 @@
     const inizio = voce.posizione + 30 + testa.getUint16(26, true) + testa.getUint16(28, true);
     const dati = blob.slice(inizio, inizio + voce.compresso);
     if (voce.metodo === 0) return new Uint8Array(await dati.arrayBuffer());
-    if (voce.metodo !== 8) throw new Error('Questo zip usa una compressione che non conosco.');
+    if (voce.metodo !== 8) throw new Error(T('Questo zip usa una compressione che non conosco.'));
     const flusso = dati.stream().pipeThrough(new DecompressionStream('deflate-raw'));
     return new Uint8Array(await new Response(flusso).arrayBuffer());
   }
@@ -467,7 +477,7 @@
     for (let i = fine.byteLength - 22; i >= 0; i--) {
       if (fine.getUint32(i, true) === 0x06054b50) { p = i; break; }
     }
-    if (p < 0) throw new Error('Questo zip non si riesce a leggere.');
+    if (p < 0) throw new Error(T('Questo zip non si riesce a leggere.'));
     const dimIndice = fine.getUint32(p + 12, true);
     const posIndice = fine.getUint32(p + 16, true);
     const indice = new DataView(await blob.slice(posIndice, posIndice + dimIndice).arrayBuffer());
@@ -504,5 +514,5 @@
     return h + ' h' + (min % 60 ? ' ' + (min % 60) + ' min' : '');
   }
 
-  return { cerca: cerca, verdetto: verdetto, segnali: segnali, riassunto: riassunto, leggi: leggi, statistiche: statistiche, analizza: analizza, testoDaFile: testoDaFile, txtDaZip: txtDaZip, mediaDaZip: mediaDaZip, durata: durata };
+  return { t: T, lingua: lingua, cerca: cerca, verdetto: verdetto, segnali: segnali, riassunto: riassunto, leggi: leggi, statistiche: statistiche, analizza: analizza, testoDaFile: testoDaFile, txtDaZip: txtDaZip, mediaDaZip: mediaDaZip, durata: durata };
 });

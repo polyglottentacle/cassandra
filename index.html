@@ -125,6 +125,16 @@
   .frase { background: #fff; border-radius: 14px; padding: 8px 12px; font-size: 14px; overflow-wrap: anywhere; white-space: pre-wrap; }
   .frase small { display: block; color: var(--velo); font-size: 11.5px; font-weight: 700; }
   @media (prefers-reduced-motion: reduce) { .eroe svg, .bolla, .trema { animation: none; } }
+  header .marchio { flex: 1; min-width: 0; }
+  .lingue { display: flex; gap: 4px; flex: none; }
+  .lingue button { min-height: 36px; min-width: 40px; padding: 4px 8px; font-size: 12.5px; font-weight: 800; background: #fff; color: var(--velo); border: 1.5px solid var(--bordo); }
+  .lingue button[aria-pressed="true"] { background: var(--accento); color: #fff; border-color: var(--accento); }
+  .pagine { position: sticky; top: 0; z-index: 5; display: flex; gap: 6px; padding: 8px 0; margin-bottom: 8px; background: var(--notte); }
+  .pagine button { flex: 1; min-height: 44px; padding: 6px 4px; font-size: 14px; font-weight: 800; background: #fff; color: var(--avorio); border: 1.5px solid var(--bordo); }
+  .pagine button[aria-selected="true"] { background: var(--accento); color: #fff; border-color: var(--accento); }
+  .premium { background: var(--oro); border-radius: 18px; padding: 14px; display: flex; flex-direction: column; gap: 8px; text-align: center; }
+  .premium .bottone { text-decoration: none; }
+  .premium .perche { font-size: 12.5px; color: var(--velo); }
   .galleria{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}
   .galleria img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px}
   .mappa{display:grid;grid-template-columns:2.4em repeat(24,1fr);gap:2px;align-items:center;margin-top:10px}
@@ -167,36 +177,38 @@
   </svg>
   <header>
     <span class="coppia" aria-hidden="true"><svg><use href="#angelo"/></svg><svg><use href="#diavolo"/></svg></span>
-    <div>
+    <div class="marchio">
       <h1>Pizia</h1>
-      <p>L'oracolo delle tue chat</p>
+      <p data-t>L'oracolo delle tue chat</p>
     </div>
+    <div class="lingue" id="lingue" role="group" aria-label="Lingua · Language · Taal"></div>
   </header>
 
   <section id="casa">
     <div class="porta" id="porta">
       <div class="eroe" aria-hidden="true"><svg><use href="#angelo"/></svg><svg><use href="#diavolo"/></svg></div>
-      <h2>Vuoi sapere il nostro giudizio?</h2>
-      <p>L'angelo avvocato difende, il diavolo detective indaga. Porta il file che WhatsApp crea con «Esporta chat» (.zip o .txt).</p>
-      <label class="bottone">Scegli il file
+      <h2 data-t>Vuoi sapere il nostro giudizio?</h2>
+      <p data-t>L'angelo avvocato difende, il diavolo detective indaga. Porta il file che WhatsApp crea con «Esporta chat» (.zip o .txt).</p>
+      <label class="bottone"><span data-t>Scegli il file</span>
         <input type="file" id="file" accept=".txt,.zip,text/plain,application/zip" style="position:absolute;opacity:0;width:1px;height:1px">
       </label>
     </div>
     <div class="errore" id="errore" role="alert" hidden></div>
-    <div class="azioni" id="rigaInstalla" hidden style="margin-top:14px"><button class="piano" id="installa" type="button">Installa Pizia sul telefono</button></div>
-    <p class="patto"><span><b>Resta tutto qui.</b> I conti si fanno su questo dispositivo: nessun server, nessun account, niente da sbloccare.</span></p>
+    <p class="periodo" id="avvisoCasa" role="status" style="margin-top:10px"></p>
+    <div class="azioni" id="rigaInstalla" hidden style="margin-top:14px"><button class="piano" id="installa" type="button" data-t>Installa Pizia sul telefono</button></div>
+    <p class="patto"><span data-t><b>Resta tutto qui.</b> I conti si fanno su questo dispositivo: nessun server, nessun account.</span></p>
     <details>
-      <summary>Come si esporta una chat da WhatsApp</summary>
+      <summary data-t>Come si esporta una chat da WhatsApp</summary>
       <ol>
-        <li>Apri la chat e tocca il nome in alto.</li>
-        <li>Scorri fino in fondo e tocca <b>Esporta chat</b>.</li>
-        <li>Scegli <b>Senza media</b>: è più veloce.</li>
-        <li>Tocca <b>Salva su File</b> (iPhone) o salva il file sul telefono (Android).</li>
-        <li>Torna qui e tocca «Scegli il file».</li>
+        <li data-t>Apri la chat e tocca il nome in alto.</li>
+        <li data-t>Scorri fino in fondo e tocca <b>Esporta chat</b>.</li>
+        <li data-t>Scegli <b>Senza media</b>: è più veloce.</li>
+        <li data-t>Tocca <b>Salva su File</b> (iPhone) o salva il file sul telefono (Android).</li>
+        <li data-t>Torna qui e tocca «Scegli il file».</li>
       </ol>
     </details>
     <div id="archivio" hidden>
-      <h3 class="sezione">Responsi salvati</h3>
+      <h3 class="sezione" data-t>Responsi salvati</h3>
       <div id="lista"></div>
     </div>
   </section>
@@ -204,20 +216,21 @@
   <section id="responso" hidden>
     <h2 class="titolo" id="titolo"></h2>
     <p class="periodo" id="periodo"></p>
-    <div class="etichette" id="etichette" role="group" aria-label="Che rapporto è"></div>
+    <div class="etichette" id="etichette" role="group"></div>
+    <nav class="pagine" id="pagine" role="tablist"></nav>
     <div id="carte"></div>
     <div class="azioni">
-      <button class="bottone" id="immagine">Salva come immagine</button>
-      <button class="piano" id="perIA">Copia il riassunto per la tua IA</button>
+      <button class="bottone" id="immagine" data-t>Salva come immagine</button>
+      <button class="piano" id="perIA" data-t>Copia il riassunto per la tua IA</button>
     </div>
     <p class="periodo" id="avviso" role="status" style="margin-top:10px"></p>
     <div class="azioni">
-      <button class="bottone" id="nuova">Un'altra chat</button>
-      <button class="piano" id="dimentica">Dimentica questo responso</button>
+      <button class="bottone" id="nuova" data-t>Un'altra chat</button>
+      <button class="piano" id="dimentica" data-t>Dimentica questo responso</button>
     </div>
   </section>
 
-  <footer>Pizia · un satellite dell'Olimpo · gratis · <a href="privacy.html" style="color:inherit;font-weight:700">Privacy</a></footer>
+  <footer><span data-t>Pizia · un satellite dell'Olimpo</span> · <a href="privacy.html" style="color:inherit;font-weight:700">Privacy</a></footer>
 </main>
 
 <script>/*MOTORE-INIZIO*/
@@ -231,7 +244,17 @@
 })(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  const DATA = '(\\d{1,4})[\\/.\\-](\\d{1,2})[\\/.\\-](\\d{1,4})';
+  // Lingue: l'italiano è la chiave. lingua(dizionario) cambia le frasi che escono; lingua(null) torna all'italiano.
+  let DIZ = null;
+  function lingua(dizionario) { DIZ = dizionario || null; }
+  function T(it) {
+    let s = (DIZ && DIZ[it]) || it;
+    for (let i = 1; i < arguments.length; i++) s = s.split('{' + (i - 1) + '}').join(String(arguments[i]));
+    return s;
+  }
+  function K(it) { return it; } // segna una frase che verrà tradotta più tardi
+
+  const DATA ='(\\d{1,4})[\\/.\\-](\\d{1,2})[\\/.\\-](\\d{1,4})';
   const ORA = '(\\d{1,2})[:.](\\d{2})(?:[:.](\\d{2}))?(?:\\s*([AaPp])\\.?\\s?[Mm]\\.?)?';
   // iOS:     [23/11/26, 07:23:10] Nome: testo
   // Android: 23/11/26, 07:23 - Nome: testo
@@ -244,12 +267,12 @@
   const RE_BLOCCO = /bloccato quest[oa] (contatto|persona)|blocked this (contact|person)|dit contact geblokkeerd/i;
   const RE_CHIAMATA = /chiamata|\bcall\b|oproep/i;
   // avvisi che WhatsApp scrive a nome di qualcuno ma che non sono messaggi
-  const RE_AVVISO = /crittograf|end-to-end|encrypt|chiamata|\bcall\b|oproep|bloccato|blocked|codice di sicurezza|security code|effimer|disappearing|ha aggiunto|ha abbandonato|ha creato/i;
+  const RE_AVVISO = /crittograf|end-to-end|encrypt|versleuteld|chiamata|\bcall\b|oproep|bloccato|blocked|geblokkeerd|codice di sicurezza|security code|beveiligingscode|effimer|disappearing|verdwijnende|ha aggiunto|ha abbandonato|ha creato|toegevoegd|verlaten|\badded\b|\bleft\b/i;
   const RE_SBLOCCO = /sbloccato|unblocked|gedeblokkeerd/i;
   const GIORNO_MS = 24 * 60 * 60 * 1000;
   const MEZZORA_MS = 30 * 60 * 1000;
-  const RE_SCUSE = /(^|[^a-zà-ÿ])(scusa|scusami|perdonami|mi dispiace|perd[oó]n|perd[oó]name|lo siento|disculpa|sorry|sry)(?![a-zà-ÿ])/;
-  const RE_AFFETTO = /(^|[^a-zà-ÿ])(ti amo|ti voglio bene|tvb|te amo|te quiero|tqm|love you|ik hou van je)(?![a-zà-ÿ])/;
+  const RE_SCUSE = /(^|[^a-zà-ÿ])(scusa|scusami|perdonami|mi dispiace|perd[oó]n|perd[oó]name|lo siento|disculpa|sorry|sry|forgive me|het spijt me|spijt me|vergeef me|excuses)(?![a-zà-ÿ])/;
+  const RE_AFFETTO = /(^|[^a-zà-ÿ])(ti amo|ti voglio bene|tvb|te amo|te quiero|tqm|love you|ik hou van je|ik hou van jou|hou van je|hou van jou)(?![a-zà-ÿ])/;
   const RE_EMOJI = /\p{Extended_Pictographic}/gu;
   const RE_PAROLA = /[a-zà-ÿ]{4,}/g;
   const RE_RISATA = /^(?:[jh]+[aeiou]+)+[jh]*$/;
@@ -260,26 +283,26 @@
     'voor niet maar deze heeft naar over door mijn jouw waar wanneer').split(' '));
 
   // Lessico corto e dichiarato per il tono: conta le parole, non capisce l'ironia.
-  const RE_BELLO = /(^|[^a-zà-ÿ])(grazie|amore|bello|bella|bellissim[oa]|brav[oa]|felice|contento|contenta|mi manchi|ti amo|ti voglio bene|tesoro|perfetto|fantastico|stupendo|adoro|gracias|te quiero|te amo|hermos[oa]|lind[oa]|feliz|love|thanks|great|happy|miss you|dank je|lief|mooi|❤️|😍|🥰|😘|😊)(?![a-zà-ÿ])/;
-  const RE_BRUTTO = /(^|[^a-zà-ÿ])(basta|stanc[oa]|odio|schifo|bugiard[oa]|stronz[oa]|vaffanculo|fanculo|lasciami|non mi scrivere|arrabbiat[oa]|delus[oa]|triste|piango|litigare|colpa tua|mentiros[oa]|mentira|te odio|d[eé]jame|harta|harto|enojad[oa]|hate|liar|leave me|angry|sad|moe van|haat|😡|🤬|😭|💔|😤)(?![a-zà-ÿ])/;
+  const RE_BELLO = /(^|[^a-zà-ÿ])(grazie|amore|bello|bella|bellissim[oa]|brav[oa]|felice|contento|contenta|mi manchi|ti amo|ti voglio bene|tesoro|perfetto|fantastico|stupendo|adoro|gracias|te quiero|te amo|hermos[oa]|lind[oa]|feliz|love|thanks|thank you|great|happy|beautiful|wonderful|miss you|dank je|dankjewel|bedankt|lief|mooi|prachtig|geweldig|blij|gelukkig|mis je|❤️|😍|🥰|😘|😊)(?![a-zà-ÿ])/;
+  const RE_BRUTTO = /(^|[^a-zà-ÿ])(basta|stanc[oa]|odio|schifo|bugiard[oa]|stronz[oa]|vaffanculo|fanculo|lasciami|non mi scrivere|arrabbiat[oa]|delus[oa]|triste|piango|litigare|colpa tua|mentiros[oa]|mentira|te odio|d[eé]jame|harta|harto|enojad[oa]|hate|liar|leave me|angry|sad|shut up|moe van|haat|boos|verdrietig|leugenaar|laat me met rust|hou je mond|😡|🤬|😭|💔|😤)(?![a-zà-ÿ])/;
   const RE_LINK = /https?:\/\/([^\s\/]+)/g;
 
-  // Temi (i «tag»): liste corte e dichiarate di parole in italiano, spagnolo e inglese.
+  // Temi (i «tag»): liste corte e dichiarate di parole in italiano, spagnolo, inglese e olandese.
   // Contano le parole, non capiscono il contesto: «amici» può parlare di altre persone.
   function parole(lista) { return new RegExp('(^|[^a-zà-ÿ])(' + lista + ')(?![a-zà-ÿ])'); }
   const TEMI = [
-    { id: 'amore', nome: 'Ti amo', colore: '#ff5d8f', re: parole('ti amo|te amo|i love you|love you|ik hou van je|ti voglio bene|tvb|te quiero|tqm') },
-    { id: 'nomignoli', nome: 'Nomignoli', colore: '#ffb23f', re: parole('amore|amor|mi vida|vita mia|cariño|tesoro|bebé|bebe|baby|cucciol[oa]|princes[as]|principessa') },
-    { id: 'baci', nome: 'Baci', colore: '#ff7b54', re: /(^|[^a-zà-ÿ])(baci[oa]?|bacion[ei]|bes[oa]s?|besit[oa]s?|kiss(es)?)(?![a-zà-ÿ])|😘|💋/ },
-    { id: 'coppia', nome: 'Coppia', colore: '#8f5bff', re: parole('fidanzat[oaie]|mio ragazzo|mia ragazza|novi[oa]|pareja|relazione|relaci[oó]n|stiamo insieme|estamos juntos|la mia donna|il mio uomo|mi mujer|mi hombre|moglie|marito|espos[oa]|boyfriend|girlfriend') },
-    { id: 'manchi', nome: 'Mi manchi', colore: '#3fb6ff', re: parole('mi manchi|te extraño|te extrano|te echo de menos|i miss you|miss you') },
-    { id: 'promesse', nome: 'Promesse', colore: '#22c9a5', re: parole('ti prometto|te prometo|prometto|te lo juro|te lo giuro|lo giuro|i promise|per sempre|para siempre|forever') },
-    { id: 'intimita', nome: 'Intimità', colore: '#e0469b', re: parole('sesso|fare l.amore|hacer el amor|letto insieme|dormire insieme|dormir juntos|nud[oa]|desnud[oa]|sexy') },
-    { id: 'gelosia', nome: 'Gelosia', colore: '#9acd32', re: parole('gelos[oaie]|gelosia|celos[oa]?|celos|jealous') },
-    { id: 'soloamici', nome: 'Solo amici', colore: '#5c6b82', re: parole('solo amic[oi]|solo amig[oa]s|siamo amici|somos amigos|just friends|come amic[oi]|como amig[oa]s|restiamo amici|quedamos como amigos') },
-    { id: 'amici', nome: 'Amicizia', colore: '#2f80ed', re: parole('amic[oaie]|amig[oa]s?|amicizia|amistad|friends?') },
-    { id: 'rottura', nome: 'Lasciarsi', colore: '#e23b4e', re: parole('lasciamoci|ci lasciamo|ti lascio|terminamos|se acab[oó]|[eè] finita|abbiamo chiuso|non mi scrivere pi[uù]|no me escribas|addio') },
-    { id: 'scuse', nome: 'Scuse', colore: '#f2c94c', re: RE_SCUSE }
+    { id: 'amore', nome: K('Ti amo'), colore: '#ff5d8f', re: parole('ti amo|te amo|i love you|love you|ik hou van je|ik hou van jou|hou van je|hou van jou|ti voglio bene|tvb|te quiero|tqm') },
+    { id: 'nomignoli', nome: K('Nomignoli'), colore: '#ffb23f', re: parole('amore|amor|mi vida|vita mia|cariño|tesoro|bebé|bebe|baby|babe|honey|sweetheart|darling|schat|schatje|liefje|lieverd|cucciol[oa]|princes[as]|principessa') },
+    { id: 'baci', nome: K('Baci'), colore: '#ff7b54', re: /(^|[^a-zà-ÿ])(baci[oa]?|bacion[ei]|bes[oa]s?|besit[oa]s?|kiss(es)?|kus(je|jes)?)(?![a-zà-ÿ])|😘|💋/ },
+    { id: 'coppia', nome: K('Coppia'), colore: '#8f5bff', re: parole('fidanzat[oaie]|mio ragazzo|mia ragazza|novi[oa]|pareja|relazione|relaci[oó]n|stiamo insieme|estamos juntos|la mia donna|il mio uomo|mi mujer|mi hombre|moglie|marito|espos[oa]|boyfriend|girlfriend|relationship|husband|wife|verkering|relatie|mijn man|mijn vrouw') },
+    { id: 'manchi', nome: K('Mi manchi'), colore: '#3fb6ff', re: parole('mi manchi|te extraño|te extrano|te echo de menos|i miss you|miss you|ik mis je|mis je|mis jou') },
+    { id: 'promesse', nome: K('Promesse'), colore: '#22c9a5', re: parole('ti prometto|te prometo|prometto|te lo juro|te lo giuro|lo giuro|i promise|i swear|per sempre|para siempre|forever|ik beloof|beloofd|voor altijd') },
+    { id: 'intimita', nome: K('Intimità'), colore: '#e0469b', re: parole('sesso|fare l.amore|hacer el amor|letto insieme|dormire insieme|dormir juntos|nud[oa]|desnud[oa]|sexy|naked|naakt|seks') },
+    { id: 'gelosia', nome: K('Gelosia'), colore: '#9acd32', re: parole('gelos[oaie]|gelosia|celos[oa]?|celos|jealous|jealousy|jaloers') },
+    { id: 'soloamici', nome: K('Solo amici'), colore: '#5c6b82', re: parole('solo amic[oi]|solo amig[oa]s|siamo amici|somos amigos|just friends|only friends|come amic[oi]|como amig[oa]s|restiamo amici|quedamos como amigos|gewoon vrienden|alleen vrienden') },
+    { id: 'amici', nome: K('Amicizia'), colore: '#2f80ed', re: parole('amic[oaie]|amig[oa]s?|amicizia|amistad|friends?|friendship|vriend|vrienden|vriendin|vriendinnen|vriendschap') },
+    { id: 'rottura', nome: K('Lasciarsi'), colore: '#e23b4e', re: parole('lasciamoci|ci lasciamo|ti lascio|terminamos|se acab[oó]|[eè] finita|abbiamo chiuso|non mi scrivere pi[uù]|no me escribas|addio|break up|breaking up|it.s over|we.re done|het is uit|het is voorbij|ik maak het uit') },
+    { id: 'scuse', nome: K('Scuse'), colore: '#f2c94c', re: RE_SCUSE }
   ];
 
   /** Le frasi di un tema o con una parola scelta. Lavora sui messaggi in memoria: niente esce dal dispositivo. */
@@ -304,38 +327,38 @@
 
   // Il giudizio della giostra: un gioco con formula dichiarata, non una sentenza.
   const GRADINI = [
-    'Scappa subito e manda la posizione a un familiare',
-    'Modalità aereo, respira e chiama un\'amica',
-    'Più fumo che arrosto',
-    'Né carne né pesce: parlatevi chiaro',
-    'C\'è del buono: annaffiatelo',
-    'Qui c\'è una cosa seria',
-    'È la tua anima gemella'
+    K('Scappa subito e manda la posizione a un familiare'),
+    K('Modalità aereo, respira e chiama un\'amica'),
+    K('Più fumo che arrosto'),
+    K('Né carne né pesce: parlatevi chiaro'),
+    K('C\'è del buono: annaffiatelo'),
+    K('Qui c\'è una cosa seria'),
+    K('È la tua anima gemella')
   ];
-  const CIMA = { Amicizia: ['Un\'amicizia che tiene', 'Amici per la vita'], Famiglia: ['Una famiglia che c\'è', 'Famiglia vera, tienitela stretta'], Lavoro: ['Si lavora bene insieme', 'Collega d\'oro'] };
+  const CIMA = { Amicizia: [K('Un\'amicizia che tiene'), K('Amici per la vita')], Famiglia: [K('Una famiglia che c\'è'), K('Famiglia vera, tienitela stretta')], Lavoro: [K('Si lavora bene insieme'), K('Collega d\'oro')] };
   function verdetto(st, etichetta) {
     const voci = [];
-    function voce(nome, punti) { punti = Math.round(punti); if (punti) voci.push({ nome: nome, punti: punti }); return punti; }
+    function voce(nome, punti) { punti = Math.round(punti); if (punti) voci.push({ nome: T(nome), punti: punti }); return punti; }
     const base = Math.round(50 + ((st.equilibrio == null ? 50 : st.equilibrio) - 50) * 0.5);
     let p = base;
     const tema = function (id) { const t = (st.temi || []).find(function (x) { return x.id === id; }); return t ? t.totale : 0; };
     const perMille = function (n) { return st.totale ? n / st.totale * 1000 : 0; };
-    p += voce('Parole d\'amore', Math.min(12, perMille(tema('amore')) * 2));
-    if (st.striscia >= 30) p += voce('Vi scrivete ogni giorno', 6);
+    p += voce(K('Parole d\'amore'), Math.min(12, perMille(tema('amore')) * 2));
+    if (st.striscia >= 30) p += voce(K('Vi scrivete ogni giorno'), 6);
     const belli = (st.mesi || []).reduce(function (a, m) { return a + m.belli; }, 0);
     const brutti = (st.mesi || []).reduce(function (a, m) { return a + m.brutti; }, 0);
-    if (belli + brutti >= 20) p += voce('Tono delle parole', (belli / (belli + brutti) - 0.5) * 30);
+    if (belli + brutti >= 20) p += voce(K('Tono delle parole'), (belli / (belli + brutti) - 0.5) * 30);
     const ss = segnali(st);
-    p += voce('Buoni segni', 3 * ss.filter(function (s) { return s.tono === 'buono'; }).length);
-    p += voce('Cose da guardare', -6 * ss.filter(function (s) { return s.tono === 'attenzione'; }).length);
-    p += voce('Blocchi', -Math.min(15, 2 * (st.blocchiTuoi || 0)));
-    p += voce('Silenzi lunghi', -Math.min(10, 3 * (st.silenzi || 0)));
-    p += voce('Parole di rottura', -Math.min(10, perMille(tema('rottura')) * 3));
+    p += voce(K('Buoni segni'), 3 * ss.filter(function (s) { return s.tono === 'buono'; }).length);
+    p += voce(K('Cose da guardare'), -6 * ss.filter(function (s) { return s.tono === 'attenzione'; }).length);
+    p += voce(K('Blocchi'), -Math.min(15, 2 * (st.blocchiTuoi || 0)));
+    p += voce(K('Silenzi lunghi'), -Math.min(10, 3 * (st.silenzi || 0)));
+    p += voce(K('Parole di rottura'), -Math.min(10, perMille(tema('rottura')) * 3));
     p = Math.max(0, Math.min(100, Math.round(p)));
     const gradino = Math.min(6, Math.floor(p / 15));
     let titolo = GRADINI[gradino];
     if (CIMA[etichetta] && gradino >= 5) titolo = CIMA[etichetta][gradino - 5];
-    return { punti: p, gradino: gradino, titolo: titolo, base: base, voci: voci };
+    return { punti: p, gradino: gradino, titolo: T(titolo), base: base, voci: voci };
   }
 
   function classifica(resto) {
@@ -579,40 +602,40 @@
     function metti(tono, titolo, testo) { out.push({ tono: tono, titolo: titolo, testo: testo }); }
 
     const quota = a.messaggi / st.totale;
-    if (quota > 0.6) metti('attenzione', a.nome + ' scrive molto di più', perc(quota) + ' dei messaggi sono suoi.');
-    else if (quota <= 0.55) metti('buono', 'Scrivete quasi uguale', perc(quota) + ' e ' + perc(1 - quota) + ': nessuno dei due parla da solo.');
+    if (quota > 0.6) metti('attenzione', T('{0} scrive molto di più', a.nome), T('{0} dei messaggi sono suoi.', perc(quota)));
+    else if (quota <= 0.55) metti('buono', T('Scrivete quasi uguale'), T('{0} e {1}: nessuno dei due parla da solo.', perc(quota), perc(1 - quota)));
 
     if (a.rispostaMedianaMs != null && b.rispostaMedianaMs != null) {
       const lento = a.rispostaMedianaMs >= b.rispostaMedianaMs ? a : b;
       const svelto = lento === a ? b : a;
-      if (lento.rispostaMedianaMs <= 5 * 60000) metti('buono', 'Vi rispondete in fretta', 'Di solito ' + svelto.nome + ' risponde in ' + durata(svelto.rispostaMedianaMs) + ' e ' + lento.nome + ' in ' + durata(lento.rispostaMedianaMs) + '.');
-      else if (lento.rispostaMedianaMs >= MEZZORA_MS && lento.rispostaMedianaMs >= 5 * svelto.rispostaMedianaMs) metti('attenzione', lento.nome + ' fa aspettare', 'Di solito risponde in ' + durata(lento.rispostaMedianaMs) + ', contro ' + durata(svelto.rispostaMedianaMs) + ' di ' + svelto.nome + '.');
+      if (lento.rispostaMedianaMs <= 5 * 60000) metti('buono', T('Vi rispondete in fretta'), T('Di solito {0} risponde in {1} e {2} in {3}.', svelto.nome, durata(svelto.rispostaMedianaMs), lento.nome, durata(lento.rispostaMedianaMs)));
+      else if (lento.rispostaMedianaMs >= MEZZORA_MS && lento.rispostaMedianaMs >= 5 * svelto.rispostaMedianaMs) metti('attenzione', T('{0} fa aspettare', lento.nome), T('Di solito risponde in {0}, contro {1} di {2}.', durata(lento.rispostaMedianaMs), durata(svelto.rispostaMedianaMs), svelto.nome));
     }
 
     const apre = a.apreGiornata >= b.apreGiornata ? a : b;
     const quotaApre = apre.apreGiornata / Math.max(1, st.giorniAttivi);
-    if (quotaApre > 0.7) metti('attenzione', 'È quasi sempre ' + apre.nome + ' a cercare', 'Apre la giornata ' + perc(quotaApre) + ' delle volte.');
+    if (quotaApre > 0.7) metti('attenzione', T('È quasi sempre {0} a cercare', apre.nome), T('Apre la giornata {0} delle volte.', perc(quotaApre)));
 
     if (a.insistenze != null) {
       const insiste = a.insistenze >= b.insistenze ? a : b;
       const altro = insiste === a ? b : a;
-      if (insiste.insistenze >= 20 && insiste.insistenze >= 2 * altro.insistenze) metti('attenzione', insiste.nome + ' riscrive spesso senza risposta', insiste.insistenze + ' volte ha riscritto dopo almeno mezz\'ora di silenzio, contro ' + altro.insistenze + ' di ' + altro.nome + '.');
+      if (insiste.insistenze >= 20 && insiste.insistenze >= 2 * altro.insistenze) metti('attenzione', T('{0} riscrive spesso senza risposta', insiste.nome), T('{0} volte ha riscritto dopo almeno mezz\'ora di silenzio, contro {1} di {2}.', insiste.insistenze, altro.insistenze, altro.nome));
 
       [a, b].forEach(function (x) {
-        if (x.eliminati >= 20 && x.eliminati / x.messaggi > 0.03) metti('nota', x.nome + ' cancella molti messaggi', x.eliminati + ' messaggi eliminati (' + perc(x.eliminati / x.messaggi) + ' dei suoi).');
+        if (x.eliminati >= 20 && x.eliminati / x.messaggi > 0.03) metti('nota', T('{0} cancella molti messaggi', x.nome), T('{0} messaggi eliminati ({1} dei suoi).', x.eliminati, perc(x.eliminati / x.messaggi)));
       });
 
       const chiede = a.scuse >= b.scuse ? a : b;
       const altroScuse = chiede === a ? b : a;
-      if (chiede.scuse >= 10 && chiede.scuse >= 3 * altroScuse.scuse) metti('nota', 'È quasi sempre ' + chiede.nome + ' a chiedere scusa', chiede.scuse + ' messaggi di scuse, contro ' + altroScuse.scuse + '.');
-      if (a.affetto > 0 && b.affetto > 0) metti('buono', 'Ve lo dite tutti e due', a.nome + ' ' + a.affetto + ' volte, ' + b.nome + ' ' + b.affetto + ' volte (ti amo, te quiero, ti voglio bene…).');
-      else if (a.affetto + b.affetto >= 10) metti('nota', 'Lo dice solo ' + (a.affetto ? a.nome : b.nome), (a.affetto || b.affetto) + ' volte, l\'altra persona mai (con queste parole).');
+      if (chiede.scuse >= 10 && chiede.scuse >= 3 * altroScuse.scuse) metti('nota', T('È quasi sempre {0} a chiedere scusa', chiede.nome), T('{0} messaggi di scuse, contro {1}.', chiede.scuse, altroScuse.scuse));
+      if (a.affetto > 0 && b.affetto > 0) metti('buono', T('Ve lo dite tutti e due'), T('{0} {1} volte, {2} {3} volte (ti amo, te quiero, ti voglio bene…).', a.nome, a.affetto, b.nome, b.affetto));
+      else if (a.affetto + b.affetto >= 10) metti('nota', T('Lo dice solo {0}', a.affetto ? a.nome : b.nome), T('{0} volte, l\'altra persona mai (con queste parole).', a.affetto || b.affetto));
     }
 
-    if (st.blocchiTuoi > 0) metti('attenzione', 'Hai bloccato questa chat ' + st.blocchiTuoi + (st.blocchiTuoi === 1 ? ' volta' : ' volte'), 'Il file segna solo i blocchi fatti da chi esporta.');
-    if (st.silenzioMax) metti('nota', st.silenzi + (st.silenzi === 1 ? ' silenzio' : ' silenzi') + ' di oltre 3 giorni', 'Il più lungo è durato ' + Math.round(st.silenzioMax.ms / GIORNO_MS) + ' giorni. L\'ha rotto ' + st.silenzioMax.rotto + '.');
-    if (st.notte != null && st.notte / st.totale > 0.15) metti('nota', 'Vi scrivete molto di notte', perc(st.notte / st.totale) + ' dei messaggi sono tra mezzanotte e le 5.');
-    if (st.striscia >= 30) metti('buono', st.striscia + ' giorni di fila', 'La striscia più lunga senza saltare un giorno.');
+    if (st.blocchiTuoi > 0) metti('attenzione', st.blocchiTuoi === 1 ? T('Hai bloccato questa chat {0} volta', 1) : T('Hai bloccato questa chat {0} volte', st.blocchiTuoi), T('Il file segna solo i blocchi fatti da chi esporta.'));
+    if (st.silenzioMax) metti('nota', st.silenzi === 1 ? T('{0} silenzio di oltre 3 giorni', 1) : T('{0} silenzi di oltre 3 giorni', st.silenzi), T('Il più lungo è durato {0} giorni. L\'ha rotto {1}.', Math.round(st.silenzioMax.ms / GIORNO_MS), st.silenzioMax.rotto));
+    if (st.notte != null && st.notte / st.totale > 0.15) metti('nota', T('Vi scrivete molto di notte'), T('{0} dei messaggi sono tra mezzanotte e le 5.', perc(st.notte / st.totale)));
+    if (st.striscia >= 30) metti('buono', T('{0} giorni di fila', st.striscia), T('La striscia più lunga senza saltare un giorno.'));
     return out;
   }
 
@@ -620,22 +643,22 @@
   function riassunto(st) {
     const sigle = ['A', 'B', 'C', 'D', 'E', 'F'];
     const sigla = {};
-    st.autori.slice(0, 6).forEach(function (x, i) { sigla[x.nome] = 'Persona ' + sigle[i]; });
+    st.autori.slice(0, 6).forEach(function (x, i) { sigla[x.nome] = T('Persona {0}', sigle[i]); });
     function anonimo(t) { Object.keys(sigla).forEach(function (n) { t = t.split(n).join(sigla[n]); }); return t; }
     const righe = [
-      'Qui sotto ci sono solo i numeri di una chat di WhatsApp (nessun messaggio, nessun nome). Io sono la Persona ___.',
-      'Dimmi con onestà e gentilezza: cosa va bene, cosa terresti d\'occhio, e tre domande che dovrei farmi. Non inventare fatti che i numeri non mostrano.',
+      T('Qui sotto ci sono solo i numeri di una chat di WhatsApp (nessun messaggio, nessun nome). Io sono la Persona ___.'),
+      T('Dimmi con onestà e gentilezza: cosa va bene, cosa terresti d\'occhio, e tre domande che dovrei farmi. Non inventare fatti che i numeri non mostrano.'),
       '',
-      'Messaggi totali: ' + st.totale + ' in ' + st.giorniAttivi + ' giorni attivi. Striscia più lunga: ' + (st.striscia || '?') + ' giorni. Chiamate: ' + (st.chiamate || 0) + '.'
+      T('Messaggi totali: {0} in {1} giorni attivi. Striscia più lunga: {2} giorni. Chiamate: {3}.', st.totale, st.giorniAttivi, st.striscia || '?', st.chiamate || 0)
     ];
-    if (st.equilibrio != null) righe.push('Indice di equilibrio dello sforzo: ' + st.equilibrio + ' su 100.');
-    if (st.mesi && st.mesi.length) righe.push('Messaggi per mese (mese: totale, parole belle/tese): ' + st.mesi.map(function (m) { return m.mese + ': ' + m.totale + ', ' + m.belli + '/' + m.brutti; }).join('; ') + '.');
+    if (st.equilibrio != null) righe.push(T('Indice di equilibrio dello sforzo: {0} su 100.', st.equilibrio));
+    if (st.mesi && st.mesi.length) righe.push(T('Messaggi per mese (mese: totale, parole belle/tese): {0}.', st.mesi.map(function (m) { return m.mese + ': ' + m.totale + ', ' + m.belli + '/' + m.brutti; }).join('; ')));
     st.autori.slice(0, 6).forEach(function (x) {
-      righe.push(sigla[x.nome] + ': ' + x.messaggi + ' messaggi; risponde in media in ' + durata(x.rispostaMediaMs) + ' (di solito ' + durata(x.rispostaMedianaMs) + '); apre la giornata ' + x.apreGiornata + ' volte; riscrive senza risposta ' + (x.insistenze || 0) + ' volte; messaggi eliminati ' + x.eliminati + '; di notte ' + (x.notte || 0) + '; scuse ' + (x.scuse || 0) + '; parole d\'affetto ' + (x.affetto || 0) + '.');
+      righe.push(sigla[x.nome] + ': ' + T('{0} messaggi; risponde in media in {1} (di solito {2}); apre la giornata {3} volte; riscrive senza risposta {4} volte; messaggi eliminati {5}; di notte {6}; scuse {7}; parole d\'affetto {8}.', x.messaggi, durata(x.rispostaMediaMs), durata(x.rispostaMedianaMs), x.apreGiornata, x.insistenze || 0, x.eliminati, x.notte || 0, x.scuse || 0, x.affetto || 0));
     });
     const ss = segnali(st);
     if (ss.length) {
-      righe.push('', 'Segnali calcolati:');
+      righe.push('', T('Segnali calcolati:'));
       ss.forEach(function (s) { righe.push('- ' + anonimo(s.titolo) + '. ' + anonimo(s.testo)); });
     }
     return righe.join('\n');
@@ -648,7 +671,7 @@
     const voci = await vociZip(blob);
     const voce = voci.find(function (v) { return /_chat\.txt$/i.test(v.nome); }) ||
                  voci.find(function (v) { return /\.txt$/i.test(v.nome); });
-    if (!voce) throw new Error('Nello zip non c\'è nessuna chat (.txt).');
+    if (!voce) throw new Error(T('Nello zip non c\'è nessuna chat (.txt).'));
     return estraiVoce(blob, voce);
   }
 
@@ -678,7 +701,7 @@
     const inizio = voce.posizione + 30 + testa.getUint16(26, true) + testa.getUint16(28, true);
     const dati = blob.slice(inizio, inizio + voce.compresso);
     if (voce.metodo === 0) return new Uint8Array(await dati.arrayBuffer());
-    if (voce.metodo !== 8) throw new Error('Questo zip usa una compressione che non conosco.');
+    if (voce.metodo !== 8) throw new Error(T('Questo zip usa una compressione che non conosco.'));
     const flusso = dati.stream().pipeThrough(new DecompressionStream('deflate-raw'));
     return new Uint8Array(await new Response(flusso).arrayBuffer());
   }
@@ -690,7 +713,7 @@
     for (let i = fine.byteLength - 22; i >= 0; i--) {
       if (fine.getUint32(i, true) === 0x06054b50) { p = i; break; }
     }
-    if (p < 0) throw new Error('Questo zip non si riesce a leggere.');
+    if (p < 0) throw new Error(T('Questo zip non si riesce a leggere.'));
     const dimIndice = fine.getUint32(p + 12, true);
     const posIndice = fine.getUint32(p + 16, true);
     const indice = new DataView(await blob.slice(posIndice, posIndice + dimIndice).arrayBuffer());
@@ -727,26 +750,257 @@
     return h + ' h' + (min % 60 ? ' ' + (min % 60) + ' min' : '');
   }
 
-  return { cerca: cerca, verdetto: verdetto, segnali: segnali, riassunto: riassunto, leggi: leggi, statistiche: statistiche, analizza: analizza, testoDaFile: testoDaFile, txtDaZip: txtDaZip, mediaDaZip: mediaDaZip, durata: durata };
+  return { t: T, lingua: lingua, cerca: cerca, verdetto: verdetto, segnali: segnali, riassunto: riassunto, leggi: leggi, statistiche: statistiche, analizza: analizza, testoDaFile: testoDaFile, txtDaZip: txtDaZip, mediaDaZip: mediaDaZip, durata: durata };
 });
 /*MOTORE-FINE*/</script>
-<script>
+<script>/*LINGUE-INIZIO*/
+/* Pizia · le lingue. Ogni riga: [italiano (la chiave), inglese, olandese].
+   Per aggiungere una frase: scrivila in italiano nel codice dentro t() e aggiungi qui la riga.
+   La prova «Ogni frase ha la sua traduzione» si accorge se ne manca una. */
+(function (radice, fabbrica) {
+  const api = fabbrica();
+  if (typeof module === 'object' && module.exports) module.exports = api;
+  else radice.PiziaLingue = api;
+})(typeof self !== 'undefined' ? self : this, function () {
+  'use strict';
+  const FRASI = [
+    // i tag
+    ["Ti amo", "I love you", "Ik hou van je"],
+    ["Nomignoli", "Pet names", "Koosnaampjes"],
+    ["Baci", "Kisses", "Kusjes"],
+    ["Coppia", "Couple", "Stel"],
+    ["Mi manchi", "I miss you", "Ik mis je"],
+    ["Promesse", "Promises", "Beloftes"],
+    ["Intimità", "Intimacy", "Intimiteit"],
+    ["Gelosia", "Jealousy", "Jaloezie"],
+    ["Solo amici", "Just friends", "Gewoon vrienden"],
+    ["Amicizia", "Friendship", "Vriendschap"],
+    ["Lasciarsi", "Breaking up", "Uit elkaar"],
+    ["Scuse", "Apologies", "Excuses"],
+    // i sette gradini del giudizio
+    ["Scappa subito e manda la posizione a un familiare", "Run now and send your location to a relative", "Ren weg en stuur je locatie naar een familielid"],
+    ["Modalità aereo, respira e chiama un'amica", "Airplane mode, breathe and call a friend", "Vliegtuigmodus, adem in en bel een vriendin"],
+    ["Più fumo che arrosto", "All talk, little action", "Veel geschreeuw, weinig wol"],
+    ["Né carne né pesce: parlatevi chiaro", "Neither here nor there: talk it out", "Vlees noch vis: praat het uit"],
+    ["C'è del buono: annaffiatelo", "There is something good here: water it", "Hier zit iets goeds in: geef het water"],
+    ["Qui c'è una cosa seria", "This is the real thing", "Dit is serieus"],
+    ["È la tua anima gemella", "This is your soulmate", "Dit is je zielsverwant"],
+    ["Un'amicizia che tiene", "A friendship that holds", "Een vriendschap die standhoudt"],
+    ["Amici per la vita", "Friends for life", "Vrienden voor het leven"],
+    ["Una famiglia che c'è", "A family that shows up", "Een familie die er is"],
+    ["Famiglia vera, tienitela stretta", "Real family: hold on to it", "Echte familie: houd ze dicht bij je"],
+    ["Si lavora bene insieme", "You work well together", "Jullie werken goed samen"],
+    ["Collega d'oro", "A colleague worth gold", "Een collega van goud"],
+    // le voci del conto
+    ["Parole d'amore", "Words of love", "Liefdeswoorden"],
+    ["Vi scrivete ogni giorno", "You write every day", "Jullie schrijven elke dag"],
+    ["Tono delle parole", "Tone of the words", "Toon van de woorden"],
+    ["Buoni segni", "Good signs", "Goede tekenen"],
+    ["Cose da guardare", "Things to watch", "Aandachtspunten"],
+    ["Blocchi", "Blocks", "Blokkades"],
+    ["Silenzi lunghi", "Long silences", "Lange stiltes"],
+    ["Parole di rottura", "Break-up words", "Woorden over uit elkaar gaan"],
+    // i segnali
+    ["{0} scrive molto di più", "{0} writes much more", "{0} schrijft veel meer"],
+    ["{0} dei messaggi sono suoi.", "{0} of the messages are theirs.", "{0} van de berichten is van die persoon."],
+    ["Scrivete quasi uguale", "You write about the same", "Jullie schrijven ongeveer evenveel"],
+    ["{0} e {1}: nessuno dei due parla da solo.", "{0} and {1}: nobody is talking alone.", "{0} en {1}: niemand praat tegen zichzelf."],
+    ["Vi rispondete in fretta", "You answer each other fast", "Jullie antwoorden elkaar snel"],
+    ["Di solito {0} risponde in {1} e {2} in {3}.", "{0} usually answers in {1} and {2} in {3}.", "{0} antwoordt meestal binnen {1} en {2} binnen {3}."],
+    ["{0} fa aspettare", "{0} keeps the other waiting", "{0} laat op zich wachten"],
+    ["Di solito risponde in {0}, contro {1} di {2}.", "Usually answers in {0}, against {1} for {2}.", "Antwoordt meestal binnen {0}, tegenover {1} bij {2}."],
+    ["È quasi sempre {0} a cercare", "It is almost always {0} who reaches out", "Het is bijna altijd {0} die contact zoekt"],
+    ["Apre la giornata {0} delle volte.", "Starts the day {0} of the time.", "Begint de dag in {0} van de gevallen."],
+    ["{0} riscrive spesso senza risposta", "{0} often writes again without an answer", "{0} schrijft vaak opnieuw zonder antwoord"],
+    ["{0} volte ha riscritto dopo almeno mezz'ora di silenzio, contro {1} di {2}.", "Wrote again {0} times after at least half an hour of silence, against {1} for {2}.", "Schreef {0} keer opnieuw na minstens een half uur stilte, tegenover {1} bij {2}."],
+    ["{0} cancella molti messaggi", "{0} deletes many messages", "{0} verwijdert veel berichten"],
+    ["{0} messaggi eliminati ({1} dei suoi).", "{0} deleted messages ({1} of theirs).", "{0} verwijderde berichten ({1} van de eigen berichten)."],
+    ["È quasi sempre {0} a chiedere scusa", "It is almost always {0} who says sorry", "Het is bijna altijd {0} die sorry zegt"],
+    ["{0} messaggi di scuse, contro {1}.", "{0} messages saying sorry, against {1}.", "{0} berichten met excuses, tegenover {1}."],
+    ["Ve lo dite tutti e due", "You both say it", "Jullie zeggen het allebei"],
+    ["{0} {1} volte, {2} {3} volte (ti amo, te quiero, ti voglio bene…).", "{0} {1} times, {2} {3} times (I love you, te quiero, ti amo…).", "{0} {1} keer, {2} {3} keer (ik hou van je, I love you, ti amo…)."],
+    ["Lo dice solo {0}", "Only {0} says it", "Alleen {0} zegt het"],
+    ["{0} volte, l'altra persona mai (con queste parole).", "{0} times, the other person never (in these words).", "{0} keer, de ander nooit (met deze woorden)."],
+    ["Hai bloccato questa chat {0} volta", "You blocked this chat {0} time", "Je hebt deze chat {0} keer geblokkeerd"],
+    ["Hai bloccato questa chat {0} volte", "You blocked this chat {0} times", "Je hebt deze chat {0} keer geblokkeerd"],
+    ["Il file segna solo i blocchi fatti da chi esporta.", "The file only records blocks made by the person who exports.", "Het bestand toont alleen blokkades van degene die exporteert."],
+    ["{0} silenzio di oltre 3 giorni", "{0} silence of more than 3 days", "{0} stilte van meer dan 3 dagen"],
+    ["{0} silenzi di oltre 3 giorni", "{0} silences of more than 3 days", "{0} stiltes van meer dan 3 dagen"],
+    ["1 silenzio di oltre 3 giorni", "1 silence of more than 3 days", "1 stilte van meer dan 3 dagen"],
+    ["Il più lungo è durato {0} giorni. L'ha rotto {1}.", "The longest lasted {0} days. {1} broke it.", "De langste duurde {0} dagen. {1} verbrak de stilte."],
+    ["Vi scrivete molto di notte", "You write a lot at night", "Jullie schrijven veel 's nachts"],
+    ["{0} dei messaggi sono tra mezzanotte e le 5.", "{0} of the messages are between midnight and 5 am.", "{0} van de berichten is tussen middernacht en 5 uur."],
+    ["{0} giorni di fila", "{0} days in a row", "{0} dagen op rij"],
+    ["La striscia più lunga senza saltare un giorno.", "The longest streak without skipping a day.", "De langste reeks zonder een dag over te slaan."],
+    // il riassunto per l'IA
+    ["Persona {0}", "Person {0}", "Persoon {0}"],
+    ["Qui sotto ci sono solo i numeri di una chat di WhatsApp (nessun messaggio, nessun nome). Io sono la Persona ___.", "Below are only the numbers of a WhatsApp chat (no messages, no names). I am Person ___.", "Hieronder staan alleen de cijfers van een WhatsApp-chat (geen berichten, geen namen). Ik ben Persoon ___."],
+    ["Dimmi con onestà e gentilezza: cosa va bene, cosa terresti d'occhio, e tre domande che dovrei farmi. Non inventare fatti che i numeri non mostrano.", "Tell me honestly and kindly: what is going well, what you would keep an eye on, and three questions I should ask myself. Do not invent facts the numbers do not show.", "Vertel me eerlijk en vriendelijk: wat gaat goed, waar zou je op letten, en drie vragen die ik mezelf moet stellen. Verzin geen feiten die de cijfers niet laten zien."],
+    ["Messaggi totali: {0} in {1} giorni attivi. Striscia più lunga: {2} giorni. Chiamate: {3}.", "Total messages: {0} over {1} active days. Longest streak: {2} days. Calls: {3}.", "Totaal berichten: {0} in {1} actieve dagen. Langste reeks: {2} dagen. Oproepen: {3}."],
+    ["Indice di equilibrio dello sforzo: {0} su 100.", "Effort balance index: {0} out of 100.", "Balansindex van de inzet: {0} van 100."],
+    ["Messaggi per mese (mese: totale, parole belle/tese): {0}.", "Messages per month (month: total, kind/tense words): {0}.", "Berichten per maand (maand: totaal, lieve/gespannen woorden): {0}."],
+    ["{0} messaggi; risponde in media in {1} (di solito {2}); apre la giornata {3} volte; riscrive senza risposta {4} volte; messaggi eliminati {5}; di notte {6}; scuse {7}; parole d'affetto {8}.", "{0} messages; answers on average in {1} (usually {2}); starts the day {3} times; writes again without an answer {4} times; deleted messages {5}; at night {6}; apologies {7}; words of affection {8}.", "{0} berichten; antwoordt gemiddeld binnen {1} (meestal {2}); begint de dag {3} keer; schrijft opnieuw zonder antwoord {4} keer; verwijderde berichten {5}; 's nachts {6}; excuses {7}; lieve woorden {8}."],
+    ["Segnali calcolati:", "Calculated signals:", "Berekende signalen:"],
+    // errori
+    ["Nello zip non c'è nessuna chat (.txt).", "There is no chat (.txt) inside this zip.", "In deze zip zit geen chat (.txt)."],
+    ["Questo zip usa una compressione che non conosco.", "This zip uses a compression I do not know.", "Deze zip gebruikt een compressie die ik niet ken."],
+    ["Questo zip non si riesce a leggere.", "This zip cannot be read.", "Deze zip kan niet worden gelezen."],
+    ["Qui dentro non trovo messaggi di WhatsApp. Serve il file creato con «Esporta chat».", "I cannot find WhatsApp messages in here. You need the file made with “Export chat”.", "Ik vind hier geen WhatsApp-berichten. Je hebt het bestand van “Chat exporteren” nodig."],
+    ["Non riesco a leggere questo file.", "I cannot read this file.", "Ik kan dit bestand niet lezen."],
+    // etichette e pagine
+    ["Crush", "Crush", "Crush"],
+    ["Famiglia", "Family", "Familie"],
+    ["Lavoro", "Work", "Werk"],
+    ["Giudizio", "Verdict", "Oordeel"],
+    ["Frasi", "Phrases", "Zinnen"],
+    ["Numeri", "Numbers", "Cijfers"],
+    ["Tempo", "Time", "Tijd"],
+    ["altri {0}", "{0} others", "{0} anderen"],
+    ["e", "and", "en"],
+    ["Pizia · l'oracolo delle tue chat", "Pizia · the oracle of your chats", "Pizia · het orakel van je chats"],
+    ["Che rapporto è", "What kind of relationship", "Wat voor relatie"],
+    // premium
+    ["Premium attivo su questo dispositivo. Grazie!", "Premium is active on this device. Thank you!", "Premium is actief op dit apparaat. Bedankt!"],
+    ["Non riesco a confermare il pagamento. Riapri il link che hai ricevuto dopo aver pagato.", "I cannot confirm the payment. Open again the link you received after paying.", "Ik kan de betaling niet bevestigen. Open opnieuw de link die je na het betalen kreeg."],
+    ["Hai letto {0} frasi su {1}.", "You have read {0} phrases out of {1}.", "Je hebt {0} van de {1} zinnen gelezen."],
+    ["Sblocca tutte le frasi · {0}", "Unlock all phrases · {0}", "Ontgrendel alle zinnen · {0}"],
+    ["Si paga una volta sola. La chat resta sul tuo dispositivo: chi incassa non riceve nessun messaggio.", "You pay once. The chat stays on your device: the payment provider receives no messages.", "Je betaalt één keer. De chat blijft op je apparaat: de betaaldienst krijgt geen berichten."],
+    // la giostra
+    ["Vuoi sapere il nostro giudizio?", "Want to know our verdict?", "Wil je ons oordeel weten?"],
+    ["Giostra del martello con angelo avvocato e diavolo detective", "High striker with a lawyer angel and a detective devil", "Kop van Jut met een engel-advocaat en een duivel-detective"],
+    ["MACCHINA DELLA VERITÀ", "TRUTH MACHINE", "WAARHEIDSMACHINE"],
+    ["Dai la martellata", "Swing the hammer", "Sla met de hamer"],
+    ["Rifai la martellata", "Swing again", "Sla nog een keer"],
+    ["È un gioco con regole fisse, non una sentenza: i numeri non conoscono la vostra vita.", "It is a game with fixed rules, not a sentence: numbers do not know your life.", "Het is een spel met vaste regels, geen vonnis: cijfers kennen jullie leven niet."],
+    ["{0} su 100", "{0} out of 100", "{0} van 100"],
+    ["Si parte da {0} (equilibrio).", "It starts from {0} (balance).", "Het begint bij {0} (balans)."],
+    // la ruota
+    ["La ruota delle parole", "The wheel of words", "Het woordenrad"],
+    ["Ruota dei temi della chat", "Wheel of the chat's themes", "Rad met de thema's van de chat"],
+    ["Cerca una parola tua", "Search a word of your own", "Zoek een eigen woord"],
+    ["Cerca una parola nella chat", "Search a word in the chat", "Zoek een woord in de chat"],
+    ["Chi l'ha scritto", "Who wrote it", "Wie het schreef"],
+    ["Tutti", "Everyone", "Iedereen"],
+    ["Tocca un tag o uno spicchio per leggere le frasi. Restano su questo dispositivo e non vengono salvate.", "Tap a tag or a slice to read the phrases. They stay on this device and are not saved.", "Tik op een tag of een stuk om de zinnen te lezen. Ze blijven op dit apparaat en worden niet opgeslagen."],
+    ["Per leggere le frasi ricarica il file: Pizia non conserva i messaggi.", "To read the phrases load the file again: Pizia does not keep the messages.", "Laad het bestand opnieuw om de zinnen te lezen: Pizia bewaart de berichten niet."],
+    ["Mostra altre {0}", "Show {0} more", "Toon er nog {0}"],
+    ["1 frase", "1 phrase", "1 zin"],
+    ["{0} frasi", "{0} phrases", "{0} zinnen"],
+    ["Le parole non dicono il contesto: leggile.", "Words do not tell the context: read them.", "Woorden vertellen de context niet: lees ze."],
+    ["Nessuna frase trovata.", "No phrase found.", "Geen zin gevonden."],
+    ["Foto della chat", "Photos of the chat", "Foto's van de chat"],
+    ["{0} foto", "{0} photos", "{0} foto's"],
+    ["{0} video · {1} audio. Qui sotto le ultime foto: restano sul tuo dispositivo e non vengono salvate.", "{0} videos · {1} audio. Below are the latest photos: they stay on your device and are not saved.", "{0} video's · {1} audio. Hieronder de laatste foto's: ze blijven op je apparaat en worden niet opgeslagen."],
+    // il responso
+    ["{0} messaggi in {1} giorni · dal {2} al {3}", "{0} messages in {1} days · from {2} to {3}", "{0} berichten in {1} dagen · van {2} tot {3}"],
+    ["Segnali", "Signals", "Signalen"],
+    ["Da guardare", "Watch this", "Let hierop"],
+    ["Buon segno", "Good sign", "Goed teken"],
+    ["Da sapere", "Good to know", "Goed om te weten"],
+    ["Sono conti fatti con regole fisse, non giudizi. I numeri non sanno perché succede una cosa.", "These are counts made with fixed rules, not judgements. Numbers do not know why something happens.", "Dit zijn tellingen met vaste regels, geen oordelen. Cijfers weten niet waarom iets gebeurt."],
+    ["Equilibrio", "Balance", "Balans"],
+    ["Quanto lo sforzo è diviso in parti uguali: messaggi, chi apre la giornata, velocità di risposta. Non misura l'amore.", "How equally the effort is shared: messages, who starts the day, answer speed. It does not measure love.", "Hoe gelijk de inzet verdeeld is: berichten, wie de dag begint, antwoordsnelheid. Het meet geen liefde."],
+    ["Emoji e parole", "Emoji and words", "Emoji en woorden"],
+    ["Affetto, scuse e notte", "Affection, apologies and night", "Genegenheid, excuses en nacht"],
+    ["parole d'affetto · {0} scuse · {1} di notte", "words of affection · {0} apologies · {1} at night", "lieve woorden · {0} excuses · {1} 's nachts"],
+    ["Affetto: ti amo, te quiero, love you, ik hou van je e simili. Notte: tra mezzanotte e le 5.", "Affection: I love you, ti amo, te quiero, ik hou van je and similar. Night: between midnight and 5 am.", "Genegenheid: ik hou van je, I love you, ti amo, te quiero en dergelijke. Nacht: tussen middernacht en 5 uur."],
+    ["Link mandati", "Links sent", "Verstuurde links"],
+    ["link", "links", "links"],
+    ["Messaggi", "Messages", "Berichten"],
+    ["Tempo medio di risposta", "Average answer time", "Gemiddelde antwoordtijd"],
+    ["di solito {0}", "usually {0}", "meestal {0}"],
+    ["Conta solo quando cambia chi scrive. I silenzi oltre 24 ore restano fuori. «Di solito» è il tempo di mezzo: una notte di sonno non lo sposta.", "It only counts when the writer changes. Silences over 24 hours are left out. “Usually” is the middle time: a night of sleep does not move it.", "Telt alleen wanneer de schrijver wisselt. Stiltes van meer dan 24 uur tellen niet mee. “Meestal” is de middelste tijd: een nacht slapen verandert die niet."],
+    ["Primo messaggio", "First message", "Eerste bericht"],
+    ["Ha scritto per primo: {0}", "Wrote first: {0}", "Schreef als eerste: {0}"],
+    ["Chi apre la giornata", "Who starts the day", "Wie de dag begint"],
+    ["{0}% dei giorni", "{0}% of the days", "{0}% van de dagen"],
+    ["Parole e foto", "Words and photos", "Woorden en foto's"],
+    ["parole a messaggio · {0} media", "words per message · {0} media", "woorden per bericht · {0} media"],
+    ["Giorno record: {0} con {1} messaggi.", "Record day: {0} with {1} messages.", "Recorddag: {0} met {1} berichten."],
+    ["Insistenze e silenzi", "Double texts and silences", "Aandringen en stiltes"],
+    ["volte ha riscritto senza risposta", "times wrote again without an answer", "keer opnieuw geschreven zonder antwoord"],
+    ["il più lungo {0} giorni, rotto da {1}.", "the longest {0} days, broken by {1}.", "de langste {0} dagen, verbroken door {1}."],
+    ["Nessun silenzio di oltre 3 giorni.", "No silence of more than 3 days.", "Geen stilte van meer dan 3 dagen."],
+    ["Striscia più lunga: {0} giorni di fila.", "Longest streak: {0} days in a row.", "Langste reeks: {0} dagen op rij."],
+    ["Chiamate", "Calls", "Oproepen"],
+    ["1 chiamata", "1 call", "1 oproep"],
+    ["{0} chiamate", "{0} calls", "{0} oproepen"],
+    ["Fatte, ricevute o perse: il file non dice chi ha chiamato.", "Made, received or missed: the file does not say who called.", "Gebeld, ontvangen of gemist: het bestand zegt niet wie belde."],
+    ["WhatsApp scrive nel file solo i blocchi fatti da te. Quelli dell'altra persona non ci sono, quindi nessuno li può contare.", "WhatsApp only writes in the file the blocks made by you. The other person's are not there, so nobody can count them.", "WhatsApp zet alleen jouw blokkades in het bestand. Die van de ander staan er niet in, dus niemand kan ze tellen."],
+    ["Nel gruppo ci sono {0} persone: qui vedi le {1} che scrivono di più.", "There are {0} people in the group: here you see the {1} who write the most.", "Er zitten {0} mensen in de groep: hier zie je de {1} die het meest schrijven."],
+    ["Ore più attive", "Most active hours", "Drukste uren"],
+    ["Tra le {0} e le {1}", "Between {0} and {1} o'clock", "Tussen {0} en {1} uur"],
+    ["Messaggi per ora del giorno, picco alle {0}", "Messages per hour of the day, peak at {0}", "Berichten per uur van de dag, piek om {0} uur"],
+    ["Mese per mese", "Month by month", "Maand voor maand"],
+    ["Messaggi per mese", "Messages per month", "Berichten per maand"],
+    ["Tono: il mese più dolce è {0} ({1}% di parole belle), il più teso {2} ({3}%). Conta le parole, non capisce l'ironia.", "Tone: the sweetest month is {0} ({1}% kind words), the tensest {2} ({3}%). It counts words, it does not get irony.", "Toon: de liefste maand is {0} ({1}% lieve woorden), de meest gespannen {2} ({3}%). Het telt woorden en snapt geen ironie."],
+    ["La vostra settimana", "Your week", "Jullie week"],
+    ["Mappa dei messaggi per giorno della settimana e ora", "Map of messages by weekday and hour", "Kaart van berichten per weekdag en uur"],
+    ["Il giorno in cui vi scrivete di più: {0}.", "The day you write the most: {0}.", "De dag waarop jullie het meest schrijven: {0}."],
+    ["{0} messaggi · letto il {1}", "{0} messages · read on {1}", "{0} berichten · gelezen op {1}"],
+    ["Dimentica {0}", "Forget {0}", "Vergeet {0}"],
+    ["Copiato. Sono solo numeri, senza nomi e senza messaggi: incollalo nella tua IA.", "Copied. Only numbers, no names and no messages: paste it into your AI.", "Gekopieerd. Alleen cijfers, zonder namen en zonder berichten: plak het in je AI."],
+    ["Copia questo testo e incollalo nella tua IA:", "Copy this text and paste it into your AI:", "Kopieer deze tekst en plak hem in je AI:"],
+    ["Di solito risponde in", "Usually answers in", "Antwoordt meestal binnen"],
+    ["Apre la giornata", "Starts the day", "Begint de dag"],
+    ["Giudizio {0}/100 · {1}", "Verdict {0}/100 · {1}", "Oordeel {0}/100 · {1}"],
+    ["{0} messaggi · striscia di {1} giorni", "{0} messages · {1}-day streak", "{0} berichten · reeks van {1} dagen"],
+    ["Immagine salvata come pizia.png.", "Image saved as pizia.png.", "Afbeelding opgeslagen als pizia.png."],
+    // i testi fissi della pagina (uguali all'HTML)
+    ["L'oracolo delle tue chat", "The oracle of your chats", "Het orakel van je chats"],
+    ["L'angelo avvocato difende, il diavolo detective indaga. Porta il file che WhatsApp crea con «Esporta chat» (.zip o .txt).", "The lawyer angel defends, the detective devil investigates. Bring the file WhatsApp makes with “Export chat” (.zip or .txt).", "De engel-advocaat verdedigt, de duivel-detective onderzoekt. Breng het bestand dat WhatsApp maakt met “Chat exporteren” (.zip of .txt)."],
+    ["Scegli il file", "Choose the file", "Kies het bestand"],
+    ["Installa Pizia sul telefono", "Install Pizia on your phone", "Installeer Pizia op je telefoon"],
+    ["<b>Resta tutto qui.</b> I conti si fanno su questo dispositivo: nessun server, nessun account.", "<b>Everything stays here.</b> The counting happens on this device: no server, no account.", "<b>Alles blijft hier.</b> Het tellen gebeurt op dit apparaat: geen server, geen account."],
+    ["Come si esporta una chat da WhatsApp", "How to export a chat from WhatsApp", "Zo exporteer je een chat uit WhatsApp"],
+    ["Apri la chat e tocca il nome in alto.", "Open the chat and tap the name at the top.", "Open de chat en tik bovenaan op de naam."],
+    ["Scorri fino in fondo e tocca <b>Esporta chat</b>.", "Scroll to the bottom and tap <b>Export chat</b>.", "Scrol naar beneden en tik op <b>Chat exporteren</b>."],
+    ["Scegli <b>Senza media</b>: è più veloce.", "Choose <b>Without media</b>: it is faster.", "Kies <b>Zonder media</b>: dat gaat sneller."],
+    ["Tocca <b>Salva su File</b> (iPhone) o salva il file sul telefono (Android).", "Tap <b>Save to Files</b> (iPhone) or save the file on your phone (Android).", "Tik op <b>Bewaar in Bestanden</b> (iPhone) of sla het bestand op je telefoon op (Android)."],
+    ["Torna qui e tocca «Scegli il file».", "Come back here and tap “Choose the file”.", "Kom hier terug en tik op “Kies het bestand”."],
+    ["Responsi salvati", "Saved readings", "Opgeslagen uitslagen"],
+    ["Salva come immagine", "Save as image", "Bewaar als afbeelding"],
+    ["Copia il riassunto per la tua IA", "Copy the summary for your AI", "Kopieer de samenvatting voor je AI"],
+    ["Un'altra chat", "Another chat", "Nog een chat"],
+    ["Dimentica questo responso", "Forget this reading", "Vergeet deze uitslag"],
+    ["Pizia · un satellite dell'Olimpo", "Pizia · a satellite of Olimpo", "Pizia · een satelliet van Olimpo"]
+  ];
+  const en = {}, nl = {};
+  FRASI.forEach(function (f) { en[f[0]] = f[1]; nl[f[0]] = f[2]; });
+  return { en: en, nl: nl };
+});
+/*LINGUE-FINE*/</script>
+<script>/*APP-INIZIO*/
+/* Pizia · la pagina: disegna il responso, le pagine, le lingue.
+   Le frasi sono scritte in italiano dentro t(): lingue.js le traduce in inglese e olandese.
+   Questo file viene incollato dentro index.html da prove/unisci.cjs. */
 (function () {
   'use strict';
   const $ = (id) => document.getElementById(id);
-  const CHIAVE = 'pizia.responsi';
-  const ETICHETTE = ['Coppia', 'Crush', 'Famiglia', 'Amicizia', 'Lavoro'];
+  const t = Pizia.t;
+  const K = (it) => it; // frase tradotta più tardi con t(variabile)
+  const CHIAVE = 'pizia.responsi', CHIAVE_LINGUA = 'pizia.lingua', CHIAVE_PREMIUM = 'pizia.premium';
+  const ETICHETTE = [K('Coppia'), K('Crush'), K('Famiglia'), K('Amicizia'), K('Lavoro')]; // in memoria restano in italiano
+  const PAGINE = [['giudizio', K('Giudizio')], ['frasi', K('Frasi')], ['numeri', K('Numeri')], ['tempo', K('Tempo')]];
+  const LINGUE = { it: 'it-IT', en: 'en-GB', nl: 'nl-NL' };
   const MAX_NOMI = 6;
-  let aperto = null; // { id, nomeFile, etichetta, salvato, st }
-  let letturaAperta = null; // i messaggi dell'ultima chat caricata: mai salvati
+  // Premium: spento finché «link» è vuoto. link = Payment Link di Stripe; verifica = indirizzo del servizio che conferma il pagamento.
+  const PREMIUM = { link: '', verifica: '', prezzo: '2,99 €', gratis: 3 };
+  if (/[?&]provaPremium=1/.test(location.search)) PREMIUM.link = '#premium'; // solo per provare il blocco: non sblocca niente
+
+  let aperto = null; // { id, etichetta, salvato, st }
+  let letturaAperta = null; // i messaggi (e le foto) dell'ultima chat caricata: mai salvati
+  let lingua = 'it', nf = new Intl.NumberFormat('it-IT');
+  let pagina = 'giudizio', paginaVista = 'giudizio';
 
   // memoria: solo i numeri, mai il testo dei messaggi
   function leggiArchivio() { try { return JSON.parse(localStorage.getItem(CHIAVE)) || []; } catch (e) { return []; } }
   function scriviArchivio(lista) { try { localStorage.setItem(CHIAVE, JSON.stringify(lista.slice(0, 30))); } catch (e) { /* senza memoria si usa lo stesso */ } }
 
-  const nf = new Intl.NumberFormat('it-IT');
-  const dataLunga = (ms) => new Date(ms).toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' });
-  const dataCorta = (ms) => new Date(ms).toLocaleDateString('it-IT', { day: 'numeric', month: 'short', year: 'numeric' });
+  const dataLunga = (ms) => new Date(ms).toLocaleDateString(LINGUE[lingua], { day: 'numeric', month: 'long', year: 'numeric' });
+  const dataCorta = (ms) => new Date(ms).toLocaleDateString(LINGUE[lingua], { day: 'numeric', month: 'short', year: 'numeric' });
+  const giornoSettimana = (g, forma) => new Date(2024, 0, 1 + g).toLocaleDateString(LINGUE[lingua], { weekday: forma }); // 1/1/2024 è lunedì
+  const decimale = (x) => new Intl.NumberFormat(LINGUE[lingua], { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(x);
 
   function el(tag, classe, testo) {
     const n = document.createElement(tag);
@@ -756,6 +1010,7 @@
   }
   function carta(colore, titolo) {
     const c = el('article', 'carta ' + colore);
+    c.dataset.pagina = pagina;
     c.appendChild(el('h2', 'serif', titolo));
     $('carte').appendChild(c);
     return c;
@@ -771,14 +1026,67 @@
   function titoloDi(st) {
     const nomi = st.autori.map((a) => a.nome);
     if (nomi.length <= 2) return nomi;
-    return [nomi[0], 'altri ' + (nomi.length - 1)];
+    return [nomi[0], t('altri {0}', nomi.length - 1)];
+  }
+
+  // ---- lingue ----
+  function linguaIniziale() {
+    let l = null;
+    try { l = localStorage.getItem(CHIAVE_LINGUA); } catch (e) { /* senza memoria */ }
+    if (!LINGUE[l]) l = (navigator.language || 'en').slice(0, 2).toLowerCase();
+    return LINGUE[l] ? l : 'en';
+  }
+  const originali = new Map();
+  function mettiLingua(l) {
+    lingua = l;
+    Pizia.lingua(l === 'it' ? null : PiziaLingue[l]);
+    nf = new Intl.NumberFormat(LINGUE[l]);
+    document.documentElement.lang = l;
+    document.title = t('Pizia · l\'oracolo delle tue chat');
+    // i testi fissi della pagina: l'italiano scritto nell'HTML è la chiave
+    document.querySelectorAll('[data-t]').forEach((n) => {
+      if (!originali.has(n)) originali.set(n, n.innerHTML.trim());
+      n.innerHTML = t(originali.get(n)); // testi nostri, scritti in lingue.js: dentro non c'è nulla della chat
+    });
+    $('etichette').setAttribute('aria-label', t('Che rapporto è'));
+    Array.from($('lingue').children).forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.lingua === l)));
+  }
+  function cambiaLingua(l) {
+    try { localStorage.setItem(CHIAVE_LINGUA, l); } catch (e) { /* senza memoria */ }
+    mettiLingua(l);
+    if (aperto) mostra(aperto, true); else disegnaArchivio();
+  }
+  Object.keys(LINGUE).forEach((l) => {
+    const b = el('button', null, l.toUpperCase());
+    b.type = 'button'; b.dataset.lingua = l;
+    b.setAttribute('aria-label', { it: 'Italiano', en: 'English', nl: 'Nederlands' }[l]);
+    b.onclick = () => cambiaLingua(l);
+    $('lingue').appendChild(b);
+  });
+
+  // ---- premium ----
+  function sbloccato() {
+    if (!PREMIUM.link) return true;
+    try { return localStorage.getItem(CHIAVE_PREMIUM) === '1'; } catch (e) { return false; }
+  }
+  async function controllaPagamento() {
+    const m = /[?&]pagato=([\w-]{10,200})/.exec(location.search);
+    if (!m || !PREMIUM.verifica) return;
+    let ok = false;
+    try {
+      const risposta = await fetch(PREMIUM.verifica + '?s=' + encodeURIComponent(m[1]));
+      ok = (await risposta.json()).ok === true;
+      if (ok) localStorage.setItem(CHIAVE_PREMIUM, '1');
+    } catch (e) { ok = false; }
+    $('avvisoCasa').textContent = ok ? t('Premium attivo su questo dispositivo. Grazie!') : t('Non riesco a confermare il pagamento. Riapri il link che hai ricevuto dopo aver pagato.');
+    try { history.replaceState(null, '', location.pathname); } catch (e) { /* resta l'indirizzo com'è */ }
   }
 
   // La giostra del martello: le chat finiscono nella macchina, il peso sale fino al giudizio.
-  const SCENA = (function () {
+  function scena() {
     const colori = ['#e23b4e', '#ff7b54', '#ffb23f', '#f2c94c', '#9acd32', '#22c9a5', '#3fb6ff'];
     const posti = [[20, 60], [72, 28], [100, 96], [28, 134], [92, 158], [226, 56], [282, 96], [246, 148], [300, 36]];
-    let s = '<svg class="scena" viewBox="0 0 340 380" role="img" aria-label="Giostra del martello con angelo avvocato e diavolo detective">';
+    let s = '<svg class="scena" viewBox="0 0 340 380" role="img">';
     posti.forEach(function (p, i) {
       s += '<g class="vola" data-x="' + p[0] + '" data-y="' + p[1] + '"><g class="bolla" style="animation-delay:-' + (i * 0.37).toFixed(2) + 's">' +
         '<rect x="' + p[0] + '" y="' + p[1] + '" width="34" height="22" rx="8" fill="' + (i % 2 ? '#a8f1d6' : '#fff') + '"/>' +
@@ -791,36 +1099,38 @@
     s += '<g id="macchina"><path d="M98 312L54 290v62l44-14z" fill="#ffd23f" stroke="#10233a" stroke-width="3" stroke-linejoin="round"/>' +
       '<rect x="96" y="300" width="150" height="64" rx="16" fill="#10233a" stroke="#fff" stroke-width="3"/>' +
       '<circle cx="120" cy="322" r="6" fill="#ff5d8f"/><circle cx="140" cy="322" r="6" fill="#ffd23f"/><circle cx="160" cy="322" r="6" fill="#22c9a5"/>' +
-      '<text x="171" y="350" text-anchor="middle" font-size="15" font-weight="800" fill="#fff" font-family="inherit">MACCHINA DELLA VERITÀ</text></g>';
+      '<text id="targa" x="171" y="350" text-anchor="middle" font-size="14" font-weight="800" fill="#fff" font-family="inherit"></text></g>';
     s += '<rect x="250" y="352" width="60" height="12" rx="6" fill="#e23b4e" stroke="#10233a" stroke-width="3"/>';
     s += '<use href="#angelo" x="0" y="196" width="78" height="94"/><use href="#diavolo" x="262" y="196" width="78" height="94"/>';
     s += '<g id="martello" style="transform-origin:272px 262px"><path d="M272 262V186" stroke="#7d5733" stroke-width="9" stroke-linecap="round"/>' +
       '<rect x="248" y="164" width="48" height="28" rx="7" fill="#ffd23f" stroke="#10233a" stroke-width="3"/></g>';
     return s + '</svg>';
-  })();
+  }
 
   function giostra(r) {
     const v = Pizia.verdetto(r.st, r.etichetta);
-    const c = carta('giostra', 'Vuoi sapere il nostro giudizio?');
-    const scena = el('div');
-    scena.innerHTML = SCENA; // disegno fisso scritto qui sopra: dentro non c'è nulla della chat
-    c.appendChild(scena);
-    const bottone = el('button', 'bottone', 'Dai la martellata');
+    const c = carta('giostra', t('Vuoi sapere il nostro giudizio?'));
+    const palco = el('div');
+    palco.innerHTML = scena(); // disegno fisso scritto qui sopra: dentro non c'è nulla della chat
+    palco.querySelector('svg').setAttribute('aria-label', t('Giostra del martello con angelo avvocato e diavolo detective'));
+    palco.querySelector('#targa').textContent = t('MACCHINA DELLA VERITÀ');
+    c.appendChild(palco);
+    const bottone = el('button', 'bottone', t('Dai la martellata'));
     bottone.type = 'button';
     bottone.id = 'martella';
     c.appendChild(bottone);
     const esito = el('p', 'esito'); esito.setAttribute('aria-live', 'polite');
     const punti = el('p', 'punti'), conto = el('p', 'conto');
     c.appendChild(esito); c.appendChild(punti); c.appendChild(conto);
-    c.appendChild(el('p', 'nota', 'È un gioco con regole fisse, non una sentenza: i numeri non conoscono la vostra vita.'));
-    const q = (sel) => scena.querySelector(sel);
+    c.appendChild(el('p', 'nota', t('È un gioco con regole fisse, non una sentenza: i numeri non conoscono la vostra vita.')));
+    const q = (sel) => palco.querySelector(sel);
     let vive = [];
     function fine() {
       esito.textContent = v.titolo;
-      punti.textContent = v.punti + ' su 100';
-      conto.textContent = 'Si parte da ' + v.base + ' (equilibrio). ' + v.voci.map((x) => x.nome + ' ' + (x.punti > 0 ? '+' : '') + x.punti).join(' · ');
+      punti.textContent = t('{0} su 100', v.punti);
+      conto.textContent = t('Si parte da {0} (equilibrio).', v.base) + ' ' + v.voci.map((x) => x.nome + ' ' + (x.punti > 0 ? '+' : '') + x.punti).join(' · ');
       bottone.disabled = false;
-      bottone.textContent = 'Rifai la martellata';
+      bottone.textContent = t('Rifai la martellata');
     }
     bottone.onclick = async () => {
       bottone.disabled = true;
@@ -830,10 +1140,10 @@
       const fermo = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       const anima = (nodo, passi, opz) => { const a = nodo.animate(passi, Object.assign({ fill: 'forwards' }, opz)); vive.push(a); return a.finished; };
       try {
-        if (fermo || !scena.animate) { q('#peso').style.transform = 'translateY(' + salita + 'px)'; fine(); return; }
+        if (fermo || !palco.animate) { q('#peso').style.transform = 'translateY(' + salita + 'px)'; fine(); return; }
         q('#peso').style.transform = '';
         q('#macchina').classList.add('trema');
-        await Promise.all(Array.from(scena.querySelectorAll('.vola')).map((g, i) => {
+        await Promise.all(Array.from(palco.querySelectorAll('.vola')).map((g, i) => {
           const dx = 62 - (+g.dataset.x + 17), dy = 320 - (+g.dataset.y + 11);
           g.style.transformOrigin = (+g.dataset.x + 17) + 'px ' + (+g.dataset.y + 11) + 'px';
           return anima(g, [{ transform: 'translate(0,0) scale(1)', opacity: 1 }, { transform: 'translate(' + dx + 'px,' + dy + 'px) scale(.15)', opacity: 0 }], { duration: 800, delay: i * 90, easing: 'ease-in' });
@@ -853,31 +1163,31 @@
   function ruota(r) {
     const st = r.st;
     if (!st.temi) return;
-    let temi = st.temi.filter((t) => t.totale > 0);
+    let temi = st.temi.filter((x) => x.totale > 0);
     if (!temi.length) return;
     if (r.etichetta === 'Amicizia' || r.etichetta === 'Famiglia' || r.etichetta === 'Lavoro') {
-      const primaAmici = (t) => (t.id === 'amici' || t.id === 'soloamici' || t.id === 'scuse') ? 0 : 1;
+      const primaAmici = (x) => (x.id === 'amici' || x.id === 'soloamici' || x.id === 'scuse') ? 0 : 1;
       temi = temi.slice().sort((a, b) => primaAmici(a) - primaAmici(b));
     }
     const lettura = (letturaAperta && letturaAperta.id === r.id) ? letturaAperta.lettura : null;
-    const c = carta('marmo', 'La ruota delle parole');
-    const somma = temi.reduce((a, t) => a + t.totale, 0);
+    const c = carta('marmo', t('La ruota delle parole'));
+    const somma = temi.reduce((a, x) => a + x.totale, 0);
     const NS = 'http://www.w3.org/2000/svg';
     const svg = document.createElementNS(NS, 'svg');
     svg.setAttribute('viewBox', '0 0 200 200'); svg.setAttribute('class', 'ruota');
-    svg.setAttribute('role', 'img'); svg.setAttribute('aria-label', 'Ruota dei temi della chat');
+    svg.setAttribute('role', 'img'); svg.setAttribute('aria-label', t('Ruota dei temi della chat'));
     let giro = -Math.PI / 2;
     const punto = (raggio, ang) => (100 + raggio * Math.cos(ang)).toFixed(2) + ' ' + (100 + raggio * Math.sin(ang)).toFixed(2);
     const spicchi = {};
-    temi.forEach((t) => {
-      const ampio = Math.max(0.02, t.totale / somma * Math.PI * 2 - 0.02), a0 = giro, a1 = giro + ampio;
-      giro += t.totale / somma * Math.PI * 2;
+    temi.forEach((x) => {
+      const ampio = Math.max(0.02, x.totale / somma * Math.PI * 2 - 0.02), a0 = giro, a1 = giro + ampio;
+      giro += x.totale / somma * Math.PI * 2;
       const p = document.createElementNS(NS, 'path');
       p.setAttribute('d', 'M' + punto(94, a0) + 'A94 94 0 ' + (ampio > Math.PI ? 1 : 0) + ' 1 ' + punto(94, a1) + 'L' + punto(52, a1) + 'A52 52 0 ' + (ampio > Math.PI ? 1 : 0) + ' 0 ' + punto(52, a0) + 'Z');
-      p.setAttribute('fill', t.colore);
-      const tt = document.createElementNS(NS, 'title'); tt.textContent = t.nome + ': ' + nf.format(t.totale); p.appendChild(tt);
-      p.onclick = () => scegli({ tema: t.id });
-      spicchi[t.id] = p;
+      p.setAttribute('fill', x.colore);
+      const tt = document.createElementNS(NS, 'title'); tt.textContent = t(x.nome) + ': ' + nf.format(x.totale); p.appendChild(tt);
+      p.onclick = () => scegli({ tema: x.id });
+      spicchi[x.id] = p;
       svg.appendChild(p);
     });
     const centro = document.createElementNS(NS, 'text');
@@ -889,26 +1199,26 @@
 
     const tag = el('div', 'tag');
     const bottoni = {};
-    temi.forEach((t) => {
+    temi.forEach((x) => {
       const b = el('button');
       b.type = 'button';
-      const pallino = el('i'); pallino.style.background = t.colore;
+      const pallino = el('i'); pallino.style.background = x.colore;
       b.appendChild(pallino);
-      b.appendChild(document.createTextNode(t.nome + ' ' + nf.format(t.totale)));
+      b.appendChild(document.createTextNode(t(x.nome) + ' ' + nf.format(x.totale)));
       b.setAttribute('aria-pressed', 'false');
-      b.onclick = () => scegli({ tema: t.id });
-      bottoni[t.id] = b;
+      b.onclick = () => scegli({ tema: x.id });
+      bottoni[x.id] = b;
       tag.appendChild(b);
     });
     c.appendChild(tag);
 
     const rigaCerca = el('div', 'cercaRiga');
-    const campo = el('input'); campo.type = 'search'; campo.placeholder = 'Cerca una parola tua'; campo.setAttribute('aria-label', 'Cerca una parola nella chat');
-    const chi = el('select'); chi.setAttribute('aria-label', 'Chi l\'ha scritto');
-    [['', 'Tutti']].concat(st.autori.slice(0, MAX_NOMI).map((a) => [a.nome, a.nome])).forEach((o) => { const op = el('option', null, o[1]); op.value = o[0]; chi.appendChild(op); });
+    const campo = el('input'); campo.type = 'search'; campo.placeholder = t('Cerca una parola tua'); campo.setAttribute('aria-label', t('Cerca una parola nella chat'));
+    const chi = el('select'); chi.setAttribute('aria-label', t('Chi l\'ha scritto'));
+    [['', t('Tutti')]].concat(st.autori.slice(0, MAX_NOMI).map((a) => [a.nome, a.nome])).forEach((o) => { const op = el('option', null, o[1]); op.value = o[0]; chi.appendChild(op); });
     rigaCerca.appendChild(campo); rigaCerca.appendChild(chi);
     c.appendChild(rigaCerca);
-    const conta = el('p', 'nota', lettura ? 'Tocca un tag o uno spicchio per leggere le frasi. Restano su questo dispositivo e non vengono salvate.' : 'Per leggere le frasi ricarica il file: Pizia non conserva i messaggi.');
+    const conta = el('p', 'nota', lettura ? t('Tocca un tag o uno spicchio per leggere le frasi. Restano su questo dispositivo e non vengono salvate.') : t('Per leggere le frasi ricarica il file: Pizia non conserva i messaggi.'));
     c.appendChild(conta);
     const frasi = el('div', 'frasi'); frasi.hidden = true;
     c.appendChild(frasi);
@@ -917,14 +1227,24 @@
     let scelta = null, viste = 0, trovate = [];
     function altre() {
       const vecchio = frasi.querySelector('button'); if (vecchio) vecchio.remove();
-      trovate.slice(viste, viste + 60).forEach((m) => {
+      const libero = sbloccato();
+      const passo = libero ? 60 : Math.max(0, PREMIUM.gratis - viste);
+      trovate.slice(viste, viste + passo).forEach((m) => {
         const f = el('div', 'frase');
-        f.appendChild(el('small', null, m.autore + ' · ' + new Date(m.quando).toLocaleString('it-IT', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })));
+        f.appendChild(el('small', null, m.autore + ' · ' + new Date(m.quando).toLocaleString(LINGUE[lingua], { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })));
         f.appendChild(document.createTextNode(m.testo.length > 600 ? m.testo.slice(0, 600) + '…' : m.testo));
         frasi.appendChild(f);
       });
-      viste = Math.min(trovate.length, viste + 60);
-      if (viste < trovate.length) { const b = el('button', 'piano', 'Mostra altre ' + Math.min(60, trovate.length - viste)); b.type = 'button'; b.onclick = altre; frasi.appendChild(b); }
+      viste = Math.min(trovate.length, viste + passo);
+      if (viste >= trovate.length) return;
+      if (libero) { const b = el('button', 'piano', t('Mostra altre {0}', Math.min(60, trovate.length - viste))); b.type = 'button'; b.onclick = altre; frasi.appendChild(b); return; }
+      const box = el('div', 'premium');
+      box.appendChild(el('strong', null, t('Hai letto {0} frasi su {1}.', viste, nf.format(trovate.length))));
+      const paga = el('a', 'bottone', t('Sblocca tutte le frasi · {0}', PREMIUM.prezzo));
+      paga.href = PREMIUM.link; paga.id = 'sblocca';
+      box.appendChild(paga);
+      box.appendChild(el('span', 'perche', t('Si paga una volta sola. La chat resta sul tuo dispositivo: chi incassa non riceve nessun messaggio.')));
+      frasi.appendChild(box);
     }
     function scegli(cosa) {
       if (cosa) scelta = cosa;
@@ -934,8 +1254,8 @@
       const per = {};
       trovate.forEach((m) => { per[m.autore] = (per[m.autore] || 0) + 1; });
       conta.textContent = trovate.length
-        ? nf.format(trovate.length) + (trovate.length === 1 ? ' frase' : ' frasi') + ' · ' + Object.keys(per).map((n) => n + ' ' + nf.format(per[n])).join(' · ') + '. Le parole non dicono il contesto: leggile.'
-        : 'Nessuna frase trovata.';
+        ? (trovate.length === 1 ? t('1 frase') : t('{0} frasi', nf.format(trovate.length))) + ' · ' + Object.keys(per).map((n) => n + ' ' + nf.format(per[n])).join(' · ') + '. ' + t('Le parole non dicono il contesto: leggile.')
+        : t('Nessuna frase trovata.');
       frasi.textContent = ''; viste = 0; frasi.hidden = !trovate.length;
       altre();
     }
@@ -943,44 +1263,70 @@
     chi.onchange = () => scegli();
   }
 
-  function mostra(r) {
+  function disegnaFoto(md) {
+    if (!md || md.foto + md.video + md.audio <= 0) return;
+    if (!md.indirizzi) md.indirizzi = md.anteprime.map((b) => URL.createObjectURL(b));
+    pagina = 'frasi';
+    const c = carta('porpora', t('Foto della chat'));
+    c.appendChild(el('p', 'grande', t('{0} foto', nf.format(md.foto))));
+    c.appendChild(el('p', 'nota', t('{0} video · {1} audio. Qui sotto le ultime foto: restano sul tuo dispositivo e non vengono salvate.', nf.format(md.video), nf.format(md.audio))));
+    const gal = el('div', 'galleria');
+    md.indirizzi.forEach((u) => { const im = new Image(); im.src = u; im.alt = t('Foto della chat'); im.loading = 'lazy'; gal.appendChild(im); });
+    c.appendChild(gal);
+  }
+
+  // ---- le pagine del responso ----
+  function mostraPagina(id) {
+    const carte = Array.from($('carte').children);
+    const piene = PAGINE.filter((p) => carte.some((c) => c.dataset.pagina === p[0]));
+    if (!piene.some((p) => p[0] === id)) id = piene.length ? piene[0][0] : 'giudizio';
+    paginaVista = id;
+    carte.forEach((c) => { c.hidden = c.dataset.pagina !== id; });
+    const barra = $('pagine');
+    barra.textContent = '';
+    piene.forEach((p) => {
+      const b = el('button', null, t(p[1]));
+      b.type = 'button'; b.setAttribute('role', 'tab'); b.dataset.pagina = p[0];
+      b.setAttribute('aria-selected', String(p[0] === id));
+      b.onclick = () => { mostraPagina(p[0]); const y = $('pagine').getBoundingClientRect().top + window.scrollY - 8; if (window.scrollY > y) window.scrollTo(0, y); };
+      barra.appendChild(b);
+    });
+  }
+
+  function mostra(r, stessa) {
+    const nuova = !stessa && !(aperto && aperto.id === r.id);
     aperto = r;
     const st = r.st;
     const autori = st.autori.slice(0, MAX_NOMI);
     $('carte').textContent = '';
 
-    const t = $('titolo');
-    t.textContent = '';
+    const tit = $('titolo');
+    tit.textContent = '';
     const nomi = titoloDi(st);
-    t.appendChild(el('span', null, nomi[0] || 'Chat'));
-    if (nomi[1]) { t.appendChild(el('span', 'e', ' e ')); t.appendChild(el('span', 'b', nomi[1])); }
+    tit.appendChild(el('span', null, nomi[0] || 'Chat'));
+    if (nomi[1]) { tit.appendChild(el('span', 'e', ' ' + t('e') + ' ')); tit.appendChild(el('span', 'b', nomi[1])); }
     $('periodo').textContent = st.primo
-      ? nf.format(st.totale) + ' messaggi in ' + nf.format(st.giorniAttivi) + ' giorni · dal ' + dataCorta(st.primo.quando) + ' al ' + dataCorta(st.ultimo)
+      ? t('{0} messaggi in {1} giorni · dal {2} al {3}', nf.format(st.totale), nf.format(st.giorniAttivi), dataCorta(st.primo.quando), dataCorta(st.ultimo))
       : '';
 
     const et = $('etichette');
     et.textContent = '';
     ETICHETTE.forEach((nome) => {
-      const b = el('button', null, nome);
+      const b = el('button', null, t(nome));
       b.type = 'button';
       b.setAttribute('aria-pressed', String(r.etichetta === nome));
-      b.onclick = () => { r.etichetta = r.etichetta === nome ? null : nome; salva(r); mostra(r); };
+      b.onclick = () => { r.etichetta = r.etichetta === nome ? null : nome; salva(r); mostra(r, true); };
       et.appendChild(b);
     });
 
+    // pagina 1 · il giudizio
+    pagina = 'giudizio';
     giostra(r);
-    ruota(r);
-
-    let c = carta('ulivo', 'Messaggi');
-    autori.forEach((a) => riga(c, a.nome, nf.format(a.messaggi), Math.round(a.messaggi / st.totale * 100) + '%'));
-    const barra = el('div', 'barra');
-    autori.forEach((a) => { const i = el('i'); i.style.flex = String(a.messaggi); barra.appendChild(i); });
-    c.appendChild(barra);
-
+    let c;
     const segni = Pizia.segnali(st);
     if (segni.length) {
-      c = carta('marmo', 'Segnali');
-      const NOMI = { attenzione: 'Da guardare', buono: 'Buon segno', nota: 'Da sapere' };
+      c = carta('marmo', t('Segnali'));
+      const NOMI = { attenzione: t('Da guardare'), buono: t('Buon segno'), nota: t('Da sapere') };
       segni.forEach((s) => {
         const box = el('div', 'segno ' + s.tono);
         box.appendChild(el('span', 'pillola', NOMI[s.tono]));
@@ -988,88 +1334,123 @@
         box.appendChild(el('span', 'perche', s.testo));
         c.appendChild(box);
       });
-      c.appendChild(el('p', 'nota', 'Sono conti fatti con regole fisse, non giudizi. I numeri non sanno perché succede una cosa.'));
+      c.appendChild(el('p', 'nota', t('Sono conti fatti con regole fisse, non giudizi. I numeri non sanno perché succede una cosa.')));
+    }
+    if (st.equilibrio != null) {
+      c = carta('ulivo', t('Equilibrio'));
+      c.appendChild(el('p', 'grande', t('{0} su 100', st.equilibrio)));
+      c.appendChild(el('p', 'nota', t('Quanto lo sforzo è diviso in parti uguali: messaggi, chi apre la giornata, velocità di risposta. Non misura l\'amore.')));
     }
 
-    c = carta('porpora', 'Tempo medio di risposta');
-    autori.forEach((a) => riga(c, a.nome, Pizia.durata(a.rispostaMediaMs), a.risposte ? 'di solito ' + Pizia.durata(a.rispostaMedianaMs) : ''));
-    c.appendChild(el('p', 'nota', 'Conta solo quando cambia chi scrive. I silenzi oltre 24 ore restano fuori. «Di solito» è il tempo di mezzo: una notte di sonno non lo sposta.'));
-
-    if (st.primo) {
-      c = carta('oro', 'Primo messaggio');
-      c.appendChild(el('p', 'grande', dataLunga(st.primo.quando)));
-      c.appendChild(el('p', 'nota', 'Ha scritto per primo: ' + st.primo.autore));
-      if (st.primo.testo) c.appendChild(el('p', 'detto', st.primo.testo.length > 240 ? st.primo.testo.slice(0, 240) + '…' : st.primo.testo));
-    }
-
-    c = carta('egeo', 'Chi apre la giornata');
-    autori.forEach((a) => riga(c, a.nome, nf.format(a.apreGiornata), Math.round(a.apreGiornata / st.giorniAttivi * 100) + '% dei giorni'));
-
-    c = carta('marmo', 'Ore più attive');
-    c.appendChild(el('p', 'grande', 'Tra le ' + st.oraPicco + ' e le ' + ((st.oraPicco + 1) % 24)));
-    const ore = el('div', 'ore');
-    const massimo = Math.max.apply(null, st.ore) || 1;
-    st.ore.forEach((n, h) => {
-      const i = el('i', h === st.oraPicco ? 'picco' : null);
-      i.style.height = Math.max(2, n / massimo * 100) + '%';
-      i.title = h + ':00 · ' + nf.format(n) + ' messaggi';
-      ore.appendChild(i);
-    });
-    ore.setAttribute('role', 'img');
-    ore.setAttribute('aria-label', 'Messaggi per ora del giorno, picco alle ' + st.oraPicco);
-    c.appendChild(ore);
-    const assi = el('div', 'assi');
-    ['0', '6', '12', '18', '23'].forEach((x) => assi.appendChild(el('span', null, x)));
-    c.appendChild(assi);
-
-    c = carta('terracotta', 'Parole e foto');
-    autori.forEach((a) => {
-      const scritti = a.messaggi - a.media - a.eliminati;
-      riga(c, a.nome, scritti ? (a.parole / scritti).toFixed(1).replace('.', ',') : '—', 'parole a messaggio · ' + nf.format(a.media) + ' media');
-    });
-    if (st.giornoRecord) {
-      const p = st.giornoRecord.data.split('-');
-      c.appendChild(el('p', 'nota', 'Giorno record: ' + dataLunga(new Date(+p[0], +p[1] - 1, +p[2]).getTime()) + ' con ' + nf.format(st.giornoRecord.messaggi) + ' messaggi.'));
-    }
-
+    // pagina 2 · le frasi e le parole
+    pagina = 'frasi';
+    ruota(r);
     if (autori[0] && autori[0].emojiTop) {
       if (autori.some((a) => a.emojiTop.length || (a.paroleTop && a.paroleTop.length))) {
-        c = carta('oro', 'Emoji e parole');
+        c = carta('oro', t('Emoji e parole'));
         autori.forEach((a) => {
           c.appendChild(el('p', 'chi2', a.nome));
           if (a.emojiTop.length) c.appendChild(el('p', 'faccine', a.emojiTop.map((e) => e[0]).join(' ')));
           if (a.paroleTop && a.paroleTop.length) c.appendChild(el('p', 'parole', a.paroleTop.map((p) => p[0]).join(' · ')));
         });
       }
+      c = carta('terracotta', t('Affetto, scuse e notte'));
+      autori.forEach((a) => riga(c, a.nome, nf.format(a.affetto), t('parole d\'affetto · {0} scuse · {1} di notte', nf.format(a.scuse), nf.format(a.notte))));
+      c.appendChild(el('p', 'nota', t('Affetto: ti amo, te quiero, love you, ik hou van je e simili. Notte: tra mezzanotte e le 5.')));
+    }
+    if (autori.some((a) => a.link > 0)) {
+      c = carta('marmo', t('Link mandati'));
+      autori.forEach((a) => riga(c, a.nome, nf.format(a.link || 0), t('link')));
+      if (st.sitiTop && st.sitiTop.length) c.appendChild(el('p', 'parole', st.sitiTop.map((x) => x[0]).join(' · ')));
+    }
+    if (letturaAperta && letturaAperta.id === r.id) disegnaFoto(letturaAperta.md);
 
-      c = carta('porpora', 'Insistenze e silenzi');
-      autori.forEach((a) => riga(c, a.nome, nf.format(a.insistenze), 'volte ha riscritto senza risposta'));
+    // pagina 3 · i numeri
+    pagina = 'numeri';
+    c = carta('ulivo', t('Messaggi'));
+    autori.forEach((a) => riga(c, a.nome, nf.format(a.messaggi), Math.round(a.messaggi / st.totale * 100) + '%'));
+    const barra = el('div', 'barra');
+    autori.forEach((a) => { const i = el('i'); i.style.flex = String(a.messaggi); barra.appendChild(i); });
+    c.appendChild(barra);
+
+    c = carta('porpora', t('Tempo medio di risposta'));
+    autori.forEach((a) => riga(c, a.nome, Pizia.durata(a.rispostaMediaMs), a.risposte ? t('di solito {0}', Pizia.durata(a.rispostaMedianaMs)) : ''));
+    c.appendChild(el('p', 'nota', t('Conta solo quando cambia chi scrive. I silenzi oltre 24 ore restano fuori. «Di solito» è il tempo di mezzo: una notte di sonno non lo sposta.')));
+
+    if (st.primo) {
+      c = carta('oro', t('Primo messaggio'));
+      c.appendChild(el('p', 'grande', dataLunga(st.primo.quando)));
+      c.appendChild(el('p', 'nota', t('Ha scritto per primo: {0}', st.primo.autore)));
+      if (st.primo.testo) c.appendChild(el('p', 'detto', st.primo.testo.length > 240 ? st.primo.testo.slice(0, 240) + '…' : st.primo.testo));
+    }
+
+    c = carta('egeo', t('Chi apre la giornata'));
+    autori.forEach((a) => riga(c, a.nome, nf.format(a.apreGiornata), t('{0}% dei giorni', Math.round(a.apreGiornata / st.giorniAttivi * 100))));
+
+    c = carta('terracotta', t('Parole e foto'));
+    autori.forEach((a) => {
+      const scritti = a.messaggi - a.media - a.eliminati;
+      riga(c, a.nome, scritti ? decimale(a.parole / scritti) : '—', t('parole a messaggio · {0} media', nf.format(a.media)));
+    });
+    if (st.giornoRecord) {
+      const p = st.giornoRecord.data.split('-');
+      c.appendChild(el('p', 'nota', t('Giorno record: {0} con {1} messaggi.', dataLunga(new Date(+p[0], +p[1] - 1, +p[2]).getTime()), nf.format(st.giornoRecord.messaggi))));
+    }
+
+    if (autori[0] && autori[0].emojiTop) {
+      c = carta('porpora', t('Insistenze e silenzi'));
+      autori.forEach((a) => riga(c, a.nome, nf.format(a.insistenze), t('volte ha riscritto senza risposta')));
       c.appendChild(el('p', 'nota', (st.silenzioMax
-        ? nf.format(st.silenzi) + (st.silenzi === 1 ? ' silenzio' : ' silenzi') + ' di oltre 3 giorni; il più lungo ' + Math.round(st.silenzioMax.ms / 86400000) + ' giorni, rotto da ' + st.silenzioMax.rotto + '. '
-        : 'Nessun silenzio di oltre 3 giorni. ') + 'Striscia più lunga: ' + nf.format(st.striscia) + ' giorni di fila.'));
-
-      c = carta('terracotta', 'Affetto, scuse e notte');
-      autori.forEach((a) => riga(c, a.nome, nf.format(a.affetto), 'parole d\'affetto · ' + nf.format(a.scuse) + ' scuse · ' + nf.format(a.notte) + ' di notte'));
-      c.appendChild(el('p', 'nota', 'Affetto: ti amo, te quiero, ti voglio bene e simili. Notte: tra mezzanotte e le 5.'));
+        ? (st.silenzi === 1 ? t('1 silenzio di oltre 3 giorni') : t('{0} silenzi di oltre 3 giorni', nf.format(st.silenzi))) + '; ' + t('il più lungo {0} giorni, rotto da {1}.', Math.round(st.silenzioMax.ms / 86400000), st.silenzioMax.rotto)
+        : t('Nessun silenzio di oltre 3 giorni.')) + ' ' + t('Striscia più lunga: {0} giorni di fila.', nf.format(st.striscia))));
+    }
+    if (st.chiamate > 0) {
+      c = carta('egeo', t('Chiamate'));
+      c.appendChild(el('p', 'grande', st.chiamate === 1 ? t('1 chiamata') : t('{0} chiamate', nf.format(st.chiamate))));
+      c.appendChild(el('p', 'nota', t('Fatte, ricevute o perse: il file non dice chi ha chiamato.')));
+    }
+    if (st.blocchiTuoi > 0) {
+      c = carta('porpora', t('Blocchi'));
+      c.appendChild(el('p', 'grande', st.blocchiTuoi === 1 ? t('Hai bloccato questa chat {0} volta', 1) : t('Hai bloccato questa chat {0} volte', st.blocchiTuoi)));
+      c.appendChild(el('p', 'nota', t('WhatsApp scrive nel file solo i blocchi fatti da te. Quelli dell\'altra persona non ci sono, quindi nessuno li può contare.')));
+    }
+    if (st.autori.length > MAX_NOMI) {
+      const avviso = el('p', 'periodo', t('Nel gruppo ci sono {0} persone: qui vedi le {1} che scrivono di più.', st.autori.length, MAX_NOMI));
+      avviso.dataset.pagina = 'numeri';
+      $('carte').appendChild(avviso);
     }
 
-    if (st.equilibrio != null) {
-      c = carta('ulivo', 'Equilibrio');
-      c.appendChild(el('p', 'grande', st.equilibrio + ' su 100'));
-      c.appendChild(el('p', 'nota', 'Quanto lo sforzo è diviso in parti uguali: messaggi, chi apre la giornata, velocità di risposta. Non misura l\'amore.'));
-    }
+    // pagina 4 · il tempo
+    pagina = 'tempo';
+    c = carta('marmo', t('Ore più attive'));
+    c.appendChild(el('p', 'grande', t('Tra le {0} e le {1}', st.oraPicco, (st.oraPicco + 1) % 24)));
+    const ore = el('div', 'ore');
+    const massimo = Math.max.apply(null, st.ore) || 1;
+    st.ore.forEach((n, h) => {
+      const i = el('i', h === st.oraPicco ? 'picco' : null);
+      i.style.height = Math.max(2, n / massimo * 100) + '%';
+      i.title = h + ':00 · ' + nf.format(n);
+      ore.appendChild(i);
+    });
+    ore.setAttribute('role', 'img');
+    ore.setAttribute('aria-label', t('Messaggi per ora del giorno, picco alle {0}', st.oraPicco));
+    c.appendChild(ore);
+    const assi = el('div', 'assi');
+    ['0', '6', '12', '18', '23'].forEach((x) => assi.appendChild(el('span', null, x)));
+    c.appendChild(assi);
+
     if (st.mesi && st.mesi.length > 1) {
-      c = carta('oro', 'Mese per mese');
+      c = carta('oro', t('Mese per mese'));
       const mx = Math.max.apply(null, st.mesi.map((m) => m.totale)) || 1;
       const gr = el('div', 'ore');
       st.mesi.forEach((m) => {
         const i = el('i', m.totale === mx ? 'picco' : null);
         i.style.height = Math.max(2, m.totale / mx * 100) + '%';
-        i.title = m.mese + ' · ' + nf.format(m.totale) + ' messaggi';
+        i.title = m.mese + ' · ' + nf.format(m.totale);
         gr.appendChild(i);
       });
       gr.setAttribute('role', 'img');
-      gr.setAttribute('aria-label', 'Messaggi per mese');
+      gr.setAttribute('aria-label', t('Messaggi per mese'));
       c.appendChild(gr);
       const as = el('div', 'assi');
       [st.mesi[0].mese, st.mesi[st.mesi.length - 1].mese].forEach((x) => as.appendChild(el('span', null, x)));
@@ -1078,16 +1459,17 @@
       if (conTono.length) {
         const quota = (m) => m.belli / (m.belli + m.brutti);
         const su = conTono.reduce((a, b) => quota(b) > quota(a) ? b : a), giu = conTono.reduce((a, b) => quota(b) < quota(a) ? b : a);
-        c.appendChild(el('p', 'nota', 'Tono: il mese più dolce è ' + su.mese + ' (' + Math.round(quota(su) * 100) + '% di parole belle), il più teso ' + giu.mese + ' (' + Math.round(quota(giu) * 100) + '%). Conta le parole, non capisce l\'ironia.'));
+        c.appendChild(el('p', 'nota', t('Tono: il mese più dolce è {0} ({1}% di parole belle), il più teso {2} ({3}%). Conta le parole, non capisce l\'ironia.', su.mese, Math.round(quota(su) * 100), giu.mese, Math.round(quota(giu) * 100))));
       }
     }
     if (st.settimana) {
-      c = carta('egeo', 'La vostra settimana');
+      c = carta('egeo', t('La vostra settimana'));
       const mxs = Math.max.apply(null, st.settimana.map((g) => Math.max.apply(null, g))) || 1;
       const tab = el('div', 'mappa');
-      ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'].forEach((nome, g) => {
+      st.settimana.forEach((giorno, g) => {
+        const nome = giornoSettimana(g, 'short');
         tab.appendChild(el('span', null, nome));
-        st.settimana[g].forEach((n, h) => {
+        giorno.forEach((n, h) => {
           const q = el('i');
           q.style.opacity = (0.08 + 0.92 * n / mxs).toFixed(2);
           q.title = nome + ' ' + h + ':00 · ' + nf.format(n);
@@ -1095,35 +1477,17 @@
         });
       });
       tab.setAttribute('role', 'img');
-      tab.setAttribute('aria-label', 'Mappa dei messaggi per giorno della settimana e ora');
+      tab.setAttribute('aria-label', t('Mappa dei messaggi per giorno della settimana e ora'));
       c.appendChild(tab);
       const tot = st.settimana.map((g) => g.reduce((a, b) => a + b, 0));
       const top = tot.indexOf(Math.max.apply(null, tot));
-      c.appendChild(el('p', 'nota', 'Il giorno in cui vi scrivete di più: ' + ['lunedì', 'martedì', 'mercoledì', 'giovedì', 'venerdì', 'sabato', 'domenica'][top] + '.'));
-    }
-    if (autori.some((a) => a.link > 0)) {
-      c = carta('marmo', 'Link mandati');
-      autori.forEach((a) => riga(c, a.nome, nf.format(a.link || 0), 'link'));
-      if (st.sitiTop && st.sitiTop.length) c.appendChild(el('p', 'parole', st.sitiTop.map((x) => x[0]).join(' · ')));
-    }
-
-    if (st.chiamate > 0) {
-      c = carta('egeo', 'Chiamate');
-      c.appendChild(el('p', 'grande', nf.format(st.chiamate) + (st.chiamate === 1 ? ' chiamata' : ' chiamate')));
-      c.appendChild(el('p', 'nota', 'Fatte, ricevute o perse: il file non dice chi ha chiamato.'));
-    }
-    if (st.blocchiTuoi > 0) {
-      c = carta('porpora', 'Blocchi');
-      c.appendChild(el('p', 'grande', 'Hai bloccato questa chat ' + st.blocchiTuoi + (st.blocchiTuoi === 1 ? ' volta' : ' volte')));
-      c.appendChild(el('p', 'nota', 'WhatsApp scrive nel file solo i blocchi fatti da te. Quelli dell\'altra persona non ci sono, quindi nessuno li può contare.'));
-    }
-    if (st.autori.length > MAX_NOMI) {
-      $('carte').appendChild(el('p', 'periodo', 'Nel gruppo ci sono ' + st.autori.length + ' persone: qui vedi le ' + MAX_NOMI + ' che scrivono di più.'));
+      c.appendChild(el('p', 'nota', t('Il giorno in cui vi scrivete di più: {0}.', giornoSettimana(top, 'long'))));
     }
 
     $('casa').hidden = true;
     $('responso').hidden = false;
-    window.scrollTo(0, 0);
+    mostraPagina(nuova ? 'giudizio' : paginaVista);
+    if (nuova) window.scrollTo(0, 0);
   }
 
   function salva(r) {
@@ -1141,15 +1505,16 @@
     $('archivio').hidden = lista.length === 0;
     $('lista').textContent = '';
     lista.forEach((r) => {
+      const nomi = titoloDi(r.st).join(' ' + t('e') + ' ');
       const box = el('div', 'responso');
       const apri = el('button', 'apri');
       apri.type = 'button';
-      apri.appendChild(el('span', 'nome', titoloDi(r.st).join(' e ')));
-      apri.appendChild(el('span', 'sotto', (r.etichetta ? r.etichetta + ' · ' : '') + nf.format(r.st.totale) + ' messaggi · letto il ' + dataCorta(r.salvato)));
+      apri.appendChild(el('span', 'nome', nomi));
+      apri.appendChild(el('span', 'sotto', (r.etichetta ? t(r.etichetta) + ' · ' : '') + t('{0} messaggi · letto il {1}', nf.format(r.st.totale), dataCorta(r.salvato))));
       apri.onclick = () => mostra(r);
       const via = el('button', 'via', '×');
       via.type = 'button';
-      via.setAttribute('aria-label', 'Dimentica ' + titoloDi(r.st).join(' e '));
+      via.setAttribute('aria-label', t('Dimentica {0}', nomi));
       via.onclick = () => { scriviArchivio(leggiArchivio().filter((x) => x.id !== r.id)); disegnaArchivio(); };
       box.appendChild(apri);
       box.appendChild(via);
@@ -1158,11 +1523,13 @@
   }
 
   function tornaACasa() {
+    if (letturaAperta && letturaAperta.md && letturaAperta.md.indirizzi) letturaAperta.md.indirizzi.forEach((u) => URL.revokeObjectURL(u));
     aperto = null;
     letturaAperta = null;
     $('responso').hidden = true;
     $('casa').hidden = false;
     $('file').value = '';
+    $('avviso').textContent = '';
     disegnaArchivio();
     window.scrollTo(0, 0);
   }
@@ -1173,24 +1540,21 @@
     try {
       const lettura = Pizia.leggi(await Pizia.testoDaFile(file));
       const st = Pizia.statistiche(lettura);
-      if (!st.totale) throw new Error('Qui dentro non trovo messaggi di WhatsApp. Serve il file creato con «Esporta chat».');
+      if (!st.totale) throw new Error(t('Qui dentro non trovo messaggi di WhatsApp. Serve il file creato con «Esporta chat».'));
       const r = { id: Date.now().toString(36), etichetta: null, salvato: Date.now(), st: st };
-      letturaAperta = { id: r.id, lettura: lettura }; // solo in memoria, finché la pagina resta aperta
+      letturaAperta = { id: r.id, lettura: lettura, md: null }; // solo in memoria, finché la pagina resta aperta
       salva(r);
       mostra(r);
       try {
         const md = await Pizia.mediaDaZip(file, 12);
-        if (md.foto + md.video + md.audio > 0) {
-          const c = carta('porpora', 'Foto della chat');
-          c.appendChild(el('p', 'grande', nf.format(md.foto) + ' foto'));
-          c.appendChild(el('p', 'nota', nf.format(md.video) + ' video · ' + nf.format(md.audio) + ' audio. Qui sotto le ultime foto: restano sul tuo dispositivo e non vengono salvate.'));
-          const gal = el('div', 'galleria');
-          md.anteprime.forEach((b) => { const im = new Image(); im.src = URL.createObjectURL(b); im.alt = 'Foto della chat'; im.loading = 'lazy'; gal.appendChild(im); });
-          c.appendChild(gal);
+        if (letturaAperta && letturaAperta.id === r.id && md.foto + md.video + md.audio > 0) {
+          letturaAperta.md = md;
+          disegnaFoto(md);
+          mostraPagina(paginaVista);
         }
       } catch (e) { /* le foto sono un di più: se non si leggono, il responso resta */ }
     } catch (e) {
-      errore.textContent = e && e.message ? e.message : 'Non riesco a leggere questo file.';
+      errore.textContent = e && e.message ? e.message : t('Non riesco a leggere questo file.');
       errore.hidden = false;
     }
   }
@@ -1205,8 +1569,8 @@
   $('perIA').onclick = async () => {
     if (!aperto) return;
     const testo = Pizia.riassunto(aperto.st);
-    try { await navigator.clipboard.writeText(testo); avvisa('Copiato. Sono solo numeri, senza nomi e senza messaggi: incollalo nella tua IA.'); }
-    catch (e) { window.prompt('Copia questo testo e incollalo nella tua IA:', testo); }
+    try { await navigator.clipboard.writeText(testo); avvisa(t('Copiato. Sono solo numeri, senza nomi e senza messaggi: incollalo nella tua IA.')); }
+    catch (e) { window.prompt(t('Copia questo testo e incollalo nella tua IA:'), testo); }
   };
 
   // un'immagine 1080×1350 disegnata qui, da salvare o condividere
@@ -1216,20 +1580,20 @@
     const g = tela.getContext('2d');
     const FONT = '"Arial Rounded MT Bold", ui-rounded, -apple-system, "Segoe UI", sans-serif';
     function scatola(x, y, w, h, colore) { g.fillStyle = colore; g.beginPath(); g.roundRect(x, y, w, h, 56); g.fill(); }
-    function scrivi(t, x, y, px, colore, allinea, largo) {
+    function scrivi(testo, x, y, px, colore, allinea, largo) {
       g.font = '800 ' + px + 'px ' + FONT; g.fillStyle = colore; g.textAlign = allinea || 'left';
-      while (largo && g.measureText(t).width > largo && t.length > 4) t = t.slice(0, -2).trimEnd() + '…';
-      g.fillText(t, x, y);
+      while (largo && g.measureText(testo).width > largo && testo.length > 4) testo = testo.slice(0, -2).trimEnd() + '…';
+      g.fillText(testo, x, y);
     }
     const a = st.autori[0], b = st.autori[1] || { nome: '', messaggi: 0, rispostaMedianaMs: null };
     g.fillStyle = '#fafaf6'; g.fillRect(0, 0, 1080, 1350);
     scrivi('Pizia', 70, 120, 54, '#2b2fa8');
     scrivi(a.nome, 70, 250, 76, '#10233a', 'left', 940);
-    if (b.nome) scrivi('e ' + b.nome, 70, 340, 76, '#2b2fa8', 'left', 940);
+    if (b.nome) scrivi(t('e') + ' ' + b.nome, 70, 340, 76, '#2b2fa8', 'left', 940);
     const blocchi = [
-      ['#a8f1d6', '#0b3a34', 'Messaggi', nf.format(a.messaggi), nf.format(b.messaggi)],
-      ['#d9c7fd', '#2c1763', 'Di solito risponde in', Pizia.durata(a.rispostaMedianaMs), Pizia.durata(b.rispostaMedianaMs)],
-      ['#ffe9a8', '#4a3500', 'Apre la giornata', nf.format(a.apreGiornata), nf.format(b.apreGiornata || 0)]
+      ['#a8f1d6', '#0b3a34', t('Messaggi'), nf.format(a.messaggi), nf.format(b.messaggi)],
+      ['#d9c7fd', '#2c1763', t('Di solito risponde in'), Pizia.durata(a.rispostaMedianaMs), Pizia.durata(b.rispostaMedianaMs)],
+      ['#ffe9a8', '#4a3500', t('Apre la giornata'), nf.format(a.apreGiornata), nf.format(b.apreGiornata || 0)]
     ];
     blocchi.forEach((r, i) => {
       const y = 410 + i * 280;
@@ -1240,8 +1604,8 @@
       if (b.nome) { scrivi(b.nome, 970, y + 125, 30, r[1], 'right', 420); scrivi(r[4], 970, y + 210, 78, r[1], 'right', 440); }
     });
     const v = Pizia.verdetto(st, aperto && aperto.etichetta);
-    scrivi('Giudizio ' + v.punti + '/100 · ' + v.titolo, 70, 1262, 36, '#2b2fa8', 'left', 940);
-    scrivi(nf.format(st.totale) + ' messaggi · striscia di ' + nf.format(st.striscia || 0) + ' giorni', 70, 1312, 30, '#4a5a70', 'left', 940);
+    scrivi(t('Giudizio {0}/100 · {1}', v.punti, v.titolo), 70, 1262, 36, '#2b2fa8', 'left', 940);
+    scrivi(t('{0} messaggi · striscia di {1} giorni', nf.format(st.totale), nf.format(st.striscia || 0)), 70, 1312, 30, '#4a5a70', 'left', 940);
     return tela;
   }
   $('immagine').onclick = () => {
@@ -1254,7 +1618,7 @@
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob); link.download = 'pizia.png';
       document.body.appendChild(link); link.click(); link.remove();
-      avvisa('Immagine salvata come pizia.png.');
+      avvisa(t('Immagine salvata come pizia.png.'));
     }, 'image/png');
   };
 
@@ -1267,9 +1631,11 @@
   $('installa').onclick = async () => { if (!invito) return; invito.prompt(); try { await invito.userChoice; } catch (e) { /* chiuso senza scegliere */ } invito = null; $('rigaInstalla').hidden = true; };
   window.addEventListener('appinstalled', () => { $('rigaInstalla').hidden = true; });
 
+  mettiLingua(linguaIniziale());
   disegnaArchivio();
+  controllaPagamento();
   if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});
 })();
-</script>
+/*APP-FINE*/</script>
 </body>
 </html>
