@@ -93,6 +93,9 @@
   .azioni { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
   .azioni > * { flex: 1 1 180px; }
   footer { margin-top: 30px; text-align: center; color: var(--velo); font-size: 12.5px; }
+  .mappa{display:grid;grid-template-columns:2.4em repeat(24,1fr);gap:2px;align-items:center;margin-top:10px}
+  .mappa span{font-size:11px;opacity:.7}
+  .mappa i{display:block;aspect-ratio:1;border-radius:3px;background:var(--accento)}
 </style>
 </head>
 <body>
@@ -305,6 +308,60 @@
       c.appendChild(el('p', 'nota', 'Affetto: ti amo, te quiero, ti voglio bene e simili. Notte: tra mezzanotte e le 5.'));
     }
 
+    if (st.equilibrio != null) {
+      c = carta('ulivo', 'Equilibrio');
+      c.appendChild(el('p', 'grande', st.equilibrio + ' su 100'));
+      c.appendChild(el('p', 'nota', 'Quanto lo sforzo è diviso in parti uguali: messaggi, chi apre la giornata, velocità di risposta. Non misura l\'amore.'));
+    }
+    if (st.mesi && st.mesi.length > 1) {
+      c = carta('oro', 'Mese per mese');
+      const mx = Math.max.apply(null, st.mesi.map((m) => m.totale)) || 1;
+      const gr = el('div', 'ore');
+      st.mesi.forEach((m) => {
+        const i = el('i', m.totale === mx ? 'picco' : null);
+        i.style.height = Math.max(2, m.totale / mx * 100) + '%';
+        i.title = m.mese + ' · ' + nf.format(m.totale) + ' messaggi';
+        gr.appendChild(i);
+      });
+      gr.setAttribute('role', 'img');
+      gr.setAttribute('aria-label', 'Messaggi per mese');
+      c.appendChild(gr);
+      const as = el('div', 'assi');
+      [st.mesi[0].mese, st.mesi[st.mesi.length - 1].mese].forEach((x) => as.appendChild(el('span', null, x)));
+      c.appendChild(as);
+      const conTono = st.mesi.filter((m) => m.belli + m.brutti >= 10);
+      if (conTono.length) {
+        const quota = (m) => m.belli / (m.belli + m.brutti);
+        const su = conTono.reduce((a, b) => quota(b) > quota(a) ? b : a), giu = conTono.reduce((a, b) => quota(b) < quota(a) ? b : a);
+        c.appendChild(el('p', 'nota', 'Tono: il mese più dolce è ' + su.mese + ' (' + Math.round(quota(su) * 100) + '% di parole belle), il più teso ' + giu.mese + ' (' + Math.round(quota(giu) * 100) + '%). Conta le parole, non capisce l\'ironia.'));
+      }
+    }
+    if (st.settimana) {
+      c = carta('egeo', 'La vostra settimana');
+      const mxs = Math.max.apply(null, st.settimana.map((g) => Math.max.apply(null, g))) || 1;
+      const tab = el('div', 'mappa');
+      ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'].forEach((nome, g) => {
+        tab.appendChild(el('span', null, nome));
+        st.settimana[g].forEach((n, h) => {
+          const q = el('i');
+          q.style.opacity = (0.08 + 0.92 * n / mxs).toFixed(2);
+          q.title = nome + ' ' + h + ':00 · ' + nf.format(n);
+          tab.appendChild(q);
+        });
+      });
+      tab.setAttribute('role', 'img');
+      tab.setAttribute('aria-label', 'Mappa dei messaggi per giorno della settimana e ora');
+      c.appendChild(tab);
+      const tot = st.settimana.map((g) => g.reduce((a, b) => a + b, 0));
+      const top = tot.indexOf(Math.max.apply(null, tot));
+      c.appendChild(el('p', 'nota', 'Il giorno in cui vi scrivete di più: ' + ['lunedì', 'martedì', 'mercoledì', 'giovedì', 'venerdì', 'sabato', 'domenica'][top] + '.'));
+    }
+    if (autori.some((a) => a.link > 0)) {
+      c = carta('marmo', 'Link mandati');
+      autori.forEach((a) => riga(c, a.nome, nf.format(a.link || 0), 'link'));
+      if (st.sitiTop && st.sitiTop.length) c.appendChild(el('p', 'parole', st.sitiTop.map((x) => x[0]).join(' · ')));
+    }
+
     if (st.chiamate > 0) {
       c = carta('egeo', 'Chiamate');
       c.appendChild(el('p', 'grande', nf.format(st.chiamate) + (st.chiamate === 1 ? ' chiamata' : ' chiamate')));
@@ -328,6 +385,7 @@
     const st = Object.assign({}, r.st);
     if (st.primo) st.primo = { quando: st.primo.quando, autore: st.primo.autore, testo: '', tipo: st.primo.tipo }; // il testo non si conserva
     st.autori = st.autori.map((a) => Object.assign({}, a, { paroleTop: [] })); // nemmeno le parole più usate
+    st.sitiTop = []; // né i siti dei link
     const lista = leggiArchivio().filter((x) => x.id !== r.id);
     lista.unshift({ id: r.id, etichetta: r.etichetta, salvato: r.salvato, st: st });
     scriviArchivio(lista);

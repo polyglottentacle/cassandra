@@ -36,6 +36,11 @@
     'that this with have what when where your just like dont about there they them then than from will would could should been were yeah okay ' +
     'voor niet maar deze heeft naar over door mijn jouw waar wanneer').split(' '));
 
+  // Lessico corto e dichiarato per il tono: conta le parole, non capisce l'ironia.
+  const RE_BELLO = /(^|[^a-zà-ÿ])(grazie|amore|bello|bella|bellissim[oa]|brav[oa]|felice|contento|contenta|mi manchi|ti amo|ti voglio bene|tesoro|perfetto|fantastico|stupendo|adoro|gracias|te quiero|te amo|hermos[oa]|lind[oa]|feliz|love|thanks|great|happy|miss you|dank je|lief|mooi|❤️|😍|🥰|😘|😊)(?![a-zà-ÿ])/;
+  const RE_BRUTTO = /(^|[^a-zà-ÿ])(basta|stanc[oa]|odio|schifo|bugiard[oa]|stronz[oa]|vaffanculo|fanculo|lasciami|non mi scrivere|arrabbiat[oa]|delus[oa]|triste|piango|litigare|colpa tua|mentiros[oa]|mentira|te odio|d[eé]jame|harta|harto|enojad[oa]|hate|liar|leave me|angry|sad|moe van|haat|😡|🤬|😭|💔|😤)(?![a-zà-ÿ])/;
+  const RE_LINK = /https?:\/\/([^\s\/]+)/g;
+
   function classifica(resto) {
     if (SEGNO.test(resto)) return { autore: null, testo: resto.replace(SEGNO, ''), tipo: 'sistema' };
     let taglio = resto.indexOf(': ');
@@ -126,11 +131,13 @@
     const perAutore = new Map();
     function scheda(nome) {
       if (!perAutore.has(nome)) perAutore.set(nome, { nome: nome, messaggi: 0, parole: 0, media: 0, eliminati: 0, tempi: [], apreGiornata: 0,
-        emoji: new Map(), paroleUsate: new Map(), notte: 0, insistenze: 0, scuse: 0, affetto: 0 });
+        emoji: new Map(), paroleUsate: new Map(), notte: 0, insistenze: 0, scuse: 0, affetto: 0, link: 0 });
       return perAutore.get(nome);
     }
     const ore = new Array(24).fill(0);
     const giorni = new Map();
+    const mesi = new Map(), siti = new Map();
+    const settimana = Array.from({ length: 7 }, function () { return new Array(24).fill(0); });
     let silenzi = 0, silenzioMax = { ms: 0, rotto: null }, striscia = 0, strisciaOra = 0, numGiornoPrima = null, notte = 0;
     let sistema = 0, blocchi = 0, chiamate = 0, primo = null, ultimo = null, prima = null, giornoPrima = null;
 
@@ -145,6 +152,12 @@
       const s = scheda(m.autore);
       const t = m.timestamp.getTime();
       s.messaggi++;
+      const chiaveMese = m.timestamp.getFullYear() + '-' + String(m.timestamp.getMonth() + 1).padStart(2, '0');
+      if (!mesi.has(chiaveMese)) mesi.set(chiaveMese, { mese: chiaveMese, totale: 0, belli: 0, brutti: 0, perAutore: {} });
+      const mm = mesi.get(chiaveMese);
+      mm.totale++;
+      mm.perAutore[m.autore] = (mm.perAutore[m.autore] || 0) + 1;
+      settimana[(m.timestamp.getDay() + 6) % 7][m.timestamp.getHours()]++;
       if (m.tipo === 'media') s.media++;
       else if (m.tipo === 'eliminato') s.eliminati++;
       else {
@@ -156,6 +169,10 @@
           const pp = basso.match(RE_PAROLA);
           if (pp) for (const p of pp) if (!VUOTE.has(p) && !RE_RISATA.test(p)) s.paroleUsate.set(p, (s.paroleUsate.get(p) || 0) + 1);
         }
+        if (RE_BELLO.test(basso)) mm.belli++;
+        if (RE_BRUTTO.test(basso)) mm.brutti++;
+        let lk; RE_LINK.lastIndex = 0;
+        while ((lk = RE_LINK.exec(basso))) { s.link++; const sito = lk[1].replace(/^www\./, ''); siti.set(sito, (siti.get(sito) || 0) + 1); }
         if (RE_SCUSE.test(basso)) s.scuse++;
         if (RE_AFFETTO.test(basso)) s.affetto++;
       }
@@ -197,7 +214,7 @@
       return {
         nome: s.nome, messaggi: s.messaggi, parole: s.parole, media: s.media, eliminati: s.eliminati,
         apreGiornata: s.apreGiornata, risposte: s.tempi.length,
-        notte: s.notte, insistenze: s.insistenze, scuse: s.scuse, affetto: s.affetto,
+        notte: s.notte, insistenze: s.insistenze, scuse: s.scuse, affetto: s.affetto, link: s.link,
         emojiTop: primi(s.emoji, 6), paroleTop: primi(s.paroleUsate, 8),
         rispostaMediaMs: s.tempi.length ? somma / s.tempi.length : null,
         rispostaMedianaMs: mediana(s.tempi)
@@ -225,8 +242,24 @@
       notte: notte,
       striscia: striscia,
       silenzi: silenzi,
-      silenzioMax: silenzioMax.ms ? silenzioMax : null
+      silenzioMax: silenzioMax.ms ? silenzioMax : null,
+      mesi: Array.from(mesi.values()).sort(function (a, b) { return a.mese < b.mese ? -1 : 1; }),
+      settimana: settimana,
+      sitiTop: primi(siti, 5),
+      equilibrio: equilibrio(autori, giorni.size)
     };
+  }
+
+  // Indice di equilibrio 0-100, solo per chat a due. Formula dichiarata:
+  // media di tre somiglianze (messaggi, chi apre la giornata, velocità di risposta).
+  // Non misura l'amore: misura quanto lo sforzo è diviso in parti uguali.
+  function equilibrio(autori, giorniAttivi) {
+    if (autori.length !== 2) return null;
+    const a = autori[0], b = autori[1];
+    function somiglia(x, y) { const M = Math.max(x, y); return M > 0 ? Math.min(x, y) / M : 1; }
+    const parti = [somiglia(a.messaggi, b.messaggi), somiglia(a.apreGiornata, b.apreGiornata)];
+    if (a.rispostaMedianaMs != null && b.rispostaMedianaMs != null) parti.push(somiglia(a.rispostaMedianaMs + 60000, b.rispostaMedianaMs + 60000));
+    return Math.round(100 * parti.reduce(function (x, y) { return x + y; }, 0) / parti.length);
   }
 
   function primi(mappa, quanti) {
@@ -291,6 +324,8 @@
       '',
       'Messaggi totali: ' + st.totale + ' in ' + st.giorniAttivi + ' giorni attivi. Striscia più lunga: ' + (st.striscia || '?') + ' giorni. Chiamate: ' + (st.chiamate || 0) + '.'
     ];
+    if (st.equilibrio != null) righe.push('Indice di equilibrio dello sforzo: ' + st.equilibrio + ' su 100.');
+    if (st.mesi && st.mesi.length) righe.push('Messaggi per mese (mese: totale, parole belle/tese): ' + st.mesi.map(function (m) { return m.mese + ': ' + m.totale + ', ' + m.belli + '/' + m.brutti; }).join('; ') + '.');
     st.autori.slice(0, 6).forEach(function (x) {
       righe.push(sigla[x.nome] + ': ' + x.messaggi + ' messaggi; risponde in media in ' + durata(x.rispostaMediaMs) + ' (di solito ' + durata(x.rispostaMedianaMs) + '); apre la giornata ' + x.apreGiornata + ' volte; riscrive senza risposta ' + (x.insistenze || 0) + ' volte; messaggi eliminati ' + x.eliminati + '; di notte ' + (x.notte || 0) + '; scuse ' + (x.scuse || 0) + '; parole d\'affetto ' + (x.affetto || 0) + '.');
     });
