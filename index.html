@@ -1312,7 +1312,7 @@ window.addEventListener('unhandledrejection', function (e) { var n = document.ge
 
   // Prova con gli amici: per chi apre Cassandra normalmente NON parte nessuna chiamata.
   // Solo chi apre il link con ?prova=CODICE e accetta il consenso manda eventi, risultati e chat alla regia.
-  const PROVA = { indirizzo: 'https://ebpdmcrovzomixdyliju.supabase.co', chiave: 'sb_publishable_YNWHj_TiscPDI2FpC0ZKrg_Db9oeGii', versione: 'pizia-16' };
+  const PROVA = { indirizzo: 'https://ebpdmcrovzomixdyliju.supabase.co', chiave: 'sb_publishable_YNWHj_TiscPDI2FpC0ZKrg_Db9oeGii', versione: 'pizia-17' };
   const CHIAVE_PROVA = 'pizia.prova';
   let codiceProva = null, battito = null;
 
@@ -1434,7 +1434,23 @@ window.addEventListener('unhandledrejection', function (e) { var n = document.ge
       $('rifiutaProva').onclick = () => { $('consenso').hidden = true; pulisciIndirizzo(); };
       return;
     }
-    if (m) pulisciIndirizzo();
+    // Fase 1: un link unico ?fase1 — l'amico si iscrive da solo, senza un invito creato a mano
+    const f1 = /[?&]fase1\b/.test(location.search);
+    if (f1 && !salvato) {
+      $('consenso').hidden = false;
+      $('accettaProva').onclick = async () => {
+        $('accettaProva').disabled = true;
+        const code = await chiama('fase1_entra', {}).catch(() => null);
+        if (!code || typeof code !== 'string') { $('accettaProva').disabled = false; return; }
+        try { localStorage.setItem(CHIAVE_PROVA, code); } catch (e) { /* vale finché la pagina resta aperta */ }
+        $('consenso').hidden = true;
+        pulisciIndirizzo();
+        entraInProva(code);
+      };
+      $('rifiutaProva').onclick = () => { $('consenso').hidden = true; pulisciIndirizzo(); };
+      return;
+    }
+    if (m || f1) pulisciIndirizzo();
     if (salvato) entraInProva(salvato);
   }
   function consegna(file, testo, r, ms) {
