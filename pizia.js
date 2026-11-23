@@ -466,6 +466,7 @@
     const dati = blob.slice(inizio, inizio + voce.compresso);
     if (voce.metodo === 0) return new Uint8Array(await dati.arrayBuffer());
     if (voce.metodo !== 8) throw new Error(T('Questo zip usa una compressione che non conosco.'));
+    if (typeof DecompressionStream === 'undefined') throw new Error(T('Questo telefono non riesce ad aprire lo zip. Aggiorna il browser oppure carica il file .txt.'));
     const flusso = dati.stream().pipeThrough(new DecompressionStream('deflate-raw'));
     return new Uint8Array(await new Response(flusso).arrayBuffer());
   }
