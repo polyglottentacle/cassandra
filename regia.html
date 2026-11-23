@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Regia di Cassandra</title>
+<style>
+  :root { --fondo: #fafaf6; --carta: #fff; --testo: #10233a; --velo: #4a5a70; --accento: #2b2fa8; --bordo: #e3e6ea; --rosso: #8a1b2e; --verde: #0b6b52; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--fondo); color: var(--testo); font: 15px/1.45 ui-rounded, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 980px; margin: 0 auto; padding: 16px; }
+  h1 { font-size: 24px; margin: 6px 0 2px; color: var(--accento); }
+  h2 { font-size: 17px; margin: 0 0 10px; }
+  .sotto { color: var(--velo); margin: 0 0 14px; font-size: 13px; }
+  section { background: var(--carta); border: 1.5px solid var(--bordo); border-radius: 18px; padding: 16px; margin: 0 0 14px; }
+  .numeri { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin: 0 0 14px; }
+  .numeri div { background: var(--carta); border: 1.5px solid var(--bordo); border-radius: 16px; padding: 12px 14px; }
+  .numeri b { display: block; font-size: 26px; }
+  .numeri span { color: var(--velo); font-size: 13px; }
+  .scorri { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+  th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--bordo); vertical-align: top; }
+  th { color: var(--velo); font-weight: 700; white-space: nowrap; }
+  td.t { white-space: nowrap; font-variant-numeric: tabular-nums; }
+  button { font: inherit; font-weight: 700; cursor: pointer; border: 1.5px solid var(--bordo); background: #fff; color: var(--testo); border-radius: 999px; padding: 6px 12px; min-height: 34px; }
+  button.pieno { background: var(--accento); color: #fff; border-color: var(--accento); min-height: 44px; padding: 10px 18px; }
+  input { font: inherit; border: 1.5px solid var(--bordo); border-radius: 999px; padding: 9px 14px; min-width: 0; flex: 1 1 160px; }
+  .riga { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px; }
+  .pallino { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #c3c9d1; margin-right: 6px; }
+  .pallino.su { background: #17b890; }
+  .err { color: var(--rosso); font-weight: 700; }
+  .ok { color: var(--verde); font-weight: 700; }
+  .vuoto { color: var(--velo); margin: 0; }
+  #avviso { background: var(--testo); color: #fff; border-radius: 14px; padding: 10px 14px; margin: 0 0 14px; word-break: break-all; }
+  code { background: #eceef2; border-radius: 6px; padding: 1px 5px; font-size: 12.5px; word-break: break-all; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Regia di Cassandra</h1>
+  <p class="sotto" id="stato">Pagina privata di Emanuele: chi è in prova, cosa si inceppa, le chat consegnate.</p>
+  <p id="avviso" role="status" hidden></p>
+
+  <section id="porta" hidden>
+    <h2>Questa regia non ha ancora una chiave</h2>
+    <p class="sotto">Il primo che preme il bottone diventa il padrone della regia. La chiave nasce su questo dispositivo e non la vede nessun altro. Dopo salva il link segreto che compare: serve per entrare da un altro telefono o computer.</p>
+    <button class="pieno" id="crea" type="button">Crea la chiave e apri la regia</button>
+  </section>
+
+  <div id="dentro" hidden>
+    <div class="numeri">
+      <div><b id="nOnline">0</b><span>online adesso</span></div>
+      <div><b id="nAmici">0</b><span>amici invitati</span></div>
+      <div><b id="nChat">0</b><span>chat consegnate</span></div>
+      <div><b id="nErrori">0</b><span>errori</span></div>
+    </div>
+
+    <section>
+      <h2>Amici in prova</h2>
+      <div class="scorri"><table><thead><tr><th>Nome</th><th>Visto</th><th>Versione</th><th>Dispositivo</th><th>Chat</th><th>Errori</th><th></th></tr></thead><tbody id="amici"></tbody></table></div>
+      <div class="riga"><input id="nome" placeholder="Nome dell'amico (lo vedi solo tu)" maxlength="60"><button class="pieno" id="invita" type="button">Crea il suo link</button></div>
+    </section>
+
+    <section>
+      <h2>Cosa si è inceppato</h2>
+      <div class="scorri"><table><tbody id="errori"></tbody></table></div>
+    </section>
+
+    <section>
+      <h2>Chat consegnate</h2>
+      <div class="scorri"><table><thead><tr><th>Quando</th><th>Chi</th><th>File</th><th>Messaggi</th><th>Giudizio</th><th></th></tr></thead><tbody id="chat"></tbody></table></div>
+    </section>
+
+    <section>
+      <h2>Ultimi movimenti</h2>
+      <div class="scorri"><table><tbody id="eventi"></tbody></table></div>
+    </section>
+
+    <div class="riga"><button id="aggiorna" type="button">Aggiorna adesso</button><button id="linkSegreto" type="button">Copia il link segreto</button><button id="esci" type="button">Esci da questo dispositivo</button></div>
+  </div>
+</main>
+<script>
+(function () {
+  'use strict';
+  const SB = { indirizzo: 'https://ebpdmcrovzomixdyliju.supabase.co', chiave: 'sb_publishable_YNWHj_TiscPDI2FpC0ZKrg_Db9oeGii' };
+  const APP = 'https://polyglottentacle.github.io/cassandra/';
+  const MEMORIA = 'cassandra.regia';
+  const $ = (id) => document.getElementById(id);
+  let chiave = null, versioneOnline = null, nomi = {};
+
+  function el(tag, classe, testo) { const n = document.createElement(tag); if (classe) n.className = classe; if (testo != null) n.textContent = testo; return n; }
+  function avvisa(testo) { $('avviso').textContent = testo; $('avviso').hidden = !testo; }
+  function chiama(nome, corpo) {
+    return fetch(SB.indirizzo + '/rest/v1/rpc/' + nome, { method: 'POST', headers: { apikey: SB.chiave, 'Content-Type': 'application/json' }, body: JSON.stringify(corpo) }).then((r) => r.json());
+  }
+  const quando = (iso) => iso ? new Date(iso).toLocaleString('it-IT', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '—';
+  function fa(iso, ora) {
+    if (!iso) return 'mai';
+    const s = Math.max(0, (new Date(ora) - new Date(iso)) / 1000);
+    if (s < 120) return 'adesso';
+    if (s < 3600) return Math.round(s / 60) + ' min fa';
+    if (s < 86400) return Math.round(s / 3600) + ' ore fa';
+    return Math.round(s / 86400) + ' giorni fa';
+  }
+  function dispositivo(ua) {
+    if (!ua) return '—';
+    const cosa = /iPhone|iPad/.test(ua) ? 'iPhone/iPad' : /Android/.test(ua) ? 'Android' : /Windows/.test(ua) ? 'Windows' : /Mac OS/.test(ua) ? 'Mac' : 'altro';
+    const con = /Edg\//.test(ua) ? 'Edge' : /SamsungBrowser/.test(ua) ? 'Samsung' : /Firefox|FxiOS/.test(ua) ? 'Firefox' : /Chrome|CriOS/.test(ua) ? 'Chrome' : /Safari/.test(ua) ? 'Safari' : '';
+    return cosa + (con ? ' · ' + con : '');
+  }
+  function copia(testo, detto) {
+    (navigator.clipboard ? navigator.clipboard.writeText(testo) : Promise.reject()).then(() => avvisa(detto), () => window.prompt('Copia:', testo));
+  }
+  function cella(riga, testo, classe) { const c = el('td', classe, testo); riga.appendChild(c); return c; }
+  function vuota(corpo, testo, colonne) { const r = el('tr'); const c = el('td', 'vuoto', testo); c.colSpan = colonne; r.appendChild(c); corpo.appendChild(r); }
+
+  function disegna(q) {
+    const ora = q.ora;
+    nomi = {};
+    q.inviti.forEach((i) => { nomi[i.codice] = i.nome || i.codice; });
+    const online = q.inviti.filter((i) => i.visto && (new Date(ora) - new Date(i.visto)) < 150000);
+    const errori = q.eventi.filter((e) => e.tipo === 'errore');
+    $('nOnline').textContent = online.length;
+    $('nAmici').textContent = q.inviti.length;
+    $('nChat').textContent = q.inviti.reduce((a, i) => a + i.chat, 0);
+    $('nErrori').textContent = q.inviti.reduce((a, i) => a + i.errori, 0);
+    $('stato').textContent = 'Aggiornata alle ' + new Date(ora).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + (versioneOnline ? ' · versione online dell\'app: ' + versioneOnline : '') + ' · si aggiorna da sola ogni 30 secondi.';
+
+    const amici = $('amici'); amici.textContent = '';
+    if (!q.inviti.length) vuota(amici, 'Ancora nessun amico: scrivi un nome qui sotto e crea il suo link.', 7);
+    q.inviti.forEach((i) => {
+      const r = el('tr');
+      const n = cella(r, null);
+      n.appendChild(el('span', 'pallino' + (online.indexOf(i) >= 0 ? ' su' : '')));
+      n.appendChild(document.createTextNode(i.nome || i.codice));
+      if (!i.attivo) n.appendChild(el('span', 'err', ' (spento)'));
+      cella(r, fa(i.visto, ora) + (i.pagina && online.indexOf(i) >= 0 ? ' · ' + i.pagina : ''), 't');
+      const v = cella(r, i.versione || '—', 't');
+      if (i.versione && versioneOnline && i.versione !== versioneOnline) v.appendChild(el('span', 'err', ' vecchia'));
+      cella(r, dispositivo(i.dispositivo));
+      cella(r, String(i.chat), 't');
+      cella(r, String(i.errori), i.errori ? 't err' : 't');
+      const az = cella(r, null, 't');
+      const b1 = el('button', null, 'Copia link'); b1.type = 'button';
+      b1.onclick = () => copia(APP + '?prova=' + i.codice, 'Link di ' + (i.nome || i.codice) + ' copiato: mandaglielo.');
+      const b2 = el('button', null, i.attivo ? 'Spegni' : 'Riaccendi'); b2.type = 'button';
+      b2.onclick = () => chiama('regia_attiva', { p_chiave: chiave, p_codice: i.codice, p_attivo: !i.attivo }).then(carica);
+      az.appendChild(b1); az.appendChild(document.createTextNode(' ')); az.appendChild(b2);
+      amici.appendChild(r);
+    });
+
+    const te = $('errori'); te.textContent = '';
+    if (!errori.length) vuota(te, 'Nessun errore segnato.', 4);
+    errori.slice(0, 40).forEach((e) => {
+      const r = el('tr');
+      cella(r, quando(e.quando), 't'); cella(r, nomi[e.codice] || e.codice);
+      cella(r, (e.dati && e.dati.testo) || '?', 'err');
+      cella(r, ((e.dati && e.dati.dove) || '') + ' · ' + dispositivo(e.dispositivo) + ' · ' + (e.versione || ''));
+      te.appendChild(r);
+    });
+
+    const tc = $('chat'); tc.textContent = '';
+    if (!q.chat.length) vuota(tc, 'Nessuna chat consegnata.', 6);
+    q.chat.forEach((c) => {
+      const r = el('tr'), ris = c.risultati || {};
+      cella(r, quando(c.quando), 't'); cella(r, nomi[c.codice] || c.codice); cella(r, c.nome_file || '—');
+      cella(r, String((ris.st && ris.st.totale) || ris.totale || '—'), 't');
+      cella(r, ris.giudizio ? ris.giudizio.punti + '/100 · ' + ris.giudizio.titolo : '—');
+      const az = cella(r, null, 't');
+      const b1 = el('button', null, c.caratteri ? 'Scarica la chat' : 'Senza testo'); b1.type = 'button'; b1.disabled = !c.caratteri;
+      b1.onclick = () => chiama('regia_chat', { p_chiave: chiave, p_id: c.id }).then((testo) => {
+        if (typeof testo !== 'string') { avvisa('Non riesco a scaricare questa chat.'); return; }
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([testo], { type: 'text/plain' }));
+        a.download = 'prova-' + c.id + '-' + (c.nome_file || 'chat').replace(/\.(zip|txt)$/i, '').replace(/[^\w.-]+/g, '_') + '.txt';
+        document.body.appendChild(a); a.click(); a.remove();
+        avvisa('Chat scaricata: aprila in Cassandra per rifare gli stessi conti.');
+      });
+      const b2 = el('button', null, 'Cancella'); b2.type = 'button';
+      b2.onclick = () => { if (window.confirm('Cancello per sempre questa chat dalla regia?')) chiama('regia_cancella_chat', { p_chiave: chiave, p_id: c.id }).then(carica); };
+      az.appendChild(b1); az.appendChild(document.createTextNode(' ')); az.appendChild(b2);
+      tc.appendChild(r);
+    });
+
+    const tv = $('eventi'); tv.textContent = '';
+    if (!q.eventi.length) vuota(tv, 'Ancora nessun movimento.', 4);
+    const NOMI = { aperta: 'ha aperto l\'app', file: 'ha caricato un file', analisi: 'analisi riuscita', errore: 'errore' };
+    q.eventi.slice(0, 60).forEach((e) => {
+      const r = el('tr'), d = e.dati || {};
+      cella(r, quando(e.quando), 't'); cella(r, nomi[e.codice] || e.codice);
+      cella(r, NOMI[e.tipo] || e.tipo, e.tipo === 'errore' ? 'err' : e.tipo === 'analisi' ? 'ok' : null);
+      cella(r, e.tipo === 'analisi' ? d.totale + ' messaggi · ' + d.persone + ' persone · ' + d.ms + ' ms' : e.tipo === 'file' ? '.' + d.tipo + ' · ' + Math.round((d.peso || 0) / 1024) + ' KB' : e.tipo === 'errore' ? (d.testo || '') : dispositivo(e.dispositivo));
+      tv.appendChild(r);
+    });
+  }
+
+  function carica() {
+    return chiama('regia_quadro', { p_chiave: chiave }).then((q) => {
+      if (!q || !q.inviti) { $('dentro').hidden = true; $('porta').hidden = true; avvisa('Questa chiave non apre la regia. Apri il link segreto che hai salvato.'); return; }
+      $('porta').hidden = true; $('dentro').hidden = false;
+      disegna(q);
+    }).catch(() => avvisa('Non riesco a parlare con il database. Controlla la connessione.'));
+  }
+
+  $('crea').onclick = () => {
+    const pezzi = new Uint8Array(30); crypto.getRandomValues(pezzi);
+    const nuova = Array.from(pezzi, (b) => b.toString(16).padStart(2, '0')).join('');
+    chiama('regia_imposta', { p_chiave: nuova }).then((ok) => {
+      if (ok !== true) { avvisa('La regia ha già una chiave: apri il link segreto che hai salvato.'); return; }
+      chiave = nuova;
+      try { localStorage.setItem(MEMORIA, chiave); } catch (e) { /* resta finché la pagina è aperta */ }
+      avvisa('Regia aperta. Premi «Copia il link segreto» qui sotto e salvalo in un posto solo tuo: senza quello non si rientra da un altro dispositivo.');
+      carica();
+    });
+  };
+  $('invita').onclick = () => {
+    const nome = $('nome').value.trim();
+    if (!nome) { $('nome').focus(); return; }
+    chiama('regia_invito', { p_chiave: chiave, p_nome: nome }).then((codice) => {
+      if (!codice) { avvisa('Non sono riuscita a creare il link.'); return; }
+      $('nome').value = '';
+      copia(APP + '?prova=' + codice, 'Link di ' + nome + ' creato e copiato: mandaglielo.');
+      carica();
+    });
+  };
+  $('aggiorna').onclick = carica;
+  $('linkSegreto').onclick = () => copia(location.origin + location.pathname + '#k=' + chiave, 'Link segreto copiato. Chi ha questo link vede tutto: non mandarlo a nessuno.');
+  $('esci').onclick = () => { try { localStorage.removeItem(MEMORIA); } catch (e) { /* niente */ } location.reload(); };
+
+  const m = /[#&]k=([0-9a-f]{32,128})/.exec(location.hash);
+  if (m) { chiave = m[1]; try { localStorage.setItem(MEMORIA, chiave); } catch (e) { /* niente */ } try { history.replaceState(null, '', location.pathname); } catch (e) { /* niente */ } }
+  else { try { chiave = localStorage.getItem(MEMORIA); } catch (e) { chiave = null; } }
+  fetch('sw.js', { cache: 'no-store' }).then((r) => r.text()).then((s) => { const v = /VERSIONE = '([^']+)'/.exec(s); versioneOnline = v ? v[1] : null; }).catch(() => {});
+  if (chiave) { carica(); setInterval(() => { if (document.visibilityState === 'visible' && !$('dentro').hidden) carica(); }, 30000); }
+  else $('porta').hidden = false;
+})();
+</script>
+</body>
+</html>

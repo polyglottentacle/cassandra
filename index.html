@@ -90,6 +90,12 @@
   .chi2 { margin: 10px 0 2px; font-size: 14px; font-weight: 700; }
   .faccine { margin: 0; font-size: 28px; letter-spacing: 2px; }
   .parole { margin: 4px 0 0; font-size: 14px; font-weight: 600; overflow-wrap: anywhere; }
+  .fasciaProva { background: var(--ulivo); color: #0b3a34; border-radius: 999px; padding: 6px 8px 6px 16px; margin: 0 0 14px; font-size: 13px; font-weight: 700; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; }
+  .fasciaProva[hidden], .consenso[hidden] { display: none; }
+  .fasciaProva button { min-height: 32px; padding: 4px 14px; background: #fff; color: #0b3a34; font-weight: 700; font-size: 13px; }
+  .consenso { background: var(--ulivo); color: #0b3a34; border-radius: 24px; padding: 22px; margin: 0 0 16px; }
+  .consenso h2 { margin: 0 0 8px; font-size: 22px; }
+  .consenso p { margin: 0; line-height: 1.5; }
   .azioni { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
   .azioni > * { flex: 1 1 180px; }
   footer { margin-top: 30px; text-align: center; color: var(--velo); font-size: 12.5px; }
@@ -185,6 +191,12 @@
     <div class="lingue" id="lingue" role="group" aria-label="Lingua · Language · Taal · Idioma"></div>
   </header>
 
+  <div class="fasciaProva" id="fasciaProva" hidden><span data-t>Amici di Cassandra · Emanuele vede quello che carichi qui</span> <button type="button" id="esciProva" data-t>Esci</button></div>
+  <section class="consenso" id="consenso" hidden>
+    <h2 data-t>Benvenuto tra i primi amici di Cassandra</h2>
+    <p data-t>Sei tra i primi a usarla insieme a Emanuele. Per aiutarti e farla crescere, lui vede quello che carichi qui: la chat, i risultati e se qualcosa si inceppa. Puoi uscire quando vuoi.</p>
+    <div class="azioni"><button class="bottone" type="button" id="accettaProva" data-t>Ci sto</button><button class="piano" type="button" id="rifiutaProva" data-t>No, grazie</button></div>
+  </section>
   <section id="casa">
     <div class="porta" id="porta">
       <div class="eroe" aria-hidden="true"><svg><use href="#angelo"/></svg><svg><use href="#diavolo"/></svg></div>
@@ -237,8 +249,8 @@
 
 <script>
 // Se qualcosa si rompe lo si legge in pagina, così chi usa l'app può dirci cosa vede.
-window.addEventListener('error', function (e) { var n = document.getElementById('errore'); if (n) { n.textContent = 'Errore · Error: ' + (e.message || '?') + (e.lineno ? ' (' + e.lineno + ')' : ''); n.hidden = false; } });
-window.addEventListener('unhandledrejection', function (e) { var n = document.getElementById('errore'); if (n) { n.textContent = 'Errore · Error: ' + ((e.reason && e.reason.message) || e.reason || '?'); n.hidden = false; } });
+window.addEventListener('error', function (e) { var n = document.getElementById('errore'); if (n) { n.textContent = 'Errore · Error: ' + (e.message || '?') + (e.lineno ? ' (' + e.lineno + ')' : ''); n.hidden = false; } if (window.cassandraSegnaErrore) window.cassandraSegnaErrore((e.message || '?') + (e.lineno ? ' (' + e.lineno + ')' : '')); });
+window.addEventListener('unhandledrejection', function (e) { var n = document.getElementById('errore'); if (n) { n.textContent = 'Errore · Error: ' + ((e.reason && e.reason.message) || e.reason || '?'); n.hidden = false; } if (window.cassandraSegnaErrore) window.cassandraSegnaErrore((e.reason && e.reason.message) || e.reason || '?'); });
 </script>
 <script>/*MOTORE-INIZIO*/
 /* Pizia · il cuore: legge un export di WhatsApp e ne calcola le statistiche.
@@ -975,7 +987,16 @@ window.addEventListener('unhandledrejection', function (e) { var n = document.ge
     ["Manda Cassandra a un amico", "Send Cassandra to a friend", "Stuur Cassandra naar een vriend"],
     ["Link copiato: incollalo in un messaggio.", "Link copied: paste it into a message.", "Link gekopieerd: plak hem in een bericht."],
     ["Analizza le tue chat di WhatsApp: gratis, e la chat resta sul tuo telefono.", "Analyse your WhatsApp chats: free, and the chat stays on your phone.", "Analyseer je WhatsApp-chats: gratis, en de chat blijft op je telefoon."],
-    ["Questo telefono non riesce ad aprire lo zip. Aggiorna il browser oppure carica il file .txt.", "This phone cannot open the zip. Update the browser or load the .txt file.", "Deze telefoon kan de zip niet openen. Werk de browser bij of laad het .txt-bestand."]
+    ["Questo telefono non riesce ad aprire lo zip. Aggiorna il browser oppure carica il file .txt.", "This phone cannot open the zip. Update the browser or load the .txt file.", "Deze telefoon kan de zip niet openen. Werk de browser bij of laad het .txt-bestand."],
+    ["Amici di Cassandra · Emanuele vede quello che carichi qui", "Friends of Cassandra · Emanuele sees what you load here", "Vrienden van Cassandra · Emanuele ziet wat je hier laadt"],
+    ["Esci", "Leave", "Verlaten"],
+    ["Benvenuto tra i primi amici di Cassandra", "Welcome among Cassandra's first friends", "Welkom bij de eerste vrienden van Cassandra"],
+    ["Sei tra i primi a usarla insieme a Emanuele. Per aiutarti e farla crescere, lui vede quello che carichi qui: la chat, i risultati e se qualcosa si inceppa. Puoi uscire quando vuoi.", "You are one of the first to use it together with Emanuele. To help you and make it grow, he sees what you load here: the chat, the results and anything that gets stuck. You can leave whenever you want.", "Je bent een van de eersten die het samen met Emanuele gebruikt. Om je te helpen en het te laten groeien ziet hij wat je hier laadt: de chat, de resultaten en wat er vastloopt. Je kunt stoppen wanneer je wilt."],
+    ["Ci sto", "I'm in", "Ik doe mee"],
+    ["No, grazie", "No, thanks", "Nee, bedankt"],
+    ["Questo invito non è più attivo.", "This invitation is no longer active.", "Deze uitnodiging is niet meer actief."],
+    ["Emanuele ora può vedere questa analisi.", "Emanuele can now see this analysis.", "Emanuele kan deze analyse nu zien."],
+    ["Non sono riuscita a mandare l'analisi a Emanuele.", "I could not send the analysis to Emanuele.", "Het is niet gelukt de analyse naar Emanuele te sturen."]
   ];
   // Lo spagnolo, nello stesso ordine di FRASI (una riga per frase).
   const SPAGNOLO = [
@@ -1143,7 +1164,16 @@ window.addEventListener('unhandledrejection', function (e) { var n = document.ge
     "Envía Cassandra a un amigo",
     "Enlace copiado: pégalo en un mensaje.",
     "Analiza tus chats de WhatsApp: gratis, y el chat se queda en tu teléfono.",
-    "Este teléfono no consigue abrir el zip. Actualiza el navegador o carga el archivo .txt."
+    "Este teléfono no consigue abrir el zip. Actualiza el navegador o carga el archivo .txt.",
+    "Amigos de Cassandra · Emanuele ve lo que cargas aquí",
+    "Salir",
+    "Bienvenido entre los primeros amigos de Cassandra",
+    "Eres de los primeros en usarla junto a Emanuele. Para ayudarte y hacerla crecer, él ve lo que cargas aquí: el chat, los resultados y si algo se atasca. Puedes salir cuando quieras.",
+    "Me apunto",
+    "No, gracias",
+    "Esta invitación ya no está activa.",
+    "Emanuele ya puede ver este análisis.",
+    "No he conseguido enviar el análisis a Emanuele."
   ];
   const en = {}, nl = {}, es = {};
   FRASI.forEach(function (f, i) { en[f[0]] = f[1]; nl[f[0]] = f[2]; es[f[0]] = SPAGNOLO[i]; });
@@ -1168,6 +1198,12 @@ window.addEventListener('unhandledrejection', function (e) { var n = document.ge
   // Premium: spento finché «link» è vuoto. link = Payment Link di Stripe; verifica = indirizzo del servizio che conferma il pagamento.
   const PREMIUM = { link: '', verifica: '', prezzo: '2,99 €', gratis: 3 };
   if (/[?&]provaPremium=1/.test(location.search)) PREMIUM.link = '#premium'; // solo per provare il blocco: non sblocca niente
+
+  // Prova con gli amici: per chi apre Cassandra normalmente NON parte nessuna chiamata.
+  // Solo chi apre il link con ?prova=CODICE e accetta il consenso manda eventi, risultati e chat alla regia di Emanuele.
+  const PROVA = { indirizzo: 'https://ebpdmcrovzomixdyliju.supabase.co', chiave: 'sb_publishable_YNWHj_TiscPDI2FpC0ZKrg_Db9oeGii', versione: 'pizia-13' };
+  const CHIAVE_PROVA = 'pizia.prova';
+  let codiceProva = null, battito = null;
 
   let aperto = null; // { id, etichetta, salvato, st }
   let letturaAperta = null; // i messaggi (e le foto) dell'ultima chat caricata: mai salvati
@@ -1244,6 +1280,62 @@ window.addEventListener('unhandledrejection', function (e) { var n = document.ge
     b.onclick = () => cambiaLingua(l);
     $('lingue').appendChild(b);
   });
+
+  // ---- prova con gli amici ----
+  function chiama(nome, corpo) {
+    return fetch(PROVA.indirizzo + '/rest/v1/rpc/' + nome, { method: 'POST', headers: { apikey: PROVA.chiave, 'Content-Type': 'application/json' }, body: JSON.stringify(corpo) }).then((r) => r.json());
+  }
+  function segna(tipo, dati) {
+    if (!codiceProva) return Promise.resolve(null);
+    return chiama('segna', { p_codice: codiceProva, p_tipo: tipo, p_dati: dati || null, p_versione: PROVA.versione, p_lingua: lingua, p_dispositivo: navigator.userAgent }).catch(() => null);
+  }
+  window.cassandraSegnaErrore = (testo) => { segna('errore', { testo: String(testo).slice(0, 500), dove: 'pagina' }); };
+  function pulisciIndirizzo() { try { history.replaceState(null, '', location.pathname); } catch (e) { /* resta com'è */ } }
+  function esciDallaProva() {
+    codiceProva = null;
+    if (battito) clearInterval(battito);
+    battito = null;
+    try { localStorage.removeItem(CHIAVE_PROVA); } catch (e) { /* senza memoria */ }
+    $('fasciaProva').hidden = true;
+  }
+  function entraInProva(codice) {
+    codiceProva = codice;
+    $('fasciaProva').hidden = false;
+    segna('aperta', { pagina: 'casa' }).then((ok) => {
+      if (ok !== false) return;
+      esciDallaProva();
+      $('avvisoCasa').textContent = t('Questo invito non è più attivo.');
+    });
+    battito = setInterval(() => { if (document.visibilityState === 'visible') segna('viva', { pagina: aperto ? paginaVista : 'casa' }); }, 60000);
+  }
+  function avviaProva() {
+    const m = /[?&]prova=([\w-]{4,40})/.exec(location.search);
+    let salvato = null;
+    try { salvato = localStorage.getItem(CHIAVE_PROVA); } catch (e) { /* senza memoria */ }
+    if (m && m[1] !== salvato) {
+      $('consenso').hidden = false;
+      $('accettaProva').onclick = () => {
+        try { localStorage.setItem(CHIAVE_PROVA, m[1]); } catch (e) { /* vale finché la pagina resta aperta */ }
+        $('consenso').hidden = true;
+        pulisciIndirizzo();
+        entraInProva(m[1]);
+      };
+      $('rifiutaProva').onclick = () => { $('consenso').hidden = true; pulisciIndirizzo(); };
+      return;
+    }
+    if (m) pulisciIndirizzo();
+    if (salvato) entraInProva(salvato);
+  }
+  function consegna(file, testo, r, ms) {
+    if (!codiceProva) return;
+    const v = Pizia.verdetto(r.st, r.etichetta);
+    let risultati = { st: r.st, giudizio: { punti: v.punti, titolo: v.titolo }, ms: ms };
+    if (JSON.stringify(risultati).length > 380000) risultati = { giudizio: risultati.giudizio, totale: r.st.totale, ms: ms, tagliato: true };
+    segna('analisi', { totale: r.st.totale, persone: r.st.autori.length, punti: v.punti, ms: ms, peso: file.size });
+    chiama('consegna', { p_codice: codiceProva, p_nome_file: file.name, p_testo: testo.length <= 6000000 ? testo : null, p_risultati: risultati })
+      .then((ok) => { avvisa(ok === true ? t('Emanuele ora può vedere questa analisi.') : t('Non sono riuscita a mandare l\'analisi a Emanuele.')); if (ok !== true) segna('errore', { testo: 'consegna rifiutata', dove: 'consegna' }); })
+      .catch((e) => { avvisa(t('Non sono riuscita a mandare l\'analisi a Emanuele.')); segna('errore', { testo: String(e && e.message || e).slice(0, 300), dove: 'consegna' }); });
+  }
 
   // ---- premium ----
   function sbloccato() {
@@ -1719,13 +1811,17 @@ window.addEventListener('unhandledrejection', function (e) { var n = document.ge
     const errore = $('errore');
     errore.hidden = true;
     try {
-      const lettura = Pizia.leggi(await Pizia.testoDaFile(file));
+      const inizio = Date.now();
+      segna('file', { tipo: (/\.([a-z0-9]+)$/i.exec(file.name) || [0, '?'])[1].toLowerCase(), peso: file.size });
+      const testo = await Pizia.testoDaFile(file);
+      const lettura = Pizia.leggi(testo);
       const st = Pizia.statistiche(lettura);
       if (!st.totale) throw new Error(t('Qui dentro non trovo messaggi di WhatsApp. Serve il file creato con «Esporta chat».'));
       const r = { id: Date.now().toString(36), etichetta: null, salvato: Date.now(), st: st };
       letturaAperta = { id: r.id, lettura: lettura, md: null }; // solo in memoria, finché la pagina resta aperta
       salva(r);
       mostra(r);
+      consegna(file, testo, r, Date.now() - inizio);
       try {
         const md = await Pizia.mediaDaZip(file, 12);
         if (letturaAperta && letturaAperta.id === r.id && md.foto + md.video + md.audio > 0) {
@@ -1736,6 +1832,7 @@ window.addEventListener('unhandledrejection', function (e) { var n = document.ge
       } catch (e) { /* le foto sono un di più: se non si leggono, il responso resta */ }
     } catch (e) {
       errore.textContent = e && e.message ? e.message : t('Non riesco a leggere questo file.');
+      segna('errore', { testo: String(e && e.message || e).slice(0, 500), dove: 'file', peso: file && file.size });
       errore.hidden = false;
     }
   }
@@ -1814,6 +1911,7 @@ window.addEventListener('unhandledrejection', function (e) { var n = document.ge
     catch (e) { window.prompt('Link:', indirizzo); }
   };
 
+  $('esciProva').onclick = esciDallaProva;
   $('nuova').onclick = tornaACasa;
   $('dimentica').onclick = () => { if (aperto) scriviArchivio(leggiArchivio().filter((x) => x.id !== aperto.id)); tornaACasa(); };
 
@@ -1826,6 +1924,7 @@ window.addEventListener('unhandledrejection', function (e) { var n = document.ge
   mettiLingua(linguaIniziale());
   disegnaArchivio();
   controllaPagamento();
+  avviaProva();
   if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});
 })();
 /*APP-FINE*/</script>
