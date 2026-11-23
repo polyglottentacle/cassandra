@@ -96,6 +96,8 @@
   .consenso { background: var(--ulivo); color: #0b3a34; border-radius: 24px; padding: 22px; margin: 0 0 16px; }
   .consenso h2 { margin: 0 0 8px; font-size: 22px; }
   .consenso p { margin: 0; line-height: 1.5; }
+  .fatto { margin: 10px 0 0; font-weight: 700; font-size: 16px; line-height: 1.35; }
+  .lente { outline: 3px solid var(--accento); outline-offset: -3px; }
   .azioni { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
   .azioni > * { flex: 1 1 180px; }
   footer { margin-top: 30px; text-align: center; color: var(--velo); font-size: 12.5px; }
@@ -996,7 +998,23 @@ window.addEventListener('unhandledrejection', function (e) { var n = document.ge
     ["No, grazie", "No, thanks", "Nee, bedankt"],
     ["Questo invito non è più attivo.", "This invitation is no longer active.", "Deze uitnodiging is niet meer actief."],
     ["Emanuele ora può vedere questa analisi.", "Emanuele can now see this analysis.", "Emanuele kan deze analyse nu zien."],
-    ["Non sono riuscita a mandare l'analisi a Emanuele.", "I could not send the analysis to Emanuele.", "Het is niet gelukt de analyse naar Emanuele te sturen."]
+    ["Non sono riuscita a mandare l'analisi a Emanuele.", "I could not send the analysis to Emanuele.", "Het is niet gelukt de analyse naar Emanuele te sturen."],
+    ["Voi due, da vicino", "The two of you, up close", "Jullie twee, van dichtbij"],
+    ["Chi insegue chi", "Who is chasing whom", "Wie achter wie aan zit"],
+    ["La vostra famiglia in chat", "Your family in the chat", "Jullie familie in de chat"],
+    ["Amici alla prova", "Friendship put to the test", "Vriendschap op de proef"],
+    ["Lavoro e confini", "Work and boundaries", "Werk en grenzen"],
+    ["Tocca qui sopra che rapporto è: il responso cambia colore e lettura.", "Tap above what kind of relationship it is: the report changes colour and reading.", "Tik hierboven wat voor relatie het is: het rapport verandert van kleur en lezing."],
+    ["Più parole d'affetto: {0} ({1})", "Most words of affection: {0} ({1})", "Meeste lieve woorden: {0} ({1})"],
+    ["Chiede più spesso scusa: {0} ({1})", "Says sorry most often: {0} ({1})", "Zegt het vaakst sorry: {0} ({1})"],
+    ["Scrive di più di notte: {0} ({1})", "Writes most at night: {0} ({1})", "Schrijft het meest 's nachts: {0} ({1})"],
+    ["Apre più spesso la giornata: {0} ({1}% dei giorni)", "Starts the day most often: {0} ({1}% of days)", "Begint de dag het vaakst: {0} ({1}% van de dagen)"],
+    ["Risponde più in fretta: {0} (di solito {1})", "Replies fastest: {0} (usually {1})", "Antwoordt het snelst: {0} (meestal {1})"],
+    ["Riscrive più spesso senza risposta: {0} ({1} volte)", "Writes again without a reply most often: {0} ({1} times)", "Schrijft het vaakst opnieuw zonder antwoord: {0} ({1} keer)"],
+    ["Tiene viva la chat: {0} ({1}% dei messaggi)", "Keeps the chat alive: {0} ({1}% of messages)", "Houdt de chat levend: {0} ({1}% van de berichten)"],
+    ["Foto, video e audio condivisi: {0}", "Photos, videos and audio shared: {0}", "Gedeelde foto's, video's en audio: {0}"],
+    ["Manda più link: {0} ({1})", "Sends the most links: {0} ({1})", "Stuurt de meeste links: {0} ({1})"],
+    ["Messaggi fuori orario (sera, notte e weekend): {0}%", "Messages outside working hours (evening, night and weekend): {0}%", "Berichten buiten werktijd (avond, nacht en weekend): {0}%"]
   ];
   // Lo spagnolo, nello stesso ordine di FRASI (una riga per frase).
   const SPAGNOLO = [
@@ -1173,7 +1191,23 @@ window.addEventListener('unhandledrejection', function (e) { var n = document.ge
     "No, gracias",
     "Esta invitación ya no está activa.",
     "Emanuele ya puede ver este análisis.",
-    "No he conseguido enviar el análisis a Emanuele."
+    "No he conseguido enviar el análisis a Emanuele.",
+    "Vosotros dos, de cerca",
+    "Quién persigue a quién",
+    "Vuestra familia en el chat",
+    "Amistad a prueba",
+    "Trabajo y límites",
+    "Toca arriba qué relación es: el informe cambia de color y de lectura.",
+    "Más palabras de cariño: {0} ({1})",
+    "Pide perdón más a menudo: {0} ({1})",
+    "Escribe más de noche: {0} ({1})",
+    "Abre el día más a menudo: {0} ({1}% de los días)",
+    "Responde más rápido: {0} (normalmente {1})",
+    "Vuelve a escribir sin respuesta más a menudo: {0} ({1} veces)",
+    "Mantiene vivo el chat: {0} ({1}% de los mensajes)",
+    "Fotos, vídeos y audios compartidos: {0}",
+    "Envía más enlaces: {0} ({1})",
+    "Mensajes fuera de horario (tarde, noche y fin de semana): {0}%"
   ];
   const en = {}, nl = {}, es = {};
   FRASI.forEach(function (f, i) { en[f[0]] = f[1]; nl[f[0]] = f[2]; es[f[0]] = SPAGNOLO[i]; });
@@ -1201,7 +1235,7 @@ window.addEventListener('unhandledrejection', function (e) { var n = document.ge
 
   // Prova con gli amici: per chi apre Cassandra normalmente NON parte nessuna chiamata.
   // Solo chi apre il link con ?prova=CODICE e accetta il consenso manda eventi, risultati e chat alla regia di Emanuele.
-  const PROVA = { indirizzo: 'https://ebpdmcrovzomixdyliju.supabase.co', chiave: 'sb_publishable_YNWHj_TiscPDI2FpC0ZKrg_Db9oeGii', versione: 'pizia-13' };
+  const PROVA = { indirizzo: 'https://ebpdmcrovzomixdyliju.supabase.co', chiave: 'sb_publishable_YNWHj_TiscPDI2FpC0ZKrg_Db9oeGii', versione: 'pizia-14' };
   const CHIAVE_PROVA = 'pizia.prova';
   let codiceProva = null, battito = null;
 
@@ -1548,6 +1582,50 @@ window.addEventListener('unhandledrejection', function (e) { var n = document.ge
     c.appendChild(gal);
   }
 
+  // La lente del rapporto: scelta l'etichetta, il responso cambia colore e mette in cima i fatti che contano per quel rapporto.
+  const RAPPORTI = {
+    Coppia: { colore: 'terracotta', accento: '#c2255c', titolo: K('Voi due, da vicino') },
+    Crush: { colore: 'porpora', accento: '#7b3fe4', titolo: K('Chi insegue chi') },
+    Famiglia: { colore: 'oro', accento: '#a85f00', titolo: K('La vostra famiglia in chat') },
+    Amicizia: { colore: 'egeo', accento: '#0b7fab', titolo: K('Amici alla prova') },
+    Lavoro: { colore: 'marmo', accento: '#3b4a5e', titolo: K('Lavoro e confini') }
+  };
+  function lente(r, autori) {
+    const st = r.st, tipo = RAPPORTI[r.etichetta];
+    document.documentElement.style.setProperty('--accento', tipo ? tipo.accento : '#2b2fa8');
+    if (!tipo) {
+      const invito = el('p', 'periodo', t('Tocca qui sopra che rapporto è: il responso cambia colore e lettura.'));
+      invito.dataset.pagina = 'giudizio';
+      $('carte').appendChild(invito);
+      return;
+    }
+    const primo = (campo) => { const a = autori.reduce((x, y) => ((y[campo] || 0) > (x[campo] || 0) ? y : x)); return (a[campo] || 0) > 0 ? a : null; };
+    const svelto = autori.filter((a) => a.risposte && a.rispostaMedianaMs != null).sort((x, y) => x.rispostaMedianaMs - y.rispostaMedianaMs)[0];
+    const fatti = {
+      affetto: () => { const a = primo('affetto'); return a && t('Più parole d\'affetto: {0} ({1})', a.nome, nf.format(a.affetto)); },
+      scuse: () => { const a = primo('scuse'); return a && t('Chiede più spesso scusa: {0} ({1})', a.nome, nf.format(a.scuse)); },
+      notte: () => { const a = primo('notte'); return a && t('Scrive di più di notte: {0} ({1})', a.nome, nf.format(a.notte)); },
+      apre: () => { const a = primo('apreGiornata'); return a && t('Apre più spesso la giornata: {0} ({1}% dei giorni)', a.nome, Math.round(a.apreGiornata / st.giorniAttivi * 100)); },
+      svelto: () => svelto && t('Risponde più in fretta: {0} (di solito {1})', svelto.nome, Pizia.durata(svelto.rispostaMedianaMs)),
+      insiste: () => { const a = primo('insistenze'); return a && t('Riscrive più spesso senza risposta: {0} ({1} volte)', a.nome, nf.format(a.insistenze)); },
+      viva: () => { const a = primo('messaggi'); return a && t('Tiene viva la chat: {0} ({1}% dei messaggi)', a.nome, Math.round(a.messaggi / st.totale * 100)); },
+      media: () => { const n = autori.reduce((s, a) => s + (a.media || 0), 0); return n > 0 && t('Foto, video e audio condivisi: {0}', nf.format(n)); },
+      link: () => { const a = primo('link'); return a && t('Manda più link: {0} ({1})', a.nome, nf.format(a.link)); },
+      striscia: () => st.striscia > 0 && t('Striscia più lunga: {0} giorni di fila.', nf.format(st.striscia)),
+      fuori: () => {
+        if (!st.settimana) return null;
+        let tutti = 0, dentro = 0;
+        st.settimana.forEach((giorno, g) => giorno.forEach((n, h) => { tutti += n; if (g < 5 && h >= 9 && h < 18) dentro += n; }));
+        return tutti > 0 && t('Messaggi fuori orario (sera, notte e weekend): {0}%', Math.round((tutti - dentro) / tutti * 100));
+      }
+    };
+    const SCELTA = { Coppia: ['affetto', 'scuse', 'notte'], Crush: ['apre', 'svelto', 'insiste'], Famiglia: ['viva', 'apre', 'media'], Amicizia: ['striscia', 'apre', 'link'], Lavoro: ['fuori', 'svelto', 'notte'] };
+    const righe = SCELTA[r.etichetta].map((k) => fatti[k]()).filter(Boolean);
+    if (!righe.length) return;
+    const c = carta(tipo.colore + ' lente', t(tipo.titolo));
+    righe.forEach((x) => c.appendChild(el('p', 'fatto', x)));
+  }
+
   // ---- le pagine del responso ----
   function mostraPagina(id) {
     const carte = Array.from($('carte').children);
@@ -1595,6 +1673,7 @@ window.addEventListener('unhandledrejection', function (e) { var n = document.ge
     // pagina 1 · il giudizio
     pagina = 'giudizio';
     giostra(r);
+    lente(r, autori);
     let c;
     const segni = Pizia.segnali(st);
     if (segni.length) {
@@ -1799,6 +1878,7 @@ window.addEventListener('unhandledrejection', function (e) { var n = document.ge
     if (letturaAperta && letturaAperta.md && letturaAperta.md.indirizzi) letturaAperta.md.indirizzi.forEach((u) => URL.revokeObjectURL(u));
     aperto = null;
     letturaAperta = null;
+    document.documentElement.style.removeProperty('--accento');
     $('responso').hidden = true;
     $('casa').hidden = false;
     $('file').value = '';
