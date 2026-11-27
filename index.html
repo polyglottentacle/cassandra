@@ -1325,7 +1325,7 @@ window.addEventListener('unhandledrejection', function (e) { var n = document.ge
 
   // Prova con gli amici: per chi apre Cassandra normalmente NON parte nessuna chiamata.
   // Solo chi apre il link con ?prova=CODICE e accetta il consenso manda eventi, risultati e chat alla regia.
-  const PROVA = { indirizzo: 'https://ebpdmcrovzomixdyliju.supabase.co', chiave: 'sb_publishable_YNWHj_TiscPDI2FpC0ZKrg_Db9oeGii', versione: 'pizia-18' };
+  const PROVA = { indirizzo: 'https://ebpdmcrovzomixdyliju.supabase.co', chiave: 'sb_publishable_YNWHj_TiscPDI2FpC0ZKrg_Db9oeGii', versione: 'pizia-19' };
   const CHIAVE_PROVA = 'pizia.prova';
   let codiceProva = null, battito = null;
 
@@ -1454,7 +1454,7 @@ window.addEventListener('unhandledrejection', function (e) { var n = document.ge
       $('accettaProva').onclick = async () => {
         $('accettaProva').disabled = true;
         const code = await chiama('fase1_entra', {}).catch(() => null);
-        if (!code || typeof code !== 'string') { $('accettaProva').disabled = false; return; }
+        if (!code || typeof code !== 'string') { $('accettaProva').disabled = false; $('consenso').hidden = true; pulisciIndirizzo(); return; } // Fase 1 chiusa: resta l'app normale
         try { localStorage.setItem(CHIAVE_PROVA, code); } catch (e) { /* vale finché la pagina resta aperta */ }
         $('consenso').hidden = true;
         pulisciIndirizzo();

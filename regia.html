@@ -63,6 +63,12 @@
     </section>
 
     <section>
+      <h2>Fase 1 · link unico ?fase1</h2>
+      <p class="sotto" id="statoFase1">…</p>
+      <div class="riga"><button class="pieno" id="fase1" type="button">…</button></div>
+    </section>
+
+    <section>
       <h2>Cosa si è inceppato</h2>
       <div class="scorri"><table><tbody id="errori"></tbody></table></div>
     </section>
@@ -77,7 +83,7 @@
       <div class="scorri"><table><tbody id="eventi"></tbody></table></div>
     </section>
 
-    <div class="riga"><button id="aggiorna" type="button">Aggiorna adesso</button><button id="linkSegreto" type="button">Copia il link segreto</button><button id="esci" type="button">Esci da questo dispositivo</button></div>
+    <div class="riga"><button id="aggiorna" type="button">Aggiorna adesso</button><button id="linkSegreto" type="button">Copia il link segreto</button><button id="cambiaChiave" type="button">Cambia chiave</button><button id="esci" type="button">Esci da questo dispositivo</button></div>
   </div>
 </main>
 <script>
@@ -200,6 +206,7 @@
       if (!q || !q.inviti) { $('dentro').hidden = true; $('porta').hidden = true; avvisa('Questa chiave non apre la regia. Apri il link segreto che hai salvato.'); return; }
       $('porta').hidden = true; $('dentro').hidden = false;
       disegna(q);
+      chiama('regia_fase1', { p_chiave: chiave }).then(disegnaFase1).catch(() => {});
     }).catch(() => avvisa('Non riesco a parlare con il database. Controlla la connessione.'));
   }
 
@@ -221,6 +228,28 @@
       if (!codice) { avvisa('Non sono riuscita a creare il link.'); return; }
       $('nome').value = '';
       copia(APP + '?prova=' + codice, 'Link di ' + nome + ' creato e copiato: mandaglielo.');
+      carica();
+    });
+  };
+  function disegnaFase1(stato) {
+    if (stato !== 'aperta' && stato !== 'chiusa') return;
+    const aperta = stato === 'aperta';
+    $('statoFase1').textContent = aperta
+      ? 'Aperta: chi apre ' + APP + '?fase1 e preme «Ci sto» entra da solo e ti manda la chat. Chiudila prima del lancio pubblico.'
+      : 'Chiusa: il link ?fase1 non iscrive più nessuno. Gli amici già dentro continuano a funzionare.';
+    $('fase1').textContent = aperta ? 'Chiudi la Fase 1' : 'Riapri la Fase 1';
+    $('fase1').dataset.aperta = aperta ? '1' : '';
+  }
+  $('fase1').onclick = () => chiama('regia_fase1', { p_chiave: chiave, p_aperta: !$('fase1').dataset.aperta }).then(disegnaFase1);
+  $('cambiaChiave').onclick = () => {
+    if (!confirm('Creo una chiave nuova su questo dispositivo. Il link segreto vecchio smetterà subito di funzionare. Continuo?')) return;
+    const pezzi = new Uint8Array(30); crypto.getRandomValues(pezzi);
+    const nuova = Array.from(pezzi, (b) => b.toString(16).padStart(2, '0')).join('');
+    chiama('regia_cambia', { p_vecchia: chiave, p_nuova: nuova }).then((ok) => {
+      if (ok !== true) { avvisa('Non sono riuscita a cambiare la chiave. Riprova.'); return; }
+      chiave = nuova;
+      try { localStorage.setItem(MEMORIA, chiave); } catch (e) { /* resta finché la pagina è aperta */ }
+      avvisa('Chiave cambiata. Qui sei già dentro. Ora premi «Copia il link segreto» e salva il link nuovo: quello vecchio non funziona più.');
       carica();
     });
   };
