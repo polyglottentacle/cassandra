@@ -84,6 +84,7 @@
     </section>
 
     <div class="riga"><button id="aggiorna" type="button">Aggiorna adesso</button><button id="linkSegreto" type="button">Copia il link segreto</button><button id="cambiaChiave" type="button">Cambia chiave</button><button id="esci" type="button">Esci da questo dispositivo</button></div>
+    <div id="copiaQui" hidden><p class="sotto">Il link segreto: selezionalo tutto, copialo (Ctrl+C) e salvalo nelle note.</p><input id="copiaTesto" readonly style="width:100%"></div>
   </div>
 </main>
 <script>
@@ -115,8 +116,20 @@
     const con = /Edg\//.test(ua) ? 'Edge' : /SamsungBrowser/.test(ua) ? 'Samsung' : /Firefox|FxiOS/.test(ua) ? 'Firefox' : /Chrome|CriOS/.test(ua) ? 'Chrome' : /Safari/.test(ua) ? 'Safari' : '';
     return cosa + (con ? ' · ' + con : '');
   }
-  function copia(testo, detto) {
-    (navigator.clipboard ? navigator.clipboard.writeText(testo) : Promise.reject()).then(() => avvisa(detto), () => window.prompt('Copia:', testo));
+  function copia(testo, detto, bottone) {
+    const mostra = () => { $('copiaQui').hidden = false; const i = $('copiaTesto'); i.value = testo; i.focus(); i.select(); avvisa('Copia il testo nella casella in fondo alla pagina.'); };
+    (navigator.clipboard ? navigator.clipboard.writeText(testo) : Promise.reject()).then(() => {
+      avvisa(detto);
+      if (bottone) { const prima = bottone.dataset.testo || bottone.textContent; bottone.textContent = 'Copiato ✓'; setTimeout(() => { bottone.textContent = prima; }, 3000); }
+    }, mostra);
+  }
+  // conferma dentro la pagina: il primo clic chiede «Sicuro?», il secondo (entro 6 secondi) esegue
+  function dueVolte(b, azione) {
+    if (b.dataset.sicuro && Date.now() - Number(b.dataset.sicuro) < 6000) { delete b.dataset.sicuro; b.textContent = b.dataset.testo; azione(); return; }
+    b.dataset.testo = b.dataset.testo || b.textContent;
+    b.dataset.sicuro = String(Date.now());
+    b.textContent = 'Sicuro? Clicca di nuovo';
+    setTimeout(() => { if (b.dataset.sicuro && Date.now() - Number(b.dataset.sicuro) >= 6000) { delete b.dataset.sicuro; b.textContent = b.dataset.testo; } }, 6100);
   }
   function cella(riga, testo, classe) { const c = el('td', classe, testo); riga.appendChild(c); return c; }
   function vuota(corpo, testo, colonne) { const r = el('tr'); const c = el('td', 'vuoto', testo); c.colSpan = colonne; r.appendChild(c); corpo.appendChild(r); }
@@ -184,7 +197,7 @@
         avvisa('Chat scaricata: aprila in Cassandra per rifare gli stessi conti.');
       });
       const b2 = el('button', null, 'Cancella'); b2.type = 'button';
-      b2.onclick = () => { if (window.confirm('Cancello per sempre questa chat dalla regia?')) chiama('regia_cancella_chat', { p_chiave: chiave, p_id: c.id }).then(carica); };
+      b2.onclick = () => dueVolte(b2, () => chiama('regia_cancella_chat', { p_chiave: chiave, p_id: c.id }).then(carica));
       az.appendChild(b1); az.appendChild(document.createTextNode(' ')); az.appendChild(b2);
       tc.appendChild(r);
     });
@@ -241,8 +254,7 @@
     $('fase1').dataset.aperta = aperta ? '1' : '';
   }
   $('fase1').onclick = () => chiama('regia_fase1', { p_chiave: chiave, p_aperta: !$('fase1').dataset.aperta }).then(disegnaFase1);
-  $('cambiaChiave').onclick = () => {
-    if (!confirm('Creo una chiave nuova su questo dispositivo. Il link segreto vecchio smetterà subito di funzionare. Continuo?')) return;
+  $('cambiaChiave').onclick = () => dueVolte($('cambiaChiave'), () => {
     const pezzi = new Uint8Array(30); crypto.getRandomValues(pezzi);
     const nuova = Array.from(pezzi, (b) => b.toString(16).padStart(2, '0')).join('');
     chiama('regia_cambia', { p_vecchia: chiave, p_nuova: nuova }).then((ok) => {
@@ -250,11 +262,13 @@
       chiave = nuova;
       try { localStorage.setItem(MEMORIA, chiave); } catch (e) { /* resta finché la pagina è aperta */ }
       avvisa('Chiave cambiata. Qui sei già dentro. Ora premi «Copia il link segreto» e salva il link nuovo: quello vecchio non funziona più.');
+      $('cambiaChiave').dataset.testo = 'Fatto ✓ ora: Copia il link segreto';
+      $('cambiaChiave').textContent = 'Fatto ✓ ora: Copia il link segreto';
       carica();
     });
-  };
+  });
   $('aggiorna').onclick = carica;
-  $('linkSegreto').onclick = () => copia(location.origin + location.pathname + '#k=' + chiave, 'Link segreto copiato. Chi ha questo link vede tutto: non mandarlo a nessuno.');
+  $('linkSegreto').onclick = () => copia(location.origin + location.pathname + '#k=' + chiave, 'Link segreto copiato. Chi ha questo link vede tutto: non mandarlo a nessuno.', $('linkSegreto'));
   $('esci').onclick = () => { try { localStorage.removeItem(MEMORIA); } catch (e) { /* niente */ } location.reload(); };
 
   const m = /[#&]k=([0-9a-f]{32,128})/.exec(location.hash);
