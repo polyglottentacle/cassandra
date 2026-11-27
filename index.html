@@ -1,10 +1,23 @@
 <!doctype html>
-<html lang="it">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Cassandra · dice la verità sulle tue chat</title>
-<meta name="description" content="Porta una chat di WhatsApp all'oracolo. I conti si fanno sul tuo telefono: niente server, niente account.">
+<title>Cassandra · The truth about your chats</title>
+<meta name="description" content="Bring a WhatsApp chat to the oracle: an angel lawyer and a devil detective give their verdict. Counted on your phone, free, no account.">
+<link rel="canonical" href="https://polyglottentacle.github.io/cassandra/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Cassandra">
+<meta property="og:url" content="https://polyglottentacle.github.io/cassandra/">
+<meta property="og:title" content="Cassandra · The truth about your chats">
+<meta property="og:description" content="An angel lawyer and a devil detective read your WhatsApp chat and give their verdict. Counted on your phone.">
+<meta property="og:image" content="https://polyglottentacle.github.io/cassandra/preview.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Cassandra: the angel lawyer and the devil detective">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Cassandra · The truth about your chats">
+<meta name="twitter:image" content="https://polyglottentacle.github.io/cassandra/preview.jpg">
 <meta name="theme-color" content="#fafaf6">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icona.svg" type="image/svg+xml">
@@ -261,7 +274,7 @@
     </div>
   </section>
 
-  <footer><span data-t>Cassandra · un satellite dell'Olimpo</span> · <a href="privacy.html" style="color:inherit;font-weight:700">Privacy</a></footer>
+  <footer><span data-t>Cassandra · un gioco, non una sentenza</span> · <a href="privacy.html" style="color:inherit;font-weight:700">Privacy</a> · <a href="terms.html" style="color:inherit;font-weight:700">Terms</a></footer>
 </main>
 
 <script>
@@ -894,7 +907,7 @@ window.addEventListener('unhandledrejection', function (e) { var n = document.ge
     ["Tempo", "Time", "Tijd"],
     ["altri {0}", "{0} others", "{0} anderen"],
     ["e", "and", "en"],
-    ["Cassandra · dice la verità sulle tue chat", "Cassandra · tells the truth about your chats", "Cassandra · zegt de waarheid over je chats"],
+    ["Cassandra · dice la verità sulle tue chat", "Cassandra · The truth about your chats", "Cassandra · zegt de waarheid over je chats"],
     ["Che rapporto è", "What kind of relationship", "Wat voor relatie"],
     // premium
     ["Premium attivo su questo dispositivo. Grazie!", "Premium is active on this device. Thank you!", "Premium is actief op dit apparaat. Bedankt!"],
@@ -1000,7 +1013,7 @@ window.addEventListener('unhandledrejection', function (e) { var n = document.ge
     ["Copia il riassunto per la tua IA", "Copy the summary for your AI", "Kopieer de samenvatting voor je AI"],
     ["Un'altra chat", "Another chat", "Nog een chat"],
     ["Dimentica questo responso", "Forget this reading", "Vergeet deze uitslag"],
-    ["Cassandra · un satellite dell'Olimpo", "Cassandra · a satellite of Olimpo", "Cassandra · een satelliet van Olimpo"],
+    ["Cassandra · un gioco, non una sentenza", "Cassandra · a game, not a verdict", "Cassandra · een spel, geen vonnis"],
     ["Manda Cassandra a un amico", "Send Cassandra to a friend", "Stuur Cassandra naar een vriend"],
     ["Link copiato: incollalo in un messaggio.", "Link copied: paste it into a message.", "Link gekopieerd: plak hem in een bericht."],
     ["Analizza le tue chat di WhatsApp: gratis, e la chat resta sul tuo telefono.", "Analyse your WhatsApp chats: free, and the chat stays on your phone.", "Analyseer je WhatsApp-chats: gratis, en de chat blijft op je telefoon."],
@@ -1224,7 +1237,7 @@ window.addEventListener('unhandledrejection', function (e) { var n = document.ge
     "Copiar el resumen para tu IA",
     "Otro chat",
     "Olvidar esta lectura",
-    "Cassandra · un satélite del Olimpo",
+    "Cassandra · un juego, no una sentencia",
     "Envía Cassandra a un amigo",
     "Enlace copiado: pégalo en un mensaje.",
     "Analiza tus chats de WhatsApp: gratis, y el chat se queda en tu teléfono.",
@@ -1312,7 +1325,7 @@ window.addEventListener('unhandledrejection', function (e) { var n = document.ge
 
   // Prova con gli amici: per chi apre Cassandra normalmente NON parte nessuna chiamata.
   // Solo chi apre il link con ?prova=CODICE e accetta il consenso manda eventi, risultati e chat alla regia.
-  const PROVA = { indirizzo: 'https://ebpdmcrovzomixdyliju.supabase.co', chiave: 'sb_publishable_YNWHj_TiscPDI2FpC0ZKrg_Db9oeGii', versione: 'pizia-17' };
+  const PROVA = { indirizzo: 'https://ebpdmcrovzomixdyliju.supabase.co', chiave: 'sb_publishable_YNWHj_TiscPDI2FpC0ZKrg_Db9oeGii', versione: 'pizia-18' };
   const CHIAVE_PROVA = 'pizia.prova';
   let codiceProva = null, battito = null;
 
@@ -1642,7 +1655,7 @@ window.addEventListener('unhandledrejection', function (e) { var n = document.ge
       if (libero) { const b = el('button', 'piano', t('Mostra altre {0}', Math.min(60, trovate.length - viste))); b.type = 'button'; b.onclick = altre; frasi.appendChild(b); return; }
       const box = el('div', 'premium');
       box.appendChild(el('strong', null, t('Hai letto {0} frasi su {1}.', viste, nf.format(trovate.length))));
-      const paga = el('a', 'bottone', t('Sblocca tutte le frasi · {0}', PREMIUM.prezzo));
+      const paga = el('a', 'bottone', t('Sblocca tutte le frasi · {0}', lingua === 'en' ? '$2.99' : PREMIUM.prezzo));
       paga.href = PREMIUM.link; paga.id = 'sblocca';
       box.appendChild(paga);
       box.appendChild(el('span', 'perche', t('Si paga una volta sola. La chat resta sul tuo dispositivo: chi incassa non riceve nessun messaggio.')));

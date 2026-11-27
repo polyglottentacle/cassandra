@@ -1,8 +1,8 @@
 {
-  "name": "Cassandra · dice la verità sulle tue chat",
+  "name": "Cassandra · The truth about your chats",
   "short_name": "Cassandra",
-  "description": "Il giudizio dell'angelo avvocato e del diavolo detective sulla tua chat di WhatsApp. Tutto sul tuo dispositivo.",
-  "lang": "it",
+  "description": "An angel lawyer and a devil detective give their verdict on your WhatsApp chat. Counted on your device.",
+  "lang": "en",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
